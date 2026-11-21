@@ -136,7 +136,14 @@ func main() {
 	log.Printf("seeded database successfully: %d stations, %d directed edges, %d fare rules, %d listings",
 		len(ds.Stations), len(ds.Edges)*2, len(ds.FareRules), len(ds.Listings))
 
-	cacheClient := cache.NewFromURL(cfg.RedisURL, cfg.RedisAddr, cfg.RedisPassword, cfg.RedisDB)
+	cacheClient := cache.NewFromOptions(cache.Options{
+		URL:       cfg.RedisURL,
+		RestURL:   cfg.RedisRestURL,
+		RestToken: cfg.RedisRestToken,
+		Addr:      cfg.RedisAddr,
+		Password:  cfg.RedisPassword,
+		DB:        cfg.RedisDB,
+	})
 	defer func() { _ = cacheClient.Close() }()
 	if err := cacheClient.Ping(ctx); err != nil {
 		log.Printf("redis unavailable (%v); skipped cache invalidation", err)

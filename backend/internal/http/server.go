@@ -220,6 +220,7 @@ func (s *Server) handleHealth(c *gin.Context) {
 		"postgis":         postgisStatus,
 		"postgis_version": postgisVersion,
 		"redis":           redisStatus,
+		"redis_mode":      s.cache.Mode(),
 		"timestamp":       time.Now().UTC().Format(time.RFC3339),
 	})
 }

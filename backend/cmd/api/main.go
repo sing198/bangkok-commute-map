@@ -31,10 +31,19 @@ func main() {
 		log.Fatalf("run migrations: %v", err)
 	}
 
-	cacheClient := cache.NewFromURL(cfg.RedisURL, cfg.RedisAddr, cfg.RedisPassword, cfg.RedisDB)
+	cacheClient := cache.NewFromOptions(cache.Options{
+		URL:       cfg.RedisURL,
+		RestURL:   cfg.RedisRestURL,
+		RestToken: cfg.RedisRestToken,
+		Addr:      cfg.RedisAddr,
+		Password:  cfg.RedisPassword,
+		DB:        cfg.RedisDB,
+	})
 	defer func() { _ = cacheClient.Close() }()
 	if err := cacheClient.Ping(ctx); err != nil {
-		log.Printf("warning: redis unavailable (%v); continuing with graceful fallback", err)
+		log.Printf("warning: redis unavailable (mode=%s, err=%v); continuing with graceful fallback", cacheClient.Mode(), err)
+	} else {
+		log.Printf("connected to redis (mode=%s)", cacheClient.Mode())
 	}
 
 	repo := commute.NewRepository(pool)
