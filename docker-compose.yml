@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: bkk-commute-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-commute}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-commute_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-bangkok_commute}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-commute} -d ${POSTGRES_DB:-bangkok_commute}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: bkk-commute-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Optional full-stack containers: run with `docker compose --profile full up -d --build`
+  api:
+    profiles: ["full"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bkk-commute-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-commute}:${POSTGRES_PASSWORD:-commute_dev}@postgres:5432/${POSTGRES_DB:-bangkok_commute}?sslmode=disable
+      REDIS_ADDR: redis:6379
+      API_PORT: "8080"
+      SEED_ON_START: "true"
+      CORS_ALLOW_ORIGIN: "http://localhost:3000,http://localhost:5173"
+    ports:
+      - "8081:8080"
+
+  web:
+    profiles: ["full"]
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bkk-commute-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+
+volumes:
+  pgdata:
+  redisdata:

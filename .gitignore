@@ -1,0 +1,18 @@
+# Binaries & build outputs
+/backend/bin/
+*.exe
+*.test
+*.out
+
+# Environment files
+.env
+.env.local
+
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
