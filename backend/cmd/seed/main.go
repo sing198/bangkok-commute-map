@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 
@@ -66,6 +67,7 @@ func main() {
 	dataDir := flag.String("data-dir", "./data", "directory containing stations.json, edges.json, fare_rules.json")
 	runMigrate := flag.Bool("migrate", true, "run embedded SQL migrations before seeding")
 	validateOnly := flag.Bool("validate-only", false, "validate JSON datasets and exit without connecting to DB")
+	dumpSQL := flag.String("dump-sql", "", "write idempotent PostgreSQL seed SQL to this path and exit")
 	flag.Parse()
 
 	ds, err := loadDataset(*dataDir)
@@ -79,6 +81,14 @@ func main() {
 	listings := generateListings(ds.Stations)
 	log.Printf("dataset valid: %d stations, %d undirected edges (%d directed), %d fare rules, %d generated listings",
 		len(ds.Stations), len(ds.Edges), len(ds.Edges)*2, len(ds.FareRules), len(listings))
+
+	if *dumpSQL != "" {
+		if err := writeSeedSQL(*dumpSQL, ds, listings); err != nil {
+			log.Fatalf("dump sql: %v", err)
+		}
+		log.Printf("wrote idempotent seed SQL to %s", *dumpSQL)
+		return
+	}
 
 	if *validateOnly {
 		log.Println("validation-only mode completed successfully")
@@ -464,4 +474,85 @@ func offsetLatLng(lat, lng, distMeters, bearingRad float64) (float64, float64) {
 	dLat := (distMeters * math.Cos(bearingRad)) / metersPerDegLat
 	dLng := (distMeters * math.Sin(bearingRad)) / (metersPerDegLat * math.Cos(lat*math.Pi/180.0))
 	return math.Round((lat+dLat)*1e6) / 1e6, math.Round((lng+dLng)*1e6) / 1e6
+}
+
+func sqlQuote(s string) string {
+	return "'" + strings.ReplaceAll(s, "'", "''") + "'"
+}
+
+func writeSeedSQL(path string, ds *Dataset, listings []GeneratedListing) error {
+	var b strings.Builder
+	b.WriteString("BEGIN;\n\n")
+
+	b.WriteString("INSERT INTO public.stations (id, name_th, name_en, line_code, operator, is_extension, location, updated_at) VALUES\n")
+	for i, s := range ds.Stations {
+		sep := ","
+		if i == len(ds.Stations)-1 {
+			sep = ""
+		}
+		fmt.Fprintf(&b, "  (%s, %s, %s, %s, %s, %t, ST_SetSRID(ST_MakePoint(%.6f, %.6f), 4326)::geography, NOW())%s\n",
+			sqlQuote(s.ID), sqlQuote(s.NameTH), sqlQuote(s.NameEN), sqlQuote(s.LineCode), sqlQuote(s.Operator), s.IsExtension, s.Lng, s.Lat, sep,
+		)
+	}
+	b.WriteString("ON CONFLICT (id) DO UPDATE SET name_th=EXCLUDED.name_th, name_en=EXCLUDED.name_en, line_code=EXCLUDED.line_code, operator=EXCLUDED.operator, is_extension=EXCLUDED.is_extension, location=EXCLUDED.location, updated_at=NOW();\n\n")
+
+	b.WriteString("INSERT INTO public.transit_edges (from_station_id, to_station_id, travel_minutes, is_transfer) VALUES\n")
+	for i, e := range ds.Edges {
+		sep := ","
+		if i == len(ds.Edges)-1 {
+			sep = ""
+		}
+		fmt.Fprintf(&b, "  (%s, %s, %d, %t), (%s, %s, %d, %t)%s\n",
+			sqlQuote(e.From), sqlQuote(e.To), e.TravelMinutes, e.IsTransfer,
+			sqlQuote(e.To), sqlQuote(e.From), e.TravelMinutes, e.IsTransfer, sep,
+		)
+	}
+	b.WriteString("ON CONFLICT (from_station_id, to_station_id) DO UPDATE SET travel_minutes=EXCLUDED.travel_minutes, is_transfer=EXCLUDED.is_transfer;\n\n")
+
+	b.WriteString("INSERT INTO public.fare_rules (operator, hops, fare_thb, effective_date) VALUES\n")
+	for i, f := range ds.FareRules {
+		sep := ","
+		if i == len(ds.FareRules)-1 {
+			sep = ""
+		}
+		fmt.Fprintf(&b, "  (%s, %d, %d, %s::date)%s\n",
+			sqlQuote(f.Operator), f.Hops, f.FareTHB, sqlQuote(f.EffectiveDate), sep,
+		)
+	}
+	b.WriteString("ON CONFLICT (operator, hops, effective_date) DO UPDATE SET fare_thb=EXCLUDED.fare_thb;\n\n")
+
+	b.WriteString("WITH raw_listings(id, title_th, title_en, property_type, district, monthly_rent_thb, room_size_sqm, bedrooms, lng, lat) AS (\n  VALUES\n")
+	for i, l := range listings {
+		sep := ","
+		if i == len(listings)-1 {
+			sep = ""
+		}
+		fmt.Fprintf(&b, "    (%s, %s, %s, %s, %s, %d, %.1f::numeric, %d, %.6f::double precision, %.6f::double precision)%s\n",
+			sqlQuote(l.ID), sqlQuote(l.TitleTH), sqlQuote(l.TitleEN), sqlQuote(l.PropertyType), sqlQuote(l.District),
+			l.MonthlyRentTHB, l.RoomSizeSqm, l.Bedrooms, l.Lng, l.Lat, sep,
+		)
+	}
+	b.WriteString(`),
+with_geo AS (
+  SELECT *, ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography AS loc
+  FROM raw_listings
+)
+INSERT INTO public.listings (id, title_th, title_en, property_type, district, monthly_rent_thb, room_size_sqm, bedrooms, location, nearest_station_id, walk_to_station_m, updated_at)
+SELECT g.id, g.title_th, g.title_en, g.property_type, g.district, g.monthly_rent_thb, g.room_size_sqm, g.bedrooms, g.loc, n.id, n.walk_m, NOW()
+FROM with_geo g
+CROSS JOIN LATERAL (
+  SELECT s.id, ROUND(ST_Distance(g.loc, s.location))::int AS walk_m
+  FROM public.stations s
+  ORDER BY s.location <-> g.loc
+  LIMIT 1
+) n
+ON CONFLICT (id) DO UPDATE SET
+  title_th=EXCLUDED.title_th, title_en=EXCLUDED.title_en, property_type=EXCLUDED.property_type,
+  district=EXCLUDED.district, monthly_rent_thb=EXCLUDED.monthly_rent_thb, room_size_sqm=EXCLUDED.room_size_sqm,
+  bedrooms=EXCLUDED.bedrooms, location=EXCLUDED.location, nearest_station_id=EXCLUDED.nearest_station_id,
+  walk_to_station_m=EXCLUDED.walk_to_station_m, updated_at=NOW();
+
+COMMIT;
+`)
+	return os.WriteFile(path, []byte(b.String()), 0o644)
 }
