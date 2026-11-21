@@ -5,10 +5,12 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
+	"os"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -21,8 +23,17 @@ func Connect(ctx context.Context, databaseURL string) (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse database url: %w", err)
 	}
-	cfg.MaxConns = 15
-	cfg.MinConns = 2
+	if os.Getenv("VERCEL") == "1" {
+		cfg.MaxConns = 5
+		cfg.MinConns = 0
+	} else {
+		cfg.MaxConns = 15
+		cfg.MinConns = 2
+	}
+	// Support Supabase Transaction Pooler (port 6543) without prepared statement conflicts.
+	if strings.Contains(databaseURL, ":6543") {
+		cfg.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+	}
 	cfg.MaxConnLifetime = 30 * time.Minute
 
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
