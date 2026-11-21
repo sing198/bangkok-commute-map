@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { compareListings, fetchPresets, searchCommute } from './api/client';
+import type { PlaceResult } from './api/places';
 import { CommuteMap } from './components/CommuteMap';
 import { CompareModal } from './components/CompareModal';
 import { FilterSidebar } from './components/FilterSidebar';
@@ -26,6 +27,7 @@ const DEFAULT_FILTERS: SearchFilters = {
 export default function App() {
   const [presets, setPresets] = useState<OfficePreset[]>([]);
   const [activePresetId, setActivePresetId] = useState<string | null>('asok');
+  const [selectedPlaceLabel, setSelectedPlaceLabel] = useState<string | null>(null);
   const [office, setOffice] = useState<OfficePoint>(DEFAULT_OFFICE);
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
 
@@ -86,11 +88,19 @@ export default function App() {
 
   const handleSelectPreset = useCallback((preset: OfficePreset) => {
     setActivePresetId(preset.id);
+    setSelectedPlaceLabel(null);
     setOffice({ lat: preset.lat, lng: preset.lng });
+  }, []);
+
+  const handleSelectPlace = useCallback((place: PlaceResult) => {
+    setActivePresetId(null);
+    setSelectedPlaceLabel(place.name);
+    setOffice({ lat: place.lat, lng: place.lng });
   }, []);
 
   const handleMoveOffice = useCallback((next: OfficePoint) => {
     setActivePresetId(null);
+    setSelectedPlaceLabel(null);
     setOffice(next);
   }, []);
 
@@ -133,6 +143,8 @@ export default function App() {
         presets={presets}
         activePresetId={activePresetId}
         onSelectPreset={handleSelectPreset}
+        selectedPlaceLabel={selectedPlaceLabel}
+        onSelectPlace={handleSelectPlace}
         filters={filters}
         onChangeFilters={setFilters}
         nearestStations={searchData?.nearest_office_stations ?? []}

@@ -1,15 +1,19 @@
 import { Building2, Clock, Footprints, Gauge, MapPin, Wallet, Zap } from 'lucide-react';
+import type { PlaceResult } from '../api/places';
 import type {
   NearestStation,
   OfficePreset,
   SearchFilters,
   TelemetryInfo,
 } from '../types/commute';
+import { OfficeSearchBox } from './OfficeSearchBox';
 
 interface FilterSidebarProps {
   presets: OfficePreset[];
   activePresetId: string | null;
   onSelectPreset: (preset: OfficePreset) => void;
+  selectedPlaceLabel: string | null;
+  onSelectPlace: (place: PlaceResult) => void;
   filters: SearchFilters;
   onChangeFilters: (next: SearchFilters) => void;
   nearestStations: NearestStation[];
@@ -29,6 +33,8 @@ export function FilterSidebar({
   presets,
   activePresetId,
   onSelectPreset,
+  selectedPlaceLabel,
+  onSelectPlace,
   filters,
   onChangeFilters,
   nearestStations,
@@ -85,6 +91,14 @@ export function FilterSidebar({
 
       {/* Scrollable Controls */}
       <div className="flex-1 space-y-5 overflow-y-auto px-5 py-4">
+        {/* Free OSM Place Search */}
+        <section>
+          <OfficeSearchBox
+            selectedLabel={selectedPlaceLabel}
+            onSelectPlace={onSelectPlace}
+          />
+        </section>
+
         {/* Office Presets */}
         <section>
           <div className="mb-2 flex items-center justify-between">
