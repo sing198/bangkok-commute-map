@@ -102,6 +102,10 @@ export function ListingDrawer({
             เวลาเดินทางเร็วสุด
           </button>
         </div>
+
+        <p className="mt-2 text-[11px] text-slate-500">
+          พิกัดอาคารจริง (OpenStreetMap &amp; Curated) · ราคาเช่าประเมินอ้างอิงตลาด
+        </p>
       </div>
 
       {/* Listing Cards */}
@@ -144,7 +148,9 @@ export function ListingDrawer({
                     <h3 className="mt-1 truncate text-sm font-bold text-slate-900">
                       {item.title_th}
                     </h3>
-                    <p className="truncate text-[11px] text-slate-500">{item.title_en}</p>
+                    {item.title_en !== item.title_th && (
+                      <p className="truncate text-[11px] text-slate-500">{item.title_en}</p>
+                    )}
                   </div>
 
                   <span
