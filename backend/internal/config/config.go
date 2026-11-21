@@ -17,26 +17,26 @@ type Config struct {
 }
 
 // Load reads configuration from environment variables with sensible local defaults.
-// Supports both API_PORT and cloud-provider PORT, as well as REDIS_URL (e.g. Upstash).
+// Supports both API_PORT and cloud-provider PORT, as well as REDIS_URL / KV_URL (Upstash / Vercel Storage).
 func Load() Config {
 	redisDB, err := strconv.Atoi(getEnv("REDIS_DB", "0"))
 	if err != nil {
 		redisDB = 0
 	}
 
-	port := os.Getenv("API_PORT")
-	if port == "" {
-		port = os.Getenv("PORT")
-	}
-	if port == "" {
-		port = "8080"
+	port := firstNonEmpty(os.Getenv("API_PORT"), os.Getenv("PORT"), "8080")
+	redisURL := firstNonEmpty(os.Getenv("REDIS_URL"), os.Getenv("KV_URL"), os.Getenv("UPSTASH_REDIS_URL"))
+
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" && redisURL == "" && os.Getenv("VERCEL") != "1" {
+		redisAddr = "localhost:6379"
 	}
 
 	return Config{
 		DatabaseURL:     getEnv("DATABASE_URL", "postgres://commute:commute_dev@localhost:5432/bangkok_commute?sslmode=disable"),
-		RedisURL:        os.Getenv("REDIS_URL"),
-		RedisAddr:       getEnv("REDIS_ADDR", "localhost:6379"),
-		RedisPassword:   getEnv("REDIS_PASSWORD", ""),
+		RedisURL:        redisURL,
+		RedisAddr:       redisAddr,
+		RedisPassword:   os.Getenv("REDIS_PASSWORD"),
 		RedisDB:         redisDB,
 		APIPort:         port,
 		CORSAllowOrigin: getEnv("CORS_ALLOW_ORIGIN", "http://localhost:5173"),
@@ -48,4 +48,13 @@ func getEnv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func firstNonEmpty(vals ...string) string {
+	for _, v := range vals {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }
