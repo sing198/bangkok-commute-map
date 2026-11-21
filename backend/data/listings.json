@@ -1,6 +1,19 @@
 [
   {
     "id": "LST_001",
+    "title_th": "44 Places Apartment",
+    "title_en": "44 Places Apartment",
+    "property_type": "apartment",
+    "district": "Kasetsart University · Outer Transit",
+    "monthly_rent_thb": 5500,
+    "room_size_sqm": 25.0,
+    "bedrooms": 0,
+    "lat": 13.847417,
+    "lng": 100.585063,
+    "source": "osm:way/146461575"
+  },
+  {
+    "id": "LST_002",
     "title_th": "บ้านมะพร้าวอพาร์ทเม้น",
     "title_en": "Baan Ma Prao Apartment",
     "property_type": "apartment",
@@ -13,7 +26,7 @@
     "source": "osm:way/1447361849"
   },
   {
-    "id": "LST_002",
+    "id": "LST_003",
     "title_th": "Twintown Mansion 1",
     "title_en": "Twintown Mansion 1",
     "property_type": "apartment",
@@ -26,7 +39,7 @@
     "source": "osm:way/397531170"
   },
   {
-    "id": "LST_003",
+    "id": "LST_004",
     "title_th": "ศุภาลัย ซิตี้ รีสอร์ท รัชโยธิน - พหลโยธิน 32",
     "title_en": "Supalai City Resort - Phaholyothin 32",
     "property_type": "condo",
@@ -39,7 +52,7 @@
     "source": "osm:way/605773422"
   },
   {
-    "id": "LST_004",
+    "id": "LST_005",
     "title_th": "ผึ้งหลวงอพาร์ทเม้นท์",
     "title_en": "Puengluang Apartment",
     "property_type": "apartment",
@@ -52,7 +65,20 @@
     "source": "osm:way/259378886"
   },
   {
-    "id": "LST_005",
+    "id": "LST_006",
+    "title_th": "บ้านเกษตร",
+    "title_en": "บ้านเกษตร",
+    "property_type": "apartment",
+    "district": "Sena Nikhom · Outer Transit",
+    "monthly_rent_thb": 5500,
+    "room_size_sqm": 29.0,
+    "bedrooms": 0,
+    "lat": 13.839385,
+    "lng": 100.572767,
+    "source": "osm:way/1011730539"
+  },
+  {
+    "id": "LST_007",
     "title_th": "Bridge Phaholyothin 37",
     "title_en": "Bridge Phaholyothin 37",
     "property_type": "condo",
@@ -65,7 +91,20 @@
     "source": "osm:way/157213476"
   },
   {
-    "id": "LST_006",
+    "id": "LST_008",
+    "title_th": "พหลโยธิน 33",
+    "title_en": "พหลโยธิน 33",
+    "property_type": "condo",
+    "district": "Ratchayothin · Outer Transit",
+    "monthly_rent_thb": 8000,
+    "room_size_sqm": 26.0,
+    "bedrooms": 1,
+    "lat": 13.830506,
+    "lng": 100.567155,
+    "source": "osm:way/1155976107"
+  },
+  {
+    "id": "LST_009",
     "title_th": "กรีนเฮ้าส์แมนชั่น",
     "title_en": "GreenHouse Mansion",
     "property_type": "apartment",
@@ -78,7 +117,7 @@
     "source": "osm:way/397482426"
   },
   {
-    "id": "LST_007",
+    "id": "LST_010",
     "title_th": "พิศวิทย์ทาวเวอร์",
     "title_en": "พิศวิทย์ทาวเวอร์",
     "property_type": "condo",
@@ -91,7 +130,7 @@
     "source": "osm:way/605774949"
   },
   {
-    "id": "LST_008",
+    "id": "LST_011",
     "title_th": "Life Ladprao Valley",
     "title_en": "Life Ladprao Valley",
     "property_type": "condo",
@@ -104,7 +143,7 @@
     "source": "osm:way/1233799364"
   },
   {
-    "id": "LST_009",
+    "id": "LST_012",
     "title_th": "เดอะ ไลน์ พหลโยธิน พาร์ค",
     "title_en": "The Line Phahonyothin Park",
     "property_type": "condo",
@@ -117,7 +156,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_010",
+    "id": "LST_013",
     "title_th": "S.L.Residence",
     "title_en": "S.L.Residence",
     "property_type": "condo",
@@ -130,7 +169,7 @@
     "source": "osm:way/374502231"
   },
   {
-    "id": "LST_011",
+    "id": "LST_014",
     "title_th": "เดอะ ไลน์ จตุจักร - หมอชิต",
     "title_en": "The Line Jatujak - Mochit",
     "property_type": "condo",
@@ -143,7 +182,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_012",
+    "id": "LST_015",
     "title_th": "Ideo Mix Phaholyothin",
     "title_en": "Ideo Mix Phaholyothin",
     "property_type": "condo",
@@ -156,7 +195,20 @@
     "source": "osm:way/322651075"
   },
   {
-    "id": "LST_013",
+    "id": "LST_016",
+    "title_th": "ไอดีโอ พหลโยธิน-จตุจักร",
+    "title_en": "Ideo Phaholyothin Chatuchak",
+    "property_type": "condo",
+    "district": "Saphan Khwai · Mid-Town Transit",
+    "monthly_rent_thb": 12500,
+    "room_size_sqm": 33.0,
+    "bedrooms": 1,
+    "lat": 13.795984,
+    "lng": 100.549971,
+    "source": "osm:way/1251790988"
+  },
+  {
+    "id": "LST_017",
     "title_th": "เกียวทอง อพาร์ทเม้นท์",
     "title_en": "Kiewthong Apartment",
     "property_type": "apartment",
@@ -169,7 +221,7 @@
     "source": "osm:way/1251549825"
   },
   {
-    "id": "LST_014",
+    "id": "LST_018",
     "title_th": "Centric Place",
     "title_en": "Centric Place",
     "property_type": "condo",
@@ -182,7 +234,20 @@
     "source": "osm:way/428429660"
   },
   {
-    "id": "LST_015",
+    "id": "LST_019",
+    "title_th": "Centric Scene condominium",
+    "title_en": "Centric Scene condominium",
+    "property_type": "condo",
+    "district": "Ari · Inner City",
+    "monthly_rent_thb": 21000,
+    "room_size_sqm": 27.0,
+    "bedrooms": 1,
+    "lat": 13.785922,
+    "lng": 100.546077,
+    "source": "osm:way/164623309"
+  },
+  {
+    "id": "LST_020",
     "title_th": "โนเบิล รีฟอร์ม อารีย์",
     "title_en": "Noble Reform Ari",
     "property_type": "condo",
@@ -195,7 +260,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_016",
+    "id": "LST_021",
     "title_th": "บ้านยสวดี",
     "title_en": "Baan Yoswadi",
     "property_type": "apartment",
@@ -208,7 +273,7 @@
     "source": "osm:way/164676064"
   },
   {
-    "id": "LST_017",
+    "id": "LST_022",
     "title_th": "The Rich Condominium",
     "title_en": "The Rich Condominium",
     "property_type": "condo",
@@ -221,7 +286,20 @@
     "source": "osm:way/676057198"
   },
   {
-    "id": "LST_018",
+    "id": "LST_023",
+    "title_th": "ST mansion",
+    "title_en": "ST mansion",
+    "property_type": "apartment",
+    "district": "Sanam Pao · Inner City",
+    "monthly_rent_thb": 11000,
+    "room_size_sqm": 23.0,
+    "bedrooms": 0,
+    "lat": 13.767594,
+    "lng": 100.548856,
+    "source": "osm:way/676447111"
+  },
+  {
+    "id": "LST_024",
     "title_th": "Varasupha Executive Apartments",
     "title_en": "Varasupha Executive Apartments",
     "property_type": "apartment",
@@ -234,7 +312,7 @@
     "source": "osm:node/2950491633"
   },
   {
-    "id": "LST_019",
+    "id": "LST_025",
     "title_th": "Villa Ratchakru",
     "title_en": "Villa Ratchakru",
     "property_type": "apartment",
@@ -247,7 +325,7 @@
     "source": "osm:way/207073104"
   },
   {
-    "id": "LST_020",
+    "id": "LST_026",
     "title_th": "ชีวาทัย ราชปรารภ",
     "title_en": "Chewathai Ratchaprarop",
     "property_type": "condo",
@@ -260,7 +338,20 @@
     "source": "osm:way/230903175"
   },
   {
-    "id": "LST_021",
+    "id": "LST_027",
+    "title_th": "M Phayathai",
+    "title_en": "M Phayathai",
+    "property_type": "condo",
+    "district": "Victory Monument · Inner City",
+    "monthly_rent_thb": 21000,
+    "room_size_sqm": 32.0,
+    "bedrooms": 1,
+    "lat": 13.760647,
+    "lng": 100.536401,
+    "source": "osm:way/582127712"
+  },
+  {
+    "id": "LST_028",
     "title_th": "Continental Mansion",
     "title_en": "Continental Mansion",
     "property_type": "apartment",
@@ -273,7 +364,7 @@
     "source": "osm:way/676982729"
   },
   {
-    "id": "LST_022",
+    "id": "LST_029",
     "title_th": "MD Apartment",
     "title_en": "MD Apartment",
     "property_type": "apartment",
@@ -286,7 +377,7 @@
     "source": "osm:way/676982742"
   },
   {
-    "id": "LST_023",
+    "id": "LST_030",
     "title_th": "ไอดีโอ คิว พญาไท",
     "title_en": "Ideo Q Phayathai",
     "property_type": "condo",
@@ -299,7 +390,7 @@
     "source": "osm:way/333177961"
   },
   {
-    "id": "LST_024",
+    "id": "LST_031",
     "title_th": "Condolette Ize",
     "title_en": "Condolette Ize",
     "property_type": "condo",
@@ -312,7 +403,7 @@
     "source": "osm:way/551184635"
   },
   {
-    "id": "LST_025",
+    "id": "LST_032",
     "title_th": "ไอดีโอ คิว สยาม - ราชเทวี",
     "title_en": "Ideo Q Siam - Ratchathewi",
     "property_type": "condo",
@@ -325,7 +416,20 @@
     "source": "curated"
   },
   {
-    "id": "LST_026",
+    "id": "LST_033",
+    "title_th": "The Line Ratchathewi",
+    "title_en": "The Line Ratchathewi",
+    "property_type": "condo",
+    "district": "Ratchathewi · Inner City",
+    "monthly_rent_thb": 19000,
+    "room_size_sqm": 32.0,
+    "bedrooms": 1,
+    "lat": 13.752102,
+    "lng": 100.533361,
+    "source": "osm:way/571144263"
+  },
+  {
+    "id": "LST_034",
     "title_th": "LKN Grand Apartment",
     "title_en": "LKN Grand Apartment",
     "property_type": "apartment",
@@ -338,7 +442,7 @@
     "source": "osm:way/636185708"
   },
   {
-    "id": "LST_027",
+    "id": "LST_035",
     "title_th": "New House Condominium",
     "title_en": "New House Condominium",
     "property_type": "condo",
@@ -351,7 +455,7 @@
     "source": "osm:way/244115003"
   },
   {
-    "id": "LST_028",
+    "id": "LST_036",
     "title_th": "สิทธาคาร",
     "title_en": "Sithakarn",
     "property_type": "condo",
@@ -364,7 +468,20 @@
     "source": "osm:way/341386299"
   },
   {
-    "id": "LST_029",
+    "id": "LST_037",
+    "title_th": "The Tower",
+    "title_en": "The Tower",
+    "property_type": "condo",
+    "district": "Chit Lom · CBD / Sukhumvit-Silom",
+    "monthly_rent_thb": 23500,
+    "room_size_sqm": 28.0,
+    "bedrooms": 1,
+    "lat": 13.746811,
+    "lng": 100.543538,
+    "source": "osm:way/900663724"
+  },
+  {
+    "id": "LST_038",
     "title_th": "บ้าน ณ วรางค์",
     "title_en": "Baan Na Varang",
     "property_type": "apartment",
@@ -377,7 +494,20 @@
     "source": "osm:way/341383110"
   },
   {
-    "id": "LST_030",
+    "id": "LST_039",
+    "title_th": "แอทธินี เรสซิเด้นซ์",
+    "title_en": "Athenee Residence",
+    "property_type": "condo",
+    "district": "Phloen Chit · CBD / Sukhumvit-Silom",
+    "monthly_rent_thb": 26500,
+    "room_size_sqm": 43.0,
+    "bedrooms": 2,
+    "lat": 13.741443,
+    "lng": 100.549389,
+    "source": "osm:way/332658494"
+  },
+  {
+    "id": "LST_040",
     "title_th": "ไลฟ์ วัน ไวร์เลส",
     "title_en": "Life One Wireless",
     "property_type": "condo",
@@ -390,7 +520,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_031",
+    "id": "LST_041",
     "title_th": "โนเบิล เพลินจิต",
     "title_en": "Noble Ploenchit",
     "property_type": "condo",
@@ -403,7 +533,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_032",
+    "id": "LST_042",
     "title_th": "นครา แมนชั่น",
     "title_en": "Nagara Mansion",
     "property_type": "apartment",
@@ -416,7 +546,7 @@
     "source": "osm:way/1274874481"
   },
   {
-    "id": "LST_033",
+    "id": "LST_043",
     "title_th": "โนเบิล รีโคล",
     "title_en": "Noble Recole",
     "property_type": "condo",
@@ -429,7 +559,7 @@
     "source": "osm:way/726046520"
   },
   {
-    "id": "LST_034",
+    "id": "LST_044",
     "title_th": "อาคารสราญ์ใจ",
     "title_en": "Saranjai Mansion",
     "property_type": "apartment",
@@ -442,7 +572,7 @@
     "source": "osm:way/1310832433"
   },
   {
-    "id": "LST_035",
+    "id": "LST_045",
     "title_th": "เดอะ คอนคอร์ด (สุขุมวิท 15)",
     "title_en": "The Concord Harmony in Living",
     "property_type": "apartment",
@@ -455,7 +585,7 @@
     "source": "osm:way/330242728"
   },
   {
-    "id": "LST_036",
+    "id": "LST_046",
     "title_th": "Citi Smart",
     "title_en": "Citi Smart",
     "property_type": "condo",
@@ -468,7 +598,7 @@
     "source": "osm:way/329919883"
   },
   {
-    "id": "LST_037",
+    "id": "LST_047",
     "title_th": "Prime Suites Condominium",
     "title_en": "Prime Suites Condominium",
     "property_type": "condo",
@@ -481,7 +611,7 @@
     "source": "osm:way/449104808"
   },
   {
-    "id": "LST_038",
+    "id": "LST_048",
     "title_th": "Sweet Home Apartments",
     "title_en": "Sweet Home Apartments",
     "property_type": "apartment",
@@ -494,7 +624,7 @@
     "source": "osm:way/1328184894"
   },
   {
-    "id": "LST_039",
+    "id": "LST_049",
     "title_th": "มาร์ค สุขุมวิท",
     "title_en": "Marque Sukhumvit",
     "property_type": "condo",
@@ -507,7 +637,7 @@
     "source": "osm:way/521687098"
   },
   {
-    "id": "LST_040",
+    "id": "LST_050",
     "title_th": "โนเบิล รีไฟน์",
     "title_en": "Noble Refine",
     "property_type": "condo",
@@ -520,7 +650,7 @@
     "source": "osm:way/208693095"
   },
   {
-    "id": "LST_041",
+    "id": "LST_051",
     "title_th": "บ้านสวนเพชร",
     "title_en": "Baan Suanpetch",
     "property_type": "apartment",
@@ -533,7 +663,7 @@
     "source": "osm:way/208693782"
   },
   {
-    "id": "LST_042",
+    "id": "LST_052",
     "title_th": "โนเบิล รีมิกซ์",
     "title_en": "Noble Remix",
     "property_type": "condo",
@@ -546,7 +676,7 @@
     "source": "osm:way/303716620"
   },
   {
-    "id": "LST_043",
+    "id": "LST_053",
     "title_th": "ริทึ่ม สุขุมวิท 36-38",
     "title_en": "Rhythm Sukhumvit 36-38",
     "property_type": "condo",
@@ -559,7 +689,7 @@
     "source": "osm:way/1230362482"
   },
   {
-    "id": "LST_044",
+    "id": "LST_054",
     "title_th": "กัญ เฮ้าส์",
     "title_en": "Gunn's House",
     "property_type": "apartment",
@@ -572,7 +702,7 @@
     "source": "osm:way/450623009"
   },
   {
-    "id": "LST_045",
+    "id": "LST_055",
     "title_th": "ริธึ่ม เอกมัย",
     "title_en": "Rhythm Ekkamai",
     "property_type": "condo",
@@ -585,7 +715,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_046",
+    "id": "LST_056",
     "title_th": "Rhythm Sukhumvit 42",
     "title_en": "Rhythm Sukhumvit 42",
     "property_type": "condo",
@@ -598,7 +728,20 @@
     "source": "osm:way/520436158"
   },
   {
-    "id": "LST_047",
+    "id": "LST_057",
+    "title_th": "TreeCondo Ekamai",
+    "title_en": "TreeCondo Ekamai",
+    "property_type": "condo",
+    "district": "Ekkamai · Inner City",
+    "monthly_rent_thb": 18500,
+    "room_size_sqm": 34.0,
+    "bedrooms": 1,
+    "lat": 13.716307,
+    "lng": 100.58312,
+    "source": "osm:way/589575862"
+  },
+  {
+    "id": "LST_058",
     "title_th": "Zenith Place",
     "title_en": "Zenith Place",
     "property_type": "apartment",
@@ -611,7 +754,7 @@
     "source": "osm:way/575459610"
   },
   {
-    "id": "LST_048",
+    "id": "LST_059",
     "title_th": "Le Luk Condominium",
     "title_en": "Le Luk Condominium",
     "property_type": "condo",
@@ -624,7 +767,7 @@
     "source": "osm:way/506792946"
   },
   {
-    "id": "LST_049",
+    "id": "LST_060",
     "title_th": "Rhythm Sukhumvit 44/1",
     "title_en": "Rhythm Sukhumvit 44/1",
     "property_type": "condo",
@@ -637,7 +780,20 @@
     "source": "osm:way/484458028"
   },
   {
-    "id": "LST_050",
+    "id": "LST_061",
+    "title_th": "Sukhumvit Plus Condominium",
+    "title_en": "Sukhumvit Plus Condominium",
+    "property_type": "condo",
+    "district": "Phra Khanong · Mid-Town Transit",
+    "monthly_rent_thb": 14500,
+    "room_size_sqm": 27.0,
+    "bedrooms": 1,
+    "lat": 13.712926,
+    "lng": 100.59239,
+    "source": "osm:relation/7172332"
+  },
+  {
+    "id": "LST_062",
     "title_th": "ไอดีโอ โมบิ สุขุมวิท (อ่อนนุช)",
     "title_en": "Ideo Mobi Sukhumvit (On Nut)",
     "property_type": "condo",
@@ -650,7 +806,20 @@
     "source": "curated"
   },
   {
-    "id": "LST_051",
+    "id": "LST_063",
+    "title_th": "Ideo Verve Sukhumvit",
+    "title_en": "Ideo Verve Sukhumvit",
+    "property_type": "condo",
+    "district": "On Nut · Mid-Town Transit",
+    "monthly_rent_thb": 17000,
+    "room_size_sqm": 30.0,
+    "bedrooms": 1,
+    "lat": 13.706243,
+    "lng": 100.601641,
+    "source": "osm:way/156496247"
+  },
+  {
+    "id": "LST_064",
     "title_th": "บ้านสราญนุช",
     "title_en": "Baan Saran Nuch",
     "property_type": "apartment",
@@ -663,7 +832,7 @@
     "source": "osm:way/113135429"
   },
   {
-    "id": "LST_052",
+    "id": "LST_065",
     "title_th": "Mint Residence",
     "title_en": "Mint Residence",
     "property_type": "condo",
@@ -676,7 +845,7 @@
     "source": "osm:way/353882591"
   },
   {
-    "id": "LST_053",
+    "id": "LST_066",
     "title_th": "Plum Condo Sukhumvit 62",
     "title_en": "Plum Condo Sukhumvit 62",
     "property_type": "condo",
@@ -689,7 +858,20 @@
     "source": "osm:way/1411748823"
   },
   {
-    "id": "LST_054",
+    "id": "LST_067",
+    "title_th": "คอนโดเมย์แฟร์เพลส",
+    "title_en": "Mayfair Place",
+    "property_type": "condo",
+    "district": "Punnawithi · Outer Transit",
+    "monthly_rent_thb": 10500,
+    "room_size_sqm": 32.0,
+    "bedrooms": 1,
+    "lat": 13.687172,
+    "lng": 100.605909,
+    "source": "osm:way/439475472"
+  },
+  {
+    "id": "LST_068",
     "title_th": "Regent Orchid Condo Sukhumvit 101",
     "title_en": "Regent Orchid Condo Sukhumvit 101",
     "property_type": "condo",
@@ -702,7 +884,7 @@
     "source": "osm:way/605771434"
   },
   {
-    "id": "LST_055",
+    "id": "LST_069",
     "title_th": "วิสซ์ดอม 101 ปุณณวิถี",
     "title_en": "Whizdom 101 Punnawithi",
     "property_type": "condo",
@@ -715,7 +897,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_056",
+    "id": "LST_070",
     "title_th": "City Gate Condo",
     "title_en": "City Gate Condo",
     "property_type": "condo",
@@ -728,7 +910,7 @@
     "source": "osm:way/318038982"
   },
   {
-    "id": "LST_057",
+    "id": "LST_071",
     "title_th": "IDEO Mobi Sukhumvit 66",
     "title_en": "IDEO Mobi Sukhumvit 66",
     "property_type": "condo",
@@ -741,7 +923,20 @@
     "source": "osm:way/827834612"
   },
   {
-    "id": "LST_058",
+    "id": "LST_072",
+    "title_th": "Pause 103",
+    "title_en": "Pause 103",
+    "property_type": "condo",
+    "district": "Udom Suk · Outer Transit",
+    "monthly_rent_thb": 9500,
+    "room_size_sqm": 30.0,
+    "bedrooms": 1,
+    "lat": 13.681408,
+    "lng": 100.612645,
+    "source": "osm:way/818744081"
+  },
+  {
+    "id": "LST_073",
     "title_th": "Ideo Mobi Sukhumvit Eastgate",
     "title_en": "Ideo Mobi Sukhumvit Eastgate",
     "property_type": "condo",
@@ -754,7 +949,7 @@
     "source": "osm:way/518607129"
   },
   {
-    "id": "LST_059",
+    "id": "LST_074",
     "title_th": "Ideo Mobi Sukhumvit Eastpoint",
     "title_en": "Ideo Mobi Sukhumvit Eastpoint",
     "property_type": "condo",
@@ -767,7 +962,7 @@
     "source": "osm:way/1392540315"
   },
   {
-    "id": "LST_060",
+    "id": "LST_075",
     "title_th": "ไนท์บริดจ์ คอลลาจ สุขุมวิท 107 (แบริ่ง)",
     "title_en": "KnightsBridge Collage Sukhumvit 107",
     "property_type": "condo",
@@ -780,7 +975,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_061",
+    "id": "LST_076",
     "title_th": "นิช โมโน สุขุมวิท - แบริ่ง",
     "title_en": "Niche Mono Sukhumvit - Bearing",
     "property_type": "condo",
@@ -793,7 +988,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_062",
+    "id": "LST_077",
     "title_th": "เดอะ เมโทรโพลิส สำโรง อินเตอร์เชนจ์",
     "title_en": "The Metropolis Samrong Interchange",
     "property_type": "condo",
@@ -806,7 +1001,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_063",
+    "id": "LST_078",
     "title_th": "เจริญผลคอนโดมิเนียม",
     "title_en": "Charoenphol Condominium",
     "property_type": "condo",
@@ -819,7 +1014,20 @@
     "source": "osm:way/1164801297"
   },
   {
-    "id": "LST_064",
+    "id": "LST_079",
+    "title_th": "เอ็ม.พี. วิลล่า",
+    "title_en": "M.P. Villa",
+    "property_type": "apartment",
+    "district": "National Stadium · Outer Transit",
+    "monthly_rent_thb": 5000,
+    "room_size_sqm": 24.0,
+    "bedrooms": 0,
+    "lat": 13.749018,
+    "lng": 100.527996,
+    "source": "osm:way/561163688"
+  },
+  {
+    "id": "LST_080",
     "title_th": "ปทุมวันเพลส",
     "title_en": "Patumwan Place",
     "property_type": "apartment",
@@ -832,7 +1040,7 @@
     "source": "osm:relation/18124029"
   },
   {
-    "id": "LST_065",
+    "id": "LST_081",
     "title_th": "คลาส สารสิน ราชดำริ",
     "title_en": "Klass Sarasin Rajdamri",
     "property_type": "condo",
@@ -845,7 +1053,7 @@
     "source": "osm:way/1104891322"
   },
   {
-    "id": "LST_066",
+    "id": "LST_082",
     "title_th": "รองรัตน์",
     "title_en": "Rongratana",
     "property_type": "condo",
@@ -858,7 +1066,7 @@
     "source": "osm:way/1222187029"
   },
   {
-    "id": "LST_067",
+    "id": "LST_083",
     "title_th": "Dream House",
     "title_en": "Dream House",
     "property_type": "apartment",
@@ -871,7 +1079,7 @@
     "source": "osm:way/1220099109"
   },
   {
-    "id": "LST_068",
+    "id": "LST_084",
     "title_th": "ศิริเพ็ญ เฮ้าส์",
     "title_en": "Siripen House",
     "property_type": "apartment",
@@ -884,7 +1092,7 @@
     "source": "osm:way/539612835"
   },
   {
-    "id": "LST_069",
+    "id": "LST_085",
     "title_th": "ริทึ่ม สาทร-นราธิวาส",
     "title_en": "Rhythm Sathorn-Narathiwas",
     "property_type": "condo",
@@ -897,7 +1105,7 @@
     "source": "osm:way/460266841"
   },
   {
-    "id": "LST_070",
+    "id": "LST_086",
     "title_th": "The Empire Place",
     "title_en": "The Empire Place",
     "property_type": "condo",
@@ -910,7 +1118,7 @@
     "source": "osm:way/217651091"
   },
   {
-    "id": "LST_071",
+    "id": "LST_087",
     "title_th": "ไลฟ์ @ สาทร 10",
     "title_en": "Life @ Sathorn 10",
     "property_type": "condo",
@@ -923,7 +1131,7 @@
     "source": "osm:way/79670851"
   },
   {
-    "id": "LST_072",
+    "id": "LST_088",
     "title_th": "The Address Sathorn",
     "title_en": "The Address Sathorn",
     "property_type": "condo",
@@ -936,7 +1144,7 @@
     "source": "osm:way/79627144"
   },
   {
-    "id": "LST_073",
+    "id": "LST_089",
     "title_th": "Ariel Apartments",
     "title_en": "Ariel Apartments",
     "property_type": "apartment",
@@ -949,7 +1157,7 @@
     "source": "osm:way/39878525"
   },
   {
-    "id": "LST_074",
+    "id": "LST_090",
     "title_th": "The Bangkok Sathorn",
     "title_en": "The Bangkok Sathorn",
     "property_type": "condo",
@@ -962,7 +1170,7 @@
     "source": "osm:way/539353978"
   },
   {
-    "id": "LST_075",
+    "id": "LST_091",
     "title_th": "The Diplomat Sathorn",
     "title_en": "The Diplomat Sathorn",
     "property_type": "condo",
@@ -975,7 +1183,20 @@
     "source": "osm:way/539353974"
   },
   {
-    "id": "LST_076",
+    "id": "LST_092",
+    "title_th": "ศุภาคาร คอนโดมิเนียม",
+    "title_en": "Supakarn Condominium",
+    "property_type": "condo",
+    "district": "Saphan Taksin · Mid-Town Transit",
+    "monthly_rent_thb": 15500,
+    "room_size_sqm": 32.0,
+    "bedrooms": 1,
+    "lat": 13.718302,
+    "lng": 100.510349,
+    "source": "osm:way/338298845"
+  },
+  {
+    "id": "LST_093",
     "title_th": "เดอะ ริเวอร์",
     "title_en": "The River",
     "property_type": "condo",
@@ -988,7 +1209,7 @@
     "source": "osm:way/445340031"
   },
   {
-    "id": "LST_077",
+    "id": "LST_094",
     "title_th": "Ace Court",
     "title_en": "Ace Court",
     "property_type": "apartment",
@@ -1001,7 +1222,7 @@
     "source": "osm:way/680334340"
   },
   {
-    "id": "LST_078",
+    "id": "LST_095",
     "title_th": "ไอดีโอ โมบิ สาทร",
     "title_en": "Ideo Mobi Sathorn",
     "property_type": "condo",
@@ -1014,7 +1235,20 @@
     "source": "osm:way/337834937"
   },
   {
-    "id": "LST_079",
+    "id": "LST_096",
+    "title_th": "Q. House Condo Sathorn",
+    "title_en": "Q. House Condo Sathorn",
+    "property_type": "condo",
+    "district": "Krung Thon Buri · Mid-Town Transit",
+    "monthly_rent_thb": 12000,
+    "room_size_sqm": 27.0,
+    "bedrooms": 1,
+    "lat": 13.721659,
+    "lng": 100.501558,
+    "source": "osm:way/449061283"
+  },
+  {
+    "id": "LST_097",
     "title_th": "The Light House",
     "title_en": "The Light House",
     "property_type": "apartment",
@@ -1027,7 +1261,7 @@
     "source": "osm:way/338181403"
   },
   {
-    "id": "LST_080",
+    "id": "LST_098",
     "title_th": "ไอดีโอ สาทร–วงเวียนใหญ่",
     "title_en": "Ideo Sathorn–Wongwian Yai",
     "property_type": "condo",
@@ -1040,7 +1274,20 @@
     "source": "osm:way/1250752788"
   },
   {
-    "id": "LST_081",
+    "id": "LST_099",
+    "title_th": "เดอะนิช",
+    "title_en": "The Niche",
+    "property_type": "condo",
+    "district": "Wongwian Yai · Mid-Town Transit",
+    "monthly_rent_thb": 9500,
+    "room_size_sqm": 36.0,
+    "bedrooms": 1,
+    "lat": 13.72698,
+    "lng": 100.491048,
+    "source": "osm:node/3130728736"
+  },
+  {
+    "id": "LST_100",
     "title_th": "เดอะ รูม บีทีเอส วงเวียนใหญ่",
     "title_en": "The Room BTS Wongwian Yai",
     "property_type": "condo",
@@ -1053,7 +1300,7 @@
     "source": "osm:way/338016801"
   },
   {
-    "id": "LST_082",
+    "id": "LST_101",
     "title_th": "ไบร์ท วงเวียนใหญ่",
     "title_en": "Bright Wongwianyai",
     "property_type": "condo",
@@ -1066,7 +1313,7 @@
     "source": "osm:way/529606854"
   },
   {
-    "id": "LST_083",
+    "id": "LST_102",
     "title_th": "Ideo Sathon-Tha Phra",
     "title_en": "Ideo Sathon-Tha Phra",
     "property_type": "condo",
@@ -1079,7 +1326,7 @@
     "source": "osm:way/634132995"
   },
   {
-    "id": "LST_084",
+    "id": "LST_103",
     "title_th": "Aspire Sathon-Tha Phra",
     "title_en": "Aspire Sathon-Tha Phra",
     "property_type": "condo",
@@ -1092,7 +1339,20 @@
     "source": "osm:way/551694599"
   },
   {
-    "id": "LST_085",
+    "id": "LST_104",
+    "title_th": "Life Sathorn Sierra",
+    "title_en": "Life Sathorn Sierra",
+    "property_type": "condo",
+    "district": "Talat Phlu · Outer Transit",
+    "monthly_rent_thb": 9500,
+    "room_size_sqm": 26.0,
+    "bedrooms": 1,
+    "lat": 13.717212,
+    "lng": 100.47905,
+    "source": "osm:way/1133850076"
+  },
+  {
+    "id": "LST_105",
     "title_th": "ศุภาลัย ลอฟท์ สถานีตลาดพลู",
     "title_en": "Supalai Loft Talat Phlu Station",
     "property_type": "condo",
@@ -1105,7 +1365,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_086",
+    "id": "LST_106",
     "title_th": "ไอดีโอ วุฒากาศ",
     "title_en": "Ideo WUTHAKAD",
     "property_type": "condo",
@@ -1118,7 +1378,7 @@
     "source": "osm:way/1127949230"
   },
   {
-    "id": "LST_087",
+    "id": "LST_107",
     "title_th": "เดอะ เพรสซิเดนท์ สาทร - ราชพฤกษ์",
     "title_en": "The President Sathorn - Ratchaphruek",
     "property_type": "condo",
@@ -1131,7 +1391,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_088",
+    "id": "LST_108",
     "title_th": "ซื่อตรง อพาร์ทเม้นต์",
     "title_en": "ซื่อตรง อพาร์ทเม้นต์",
     "property_type": "apartment",
@@ -1144,7 +1404,7 @@
     "source": "osm:way/1127948743"
   },
   {
-    "id": "LST_089",
+    "id": "LST_109",
     "title_th": "ไอดีโอ โมบิ บางซื่อ แกรนด์ อินเตอร์เชนจ์",
     "title_en": "Ideo Mobi Bangsue Grand Interchange",
     "property_type": "condo",
@@ -1157,7 +1417,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_090",
+    "id": "LST_110",
     "title_th": "ริชพาร์ค @ เตาปูน อินเตอร์เชนจ์",
     "title_en": "Rich Park @ Taopoon Interchange",
     "property_type": "condo",
@@ -1170,7 +1430,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_091",
+    "id": "LST_111",
     "title_th": "เดอะ ทรี อินเตอร์เชนจ์ บางซื่อ",
     "title_en": "The Tree Interchange Bang Sue",
     "property_type": "condo",
@@ -1183,7 +1443,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_092",
+    "id": "LST_112",
     "title_th": "อีควิน็อกซ์ พหล–วิภา",
     "title_en": "Equinox Phahol–Vibha",
     "property_type": "condo",
@@ -1196,7 +1456,20 @@
     "source": "osm:way/342431405"
   },
   {
-    "id": "LST_093",
+    "id": "LST_113",
+    "title_th": "ไอดีโอ ลาดพร้าว 5",
+    "title_en": "Ideo Lardprao 5",
+    "property_type": "condo",
+    "district": "Phahon Yothin · Mid-Town Transit",
+    "monthly_rent_thb": 15000,
+    "room_size_sqm": 28.0,
+    "bedrooms": 1,
+    "lat": 13.810891,
+    "lng": 100.565907,
+    "source": "osm:way/184554854"
+  },
+  {
+    "id": "LST_114",
     "title_th": "Lert Ubon Skylife Tower",
     "title_en": "Lert Ubon Skylife Tower",
     "property_type": "condo",
@@ -1209,7 +1482,7 @@
     "source": "osm:way/560113935"
   },
   {
-    "id": "LST_094",
+    "id": "LST_115",
     "title_th": "IDEO Ladprao 17",
     "title_en": "IDEO Ladprao 17",
     "property_type": "condo",
@@ -1222,7 +1495,20 @@
     "source": "osm:node/1721406151"
   },
   {
-    "id": "LST_095",
+    "id": "LST_116",
+    "title_th": "Life@Ratchada",
+    "title_en": "Life@Ratchada",
+    "property_type": "condo",
+    "district": "Lat Phrao · Mid-Town Transit",
+    "monthly_rent_thb": 12000,
+    "room_size_sqm": 30.0,
+    "bedrooms": 1,
+    "lat": 13.802954,
+    "lng": 100.577589,
+    "source": "osm:way/183387550"
+  },
+  {
+    "id": "LST_117",
     "title_th": "วิซดอม อเวนิว รัชดา - ลาดพร้าว",
     "title_en": "Whizdom Avenue Ratchada-Ladprao",
     "property_type": "condo",
@@ -1235,7 +1521,7 @@
     "source": "osm:way/492711886"
   },
   {
-    "id": "LST_096",
+    "id": "LST_118",
     "title_th": "Chateau In Town",
     "title_en": "Chateau In Town",
     "property_type": "condo",
@@ -1248,7 +1534,7 @@
     "source": "osm:way/331795211"
   },
   {
-    "id": "LST_097",
+    "id": "LST_119",
     "title_th": "ไอดีโอ รัชดา - สุทธิสาร",
     "title_en": "Ideo Ratchada - Sutthisan",
     "property_type": "condo",
@@ -1261,7 +1547,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_098",
+    "id": "LST_120",
     "title_th": "ริธึ่ม รัชดา - ห้วยขวาง",
     "title_en": "Rhythm Ratchada - Huaikhwang",
     "property_type": "condo",
@@ -1274,7 +1560,20 @@
     "source": "curated"
   },
   {
-    "id": "LST_099",
+    "id": "LST_121",
+    "title_th": "The Colory Vivid condominum",
+    "title_en": "The Colory Vivid condominum",
+    "property_type": "condo",
+    "district": "Huai Khwang · Mid-Town Transit",
+    "monthly_rent_thb": 15500,
+    "room_size_sqm": 27.0,
+    "bedrooms": 1,
+    "lat": 13.777606,
+    "lng": 100.57654,
+    "source": "osm:way/703199489"
+  },
+  {
+    "id": "LST_122",
     "title_th": "Ve Rasdi Place",
     "title_en": "Ve Rasdi Place",
     "property_type": "apartment",
@@ -1287,7 +1586,7 @@
     "source": "osm:way/331795169"
   },
   {
-    "id": "LST_100",
+    "id": "LST_123",
     "title_th": "Noble Revolve Ratchada",
     "title_en": "Noble Revolve Ratchada",
     "property_type": "condo",
@@ -1300,7 +1599,20 @@
     "source": "osm:way/904885407"
   },
   {
-    "id": "LST_101",
+    "id": "LST_124",
+    "title_th": "ไอดีโอ โมบิ พระราม 9",
+    "title_en": "Ideo Mobi Rama 9",
+    "property_type": "condo",
+    "district": "Phra Ram 9 · Inner City",
+    "monthly_rent_thb": 25000,
+    "room_size_sqm": 31.0,
+    "bedrooms": 1,
+    "lat": 13.755477,
+    "lng": 100.565752,
+    "source": "osm:way/532749607"
+  },
+  {
+    "id": "LST_125",
     "title_th": "ไลฟ์ อโศก - พระราม 9",
     "title_en": "Life Asoke - Rama 9",
     "property_type": "condo",
@@ -1313,7 +1625,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_102",
+    "id": "LST_126",
     "title_th": "ศุภาลัย พรีเมียร์ พระราม 9",
     "title_en": "Supalai Premier Rama 9",
     "property_type": "condo",
@@ -1326,7 +1638,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_103",
+    "id": "LST_127",
     "title_th": "บี.ยู. เพลส",
     "title_en": "B.U. Place",
     "property_type": "apartment",
@@ -1339,7 +1651,7 @@
     "source": "osm:way/1330629067"
   },
   {
-    "id": "LST_104",
+    "id": "LST_128",
     "title_th": "ไอดีโอ โมบิ อโศก",
     "title_en": "Ideo Mobi Asoke",
     "property_type": "condo",
@@ -1352,7 +1664,20 @@
     "source": "curated"
   },
   {
-    "id": "LST_105",
+    "id": "LST_129",
+    "title_th": "Supalai Premier Asoke",
+    "title_en": "Supalai Premier Asoke",
+    "property_type": "condo",
+    "district": "Phetchaburi · Inner City",
+    "monthly_rent_thb": 18500,
+    "room_size_sqm": 35.0,
+    "bedrooms": 1,
+    "lat": 13.747858,
+    "lng": 100.565308,
+    "source": "osm:way/340722261"
+  },
+  {
+    "id": "LST_130",
     "title_th": "เดอะรูม สุขุมวิท 21",
     "title_en": "The Room Sukhumvit 21",
     "property_type": "condo",
@@ -1365,7 +1690,7 @@
     "source": "osm:way/332218928"
   },
   {
-    "id": "LST_106",
+    "id": "LST_131",
     "title_th": "สุขุมวิท ลีฟวิ่ง ทาวน์",
     "title_en": "Sukhumvit Living Town",
     "property_type": "apartment",
@@ -1378,7 +1703,7 @@
     "source": "osm:way/329745927"
   },
   {
-    "id": "LST_107",
+    "id": "LST_132",
     "title_th": "แอชตัน อโศก",
     "title_en": "Ashton Asoke",
     "property_type": "condo",
@@ -1391,7 +1716,20 @@
     "source": "curated"
   },
   {
-    "id": "LST_108",
+    "id": "LST_133",
+    "title_th": "Prasanmit Condominium",
+    "title_en": "Prasanmit Condominium",
+    "property_type": "condo",
+    "district": "Sukhumvit · CBD / Sukhumvit-Silom",
+    "monthly_rent_thb": 31000,
+    "room_size_sqm": 44.0,
+    "bedrooms": 2,
+    "lat": 13.736999,
+    "lng": 100.563075,
+    "source": "osm:way/329745986"
+  },
+  {
+    "id": "LST_134",
     "title_th": "วัฒนา ไฮทส์ คอนโดมิเนียม",
     "title_en": "Wattana Heights",
     "property_type": "condo",
@@ -1404,7 +1742,7 @@
     "source": "osm:way/329745978"
   },
   {
-    "id": "LST_109",
+    "id": "LST_135",
     "title_th": "แกรนด์วิล เฮ้าส์ 2",
     "title_en": "Grandville House 2",
     "property_type": "apartment",
@@ -1417,7 +1755,7 @@
     "source": "osm:way/329745932"
   },
   {
-    "id": "LST_110",
+    "id": "LST_136",
     "title_th": "ไลฟ์ พระราม 4 - อโศก",
     "title_en": "Life Rama 4 - Asoke",
     "property_type": "condo",
@@ -1430,7 +1768,20 @@
     "source": "curated"
   },
   {
-    "id": "LST_111",
+    "id": "LST_137",
+    "title_th": "คอนโดฯมอนเทอเร่ย์เพลส",
+    "title_en": "Monterey Place Condominium",
+    "property_type": "condo",
+    "district": "Queen Sirikit National Convention Centre · Mid-Town Transit",
+    "monthly_rent_thb": 12500,
+    "room_size_sqm": 28.0,
+    "bedrooms": 1,
+    "lat": 13.72374,
+    "lng": 100.561804,
+    "source": "osm:way/339089659"
+  },
+  {
+    "id": "LST_138",
     "title_th": "บ้านพรทิพย์",
     "title_en": "Baan Porn Tip",
     "property_type": "apartment",
@@ -1443,7 +1794,7 @@
     "source": "osm:node/4460604838"
   },
   {
-    "id": "LST_112",
+    "id": "LST_139",
     "title_th": "อพาร์ทเม้นท์เมฆสวัสดิ์",
     "title_en": "อพาร์ทเม้นท์เมฆสวัสดิ์",
     "property_type": "apartment",
@@ -1456,7 +1807,7 @@
     "source": "osm:way/1313855835"
   },
   {
-    "id": "LST_113",
+    "id": "LST_140",
     "title_th": "Siam Penthouse 2",
     "title_en": "Siam Penthouse 2",
     "property_type": "apartment",
@@ -1469,7 +1820,7 @@
     "source": "osm:way/339886383"
   },
   {
-    "id": "LST_114",
+    "id": "LST_141",
     "title_th": "ดุสิต เรสซิเดนเซส",
     "title_en": "Dusit Residences",
     "property_type": "condo",
@@ -1482,7 +1833,7 @@
     "source": "osm:way/1266545784"
   },
   {
-    "id": "LST_115",
+    "id": "LST_142",
     "title_th": "Supalai Icon สาทร",
     "title_en": "Supalai Icon Sathon",
     "property_type": "condo",
@@ -1495,7 +1846,7 @@
     "source": "osm:way/1220217095"
   },
   {
-    "id": "LST_116",
+    "id": "LST_143",
     "title_th": "ฟรีเซีย",
     "title_en": "ฟรีเซีย",
     "property_type": "condo",
@@ -1508,7 +1859,7 @@
     "source": "osm:way/1224798751"
   },
   {
-    "id": "LST_117",
+    "id": "LST_144",
     "title_th": "แอชตัน จุฬา - สีลม",
     "title_en": "Ashton Chula - Silom",
     "property_type": "condo",
@@ -1521,7 +1872,20 @@
     "source": "curated"
   },
   {
-    "id": "LST_118",
+    "id": "LST_145",
+    "title_th": "ศุภาลัย เอลีท สุรวงศ์",
+    "title_en": "Supalai Elite Surawong",
+    "property_type": "condo",
+    "district": "Sam Yan · Inner City",
+    "monthly_rent_thb": 20000,
+    "room_size_sqm": 26.0,
+    "bedrooms": 1,
+    "lat": 13.730373,
+    "lng": 100.52286,
+    "source": "osm:way/1020471361"
+  },
+  {
+    "id": "LST_146",
     "title_th": "วิช แอท สามย่าน",
     "title_en": "Wish@Samyan",
     "property_type": "condo",
@@ -1534,7 +1898,7 @@
     "source": "osm:way/168665046"
   },
   {
-    "id": "LST_119",
+    "id": "LST_147",
     "title_th": "จามจุรีเรสิเดนซ์",
     "title_en": "Chamchuri Residence",
     "property_type": "apartment",
@@ -1547,7 +1911,7 @@
     "source": "osm:way/33070964"
   },
   {
-    "id": "LST_120",
+    "id": "LST_148",
     "title_th": "Thaisathit Condominium",
     "title_en": "Thaisathit Condominium",
     "property_type": "condo",
@@ -1560,7 +1924,20 @@
     "source": "osm:way/512181028"
   },
   {
-    "id": "LST_121",
+    "id": "LST_149",
+    "title_th": "แฟลตทรัพย์สิน",
+    "title_en": "Sap Sin Flat",
+    "property_type": "apartment",
+    "district": "Hua Lamphong · Mid-Town Transit",
+    "monthly_rent_thb": 6000,
+    "room_size_sqm": 25.0,
+    "bedrooms": 0,
+    "lat": 13.732976,
+    "lng": 100.513719,
+    "source": "osm:way/1235199641"
+  },
+  {
+    "id": "LST_150",
     "title_th": "แฟลตสวนกวางตุ้ง",
     "title_en": "Suan Kwang Tung Flat",
     "property_type": "apartment",
@@ -1573,7 +1950,7 @@
     "source": "osm:way/305102119"
   },
   {
-    "id": "LST_122",
+    "id": "LST_151",
     "title_th": "ฉายสุนีย์อพาร์ทเม็นต์",
     "title_en": "Chaisunee Apartment",
     "property_type": "apartment",
@@ -1586,7 +1963,33 @@
     "source": "osm:way/626816119"
   },
   {
-    "id": "LST_123",
+    "id": "LST_152",
+    "title_th": "ปาทุกาพาณิชย์",
+    "title_en": "ปาทุกาพาณิชย์",
+    "property_type": "condo",
+    "district": "Sam Yot · Outer Transit",
+    "monthly_rent_thb": 10500,
+    "room_size_sqm": 26.0,
+    "bedrooms": 1,
+    "lat": 13.753814,
+    "lng": 100.5011,
+    "source": "osm:way/1524460894"
+  },
+  {
+    "id": "LST_153",
+    "title_th": "แฟลตไมตรี",
+    "title_en": "แฟลตไมตรี",
+    "property_type": "condo",
+    "district": "Sam Yot · Outer Transit",
+    "monthly_rent_thb": 8500,
+    "room_size_sqm": 30.0,
+    "bedrooms": 1,
+    "lat": 13.74746,
+    "lng": 100.498646,
+    "source": "osm:way/1267918437"
+  },
+  {
+    "id": "LST_154",
     "title_th": "แฟลตบำเพ็ญบุญ",
     "title_en": "Bamphen Boon Flat",
     "property_type": "apartment",
@@ -1599,7 +2002,7 @@
     "source": "osm:way/1265987428"
   },
   {
-    "id": "LST_124",
+    "id": "LST_155",
     "title_th": "ท่าเตียน เรสซิเดนซ์ (สนามไชย)",
     "title_en": "Tha Tien Residence (Sanam Chai)",
     "property_type": "apartment",
@@ -1612,7 +2015,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_125",
+    "id": "LST_156",
     "title_th": "เดอะ ทรี จรัญสนิทวงศ์ 30 (อิสรภาพ)",
     "title_en": "The Tree Charan 30 (Itsaraphap)",
     "property_type": "condo",
@@ -1625,7 +2028,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_126",
+    "id": "LST_157",
     "title_th": "บ้านอิสรภาพ อพาร์ตเมนต์",
     "title_en": "Baan Itsaraphap Residence",
     "property_type": "apartment",
@@ -1638,7 +2041,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_127",
+    "id": "LST_158",
     "title_th": "ลุมพินี เพลส รัชดา - ท่าพระ",
     "title_en": "Lumpini Place Ratchada - Thapra",
     "property_type": "condo",
@@ -1651,7 +2054,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_128",
+    "id": "LST_159",
     "title_th": "เดอะ พาร์คแลนด์ เพชรเกษม - ท่าพระ",
     "title_en": "The Parkland Phetkasem - Thapra",
     "property_type": "condo",
@@ -1664,7 +2067,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_129",
+    "id": "LST_160",
     "title_th": "ศุภาลัย ปาร์ค ราชพฤกษ์-เพชรเกษม",
     "title_en": "SUPALAI PARK RATCHAPRUEK-PHETKASEM",
     "property_type": "condo",
@@ -1677,7 +2080,7 @@
     "source": "osm:way/1126855374"
   },
   {
-    "id": "LST_130",
+    "id": "LST_161",
     "title_th": "ชีวาทัย เพชรเกษม 27",
     "title_en": "ชีวาทัย เพชรเกษม 27",
     "property_type": "condo",
@@ -1690,7 +2093,7 @@
     "source": "osm:way/1126868080"
   },
   {
-    "id": "LST_131",
+    "id": "LST_162",
     "title_th": "รีเจ้นท์ โฮม บางซ่อน",
     "title_en": "Regent Home Bangson",
     "property_type": "condo",
@@ -1703,7 +2106,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_132",
+    "id": "LST_163",
     "title_th": "ศุภาลัย เวอเรนด้า รัชวิภา-ประชาชื่น",
     "title_en": "Supalai Veranda Ratchawipha-Pracha Chuen",
     "property_type": "condo",
@@ -1716,7 +2119,7 @@
     "source": "osm:way/1361947314"
   },
   {
-    "id": "LST_133",
+    "id": "LST_164",
     "title_th": "เดอะ พาร์คแลนด์ วงศ์สว่าง",
     "title_en": "The Parkland Wongsawang",
     "property_type": "condo",
@@ -1729,7 +2132,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_134",
+    "id": "LST_165",
     "title_th": "เซ็นทริค ติวานนท์ สเตชั่น",
     "title_en": "Centric Tiwanon Station",
     "property_type": "condo",
@@ -1742,7 +2145,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_135",
+    "id": "LST_166",
     "title_th": "ศุภาลัย วิสต้า แยกติวานนท์",
     "title_en": "Supalai Vista Yaek Tiwanon",
     "property_type": "condo",
@@ -1755,7 +2158,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_136",
+    "id": "LST_167",
     "title_th": "นนท์ทาวเวอร์ A",
     "title_en": "นนท์ทาวเวอร์ A",
     "property_type": "condo",
@@ -1768,7 +2171,7 @@
     "source": "osm:way/1348430698"
   },
   {
-    "id": "LST_137",
+    "id": "LST_168",
     "title_th": "แอสปาย รัตนาธิเบศร์ 2 (ศูนย์ราชการนนทบุรี)",
     "title_en": "Aspire Rattanathibet 2",
     "property_type": "condo",
@@ -1781,7 +2184,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_138",
+    "id": "LST_169",
     "title_th": "ศุภาลัย ปาร์ค แคราย - งามวงศ์วาน",
     "title_en": "Supalai Park Khae Rai - Ngamwongwan",
     "property_type": "condo",
@@ -1794,7 +2197,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_139",
+    "id": "LST_170",
     "title_th": "ลุมพินี คอนโดทาวน์ รัตนาธิเบศร์",
     "title_en": "Lumpini Condotown Rattanathibet",
     "property_type": "condo",
@@ -1807,7 +2210,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_140",
+    "id": "LST_171",
     "title_th": "เดอะ โพลิแทน รีฟ (แยกนนทบุรี 1)",
     "title_en": "The Politan Rive (Nonthaburi 1)",
     "property_type": "condo",
@@ -1820,7 +2223,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_141",
+    "id": "LST_172",
     "title_th": "เดอะ ไลน์ พญาไท",
     "title_en": "The Line Phaya Thai",
     "property_type": "condo",
@@ -1833,7 +2236,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_142",
+    "id": "LST_173",
     "title_th": "Supalai Elite Phayathai",
     "title_en": "Supalai Elite Phayathai",
     "property_type": "condo",
@@ -1846,7 +2249,7 @@
     "source": "osm:way/1022245042"
   },
   {
-    "id": "LST_143",
+    "id": "LST_174",
     "title_th": "เดอะ รูม พญาไท",
     "title_en": "The Room Phayathai",
     "property_type": "condo",
@@ -1859,7 +2262,7 @@
     "source": "osm:way/1022245040"
   },
   {
-    "id": "LST_144",
+    "id": "LST_175",
     "title_th": "ฟิวส์ โมเบียส รามคำแหง - คลองตัน",
     "title_en": "Fuse Mobius Ramkhamhaeng - Klongton",
     "property_type": "condo",
@@ -1872,7 +2275,20 @@
     "source": "curated"
   },
   {
-    "id": "LST_145",
+    "id": "LST_176",
+    "title_th": "Plum Condo Ramkhamhaeng",
+    "title_en": "Plum Condo Ramkhamhaeng",
+    "property_type": "condo",
+    "district": "Ramkhamhaeng · Outer Transit",
+    "monthly_rent_thb": 10500,
+    "room_size_sqm": 36.0,
+    "bedrooms": 1,
+    "lat": 13.743233,
+    "lng": 100.603274,
+    "source": "osm:way/795573470"
+  },
+  {
+    "id": "LST_177",
     "title_th": "เดอะ เบส พระราม 9 - รามคำแหง",
     "title_en": "The Base Rama 9 - Ramkhamhaeng",
     "property_type": "condo",
@@ -1885,7 +2301,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_146",
+    "id": "LST_178",
     "title_th": "FloraVille Condo Tower C-D",
     "title_en": "FloraVille Condo Tower C-D",
     "property_type": "condo",
@@ -1898,7 +2314,7 @@
     "source": "osm:way/1536124404"
   },
   {
-    "id": "LST_147",
+    "id": "LST_179",
     "title_th": "Lumphini Place Srinakarin",
     "title_en": "Lumphini Place Srinakarin",
     "property_type": "condo",
@@ -1911,7 +2327,20 @@
     "source": "osm:way/568941697"
   },
   {
-    "id": "LST_148",
+    "id": "LST_180",
+    "title_th": "The Iris Condominium",
+    "title_en": "The Iris Condominium",
+    "property_type": "condo",
+    "district": "Hua Mak · Outer Transit",
+    "monthly_rent_thb": 9500,
+    "room_size_sqm": 26.0,
+    "bedrooms": 1,
+    "lat": 13.744562,
+    "lng": 100.643679,
+    "source": "osm:node/6089892661"
+  },
+  {
+    "id": "LST_181",
     "title_th": "แอร์ลิงค์ เรสซิเดนซ์ (บ้านทับช้าง)",
     "title_en": "Airlink Residence (Ban Thap Chang)",
     "property_type": "condo",
@@ -1924,7 +2353,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_149",
+    "id": "LST_182",
     "title_th": "ไอริส แอเวนิว อ่อนนุช - ลาดกระบัง (บ้านทับช้าง)",
     "title_en": "Iris Avenue Onnuch - Suvarnabhumi",
     "property_type": "condo",
@@ -1937,7 +2366,7 @@
     "source": "curated"
   },
   {
-    "id": "LST_150",
+    "id": "LST_183",
     "title_th": "ปิยโชค แมนชั่น",
     "title_en": "ปิยโชค แมนชั่น",
     "property_type": "apartment",
