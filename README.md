@@ -4,8 +4,10 @@
 
 ![Go](https://img.shields.io/badge/Go-1.24-00ADD8?logo=go&logoColor=white)
 ![PostgreSQL PostGIS](https://img.shields.io/badge/PostgreSQL_16-PostGIS_3.4-4169E1?logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)
+![Redis](https://img.shields.io/badge/Upstash_Redis-REST_%2F_Redis_7-DC382D?logo=redis&logoColor=white)
 ![React TypeScript](https://img.shields.io/badge/React_19-TypeScript_+_Tailwind-61DAFB?logo=react&logoColor=black)
+
+**Live Demo:** https://bangkok-commute-map.vercel.app/ · **25s Demo Video:** [`docs/bangkok-commute-map-demo.mp4`](docs/bangkok-commute-map-demo.mp4) · **Case Study:** [`docs/PORTFOLIO_CASE_STUDY.md`](docs/PORTFOLIO_CASE_STUDY.md)
 
 ---
 
