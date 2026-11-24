@@ -21,9 +21,18 @@ export function CompareModal({
   const maxTrueCost = data
     ? Math.max(...data.items.map((i) => i.cost.true_monthly_cost_thb), 1)
     : 1;
+  const minTrueCost = data && data.items.length > 0
+    ? Math.min(...data.items.map((i) => i.cost.true_monthly_cost_thb))
+    : 0;
   const maxHours = data
     ? Math.max(...data.items.map((i) => i.cost.monthly_commute_hours), 1)
     : 1;
+  const minOneWayMinutes = data && data.items.length > 0
+    ? Math.min(...data.items.map((i) => i.cost.one_way_minutes))
+    : 0;
+
+  const hasCostDiff = Boolean(data && data.summary.max_monthly_savings_thb > 0);
+  const hasTimeDiff = Boolean(data && data.summary.max_monthly_hours_saved > 0);
 
   return (
     <div
@@ -76,14 +85,48 @@ export function CompareModal({
                       สรุป Trade-off สำคัญ
                     </div>
                     <p className="mt-0.5 text-sm text-slate-800">
-                      ส่วนต่างค่าครองชีพรวมสูงสุด{' '}
-                      <strong className="text-emerald-700">
-                        ฿{data.summary.max_monthly_savings_thb.toLocaleString()}/เดือน
-                      </strong>{' '}
-                      และส่วนต่างเวลาชีวิตบนถนนสูงสุด{' '}
-                      <strong className="text-indigo-700">
-                        {data.summary.max_monthly_hours_saved} ชั่วโมง/เดือน
-                      </strong>
+                      {hasCostDiff && hasTimeDiff ? (
+                        <>
+                          ส่วนต่างค่าครองชีพรวมสูงสุด{' '}
+                          <strong className="text-emerald-700">
+                            ฿{data.summary.max_monthly_savings_thb.toLocaleString()}/เดือน
+                          </strong>{' '}
+                          และส่วนต่างเวลาชีวิตบนถนนสูงสุด{' '}
+                          <strong className="text-indigo-700">
+                            {data.summary.max_monthly_hours_saved} ชั่วโมง/เดือน
+                          </strong>
+                        </>
+                      ) : !hasCostDiff && hasTimeDiff ? (
+                        <>
+                          ทุกทำเลมีค่าครองชีพรวมเท่ากันที่{' '}
+                          <strong className="text-slate-900">
+                            ฿{minTrueCost.toLocaleString()}/เดือน
+                          </strong>{' '}
+                          — ประหยัดเวลาชีวิตบนถนนได้สูงสุด{' '}
+                          <strong className="text-indigo-700">
+                            {data.summary.max_monthly_hours_saved} ชั่วโมง/เดือน
+                          </strong>
+                        </>
+                      ) : hasCostDiff && !hasTimeDiff ? (
+                        <>
+                          ทุกทำเลใช้เวลาเดินทางเท่ากันที่{' '}
+                          <strong className="text-slate-900">
+                            {data.items[0].cost.monthly_commute_hours} ชม./เดือน
+                          </strong>{' '}
+                          — ประหยัดค่าครองชีพรวมได้สูงสุด{' '}
+                          <strong className="text-emerald-700">
+                            ฿{data.summary.max_monthly_savings_thb.toLocaleString()}/เดือน
+                          </strong>
+                        </>
+                      ) : (
+                        <>
+                          ทุกทำเลที่เลือกมีค่าครองชีพรวมและเวลาเดินทางเท่ากันที่{' '}
+                          <strong className="text-slate-900">
+                            ฿{minTrueCost.toLocaleString()}/เดือน •{' '}
+                            {data.items[0].cost.monthly_commute_hours} ชม./เดือน
+                          </strong>
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -96,8 +139,12 @@ export function CompareModal({
                 }`}
               >
                 {data.items.map((item) => {
-                  const isCheapest = item.id === data.summary.lowest_true_cost_id;
-                  const isFastest = item.id === data.summary.fastest_commute_id;
+                  const isCheapest =
+                    hasCostDiff && item.cost.true_monthly_cost_thb === minTrueCost;
+                  const isFastest =
+                    hasTimeDiff && item.cost.one_way_minutes === minOneWayMinutes;
+                  const highlightEmerald = isCheapest;
+                  const highlightIndigo = !hasCostDiff && isFastest;
                   const rentPct = Math.round(
                     (item.monthly_rent_thb / maxTrueCost) * 100
                   );
@@ -112,9 +159,11 @@ export function CompareModal({
                     <div
                       key={item.id}
                       className={`flex flex-col rounded-2xl border p-4 ${
-                        isCheapest
+                        highlightEmerald
                           ? 'border-emerald-400 bg-emerald-50/30 ring-1 ring-emerald-400/40'
-                          : 'border-slate-200 bg-white'
+                          : highlightIndigo
+                            ? 'border-indigo-400 bg-indigo-50/30 ring-1 ring-indigo-400/40'
+                            : 'border-slate-200 bg-white'
                       }`}
                     >
                       {/* Winner Badges */}
@@ -214,12 +263,22 @@ export function CompareModal({
                           </dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt>เข้า-ออกสถานี</dt>
+                          <dt>เข้าสถานี (ต้นทาง)</dt>
                           <dd className="font-semibold text-slate-900">
-                            {item.home_access.mode === 'walk' ? 'เดิน' : 'วินฯ'}{' '}
-                            {item.home_access.distance_m} ม.
+                            {item.home_access.mode === 'walk'
+                              ? `เดิน ${item.home_access.distance_m} ม.`
+                              : `วินฯ ${item.home_access.distance_m} ม. (+฿${item.home_access.one_way_cost_thb})`}
                           </dd>
                         </div>
+                        {item.office_access.one_way_cost_thb > 0 && (
+                          <div className="flex justify-between">
+                            <dt>ต่อถึงออฟฟิศ (ปลายทาง)</dt>
+                            <dd className="font-semibold text-amber-700">
+                              วินฯ {item.office_access.distance_m} ม. (+฿
+                              {item.office_access.one_way_cost_thb})
+                            </dd>
+                          </div>
+                        )}
                         <div className="flex justify-between">
                           <dt className="flex items-center gap-1">
                             <TrainFront className="h-3.5 w-3.5" />

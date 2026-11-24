@@ -219,6 +219,13 @@ export function ListingDrawer({
                         .join(' + ')}
                     </span>
                   )}
+
+                  {item.office_access.one_way_cost_thb > 0 && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-amber-800">
+                      <Bike className="h-3 w-3 text-amber-600" />
+                      ต่อวินถึงออฟฟิศ ฿{item.office_access.one_way_cost_thb}
+                    </span>
+                  )}
                 </div>
 
                 {/* Compare Checkbox */}

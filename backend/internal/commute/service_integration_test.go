@@ -8,7 +8,104 @@ import (
 	"github.com/tk/bangkok-commute-map/backend/internal/cache"
 	"github.com/tk/bangkok-commute-map/backend/internal/config"
 	"github.com/tk/bangkok-commute-map/backend/internal/db"
+	"github.com/tk/bangkok-commute-map/backend/internal/transit"
 )
+
+func TestBuildCompareSummary_TieBreaking(t *testing.T) {
+	// Exact tie scenario: all 3 listings cost 6,760 THB/mo, with 22m, 17m, 21m commute.
+	tiedCost := []ListingResult{
+		{
+			ID: "SLOWEST",
+			Cost: transit.CommuteCostSummary{
+				TrueMonthlyCostTHB:  6760,
+				OneWayMinutes:       22,
+				MonthlyCommuteHours: 16.1,
+			},
+		},
+		{
+			ID: "FASTEST",
+			Cost: transit.CommuteCostSummary{
+				TrueMonthlyCostTHB:  6760,
+				OneWayMinutes:       17,
+				MonthlyCommuteHours: 12.5,
+			},
+		},
+		{
+			ID: "MIDDLE",
+			Cost: transit.CommuteCostSummary{
+				TrueMonthlyCostTHB:  6760,
+				OneWayMinutes:       21,
+				MonthlyCommuteHours: 15.4,
+			},
+		},
+	}
+
+	s := buildCompareSummary(tiedCost)
+	if s.MaxMonthlySavingsTHB != 0 {
+		t.Fatalf("expected 0 savings on tied cost, got %d", s.MaxMonthlySavingsTHB)
+	}
+	if s.LowestTrueCostID != "FASTEST" {
+		t.Fatalf("expected LowestTrueCostID to tie-break to FASTEST, got %s", s.LowestTrueCostID)
+	}
+	if s.FastestCommuteID != "FASTEST" {
+		t.Fatalf("expected FastestCommuteID=FASTEST, got %s", s.FastestCommuteID)
+	}
+	if s.MaxMonthlyHoursSaved != 3.6 {
+		t.Fatalf("expected MaxMonthlyHoursSaved=3.6, got %.1f", s.MaxMonthlyHoursSaved)
+	}
+
+	// Equal-time tie scenario: fastest should tie-break to cheaper option.
+	tiedTime := []ListingResult{
+		{
+			ID: "EXPENSIVE_16M",
+			Cost: transit.CommuteCostSummary{
+				TrueMonthlyCostTHB:  17968,
+				OneWayMinutes:       16,
+				MonthlyCommuteHours: 11.7,
+			},
+		},
+		{
+			ID: "CHEAPER_16M",
+			Cost: transit.CommuteCostSummary{
+				TrueMonthlyCostTHB:  14040,
+				OneWayMinutes:       16,
+				MonthlyCommuteHours: 11.7,
+			},
+		},
+	}
+	s2 := buildCompareSummary(tiedTime)
+	if s2.FastestCommuteID != "CHEAPER_16M" {
+		t.Fatalf("expected FastestCommuteID to tie-break to CHEAPER_16M, got %s", s2.FastestCommuteID)
+	}
+}
+
+func TestIsBetterStationOption_PrefersWalkOverWinForSmallTimeGain(t *testing.T) {
+	walkOption := ReachableStation{
+		CommuteMins:   12,
+		OneWayFareTHB: 22,
+		OfficeAccess:  transit.AccessLeg{DistanceM: 85, Mode: "walk", Minutes: 1, OneWayCostTHB: 0},
+		Route:         transit.RouteResult{DestID: "MRT_BL20"},
+	}
+	winOption := ReachableStation{
+		CommuteMins:   11,
+		OneWayFareTHB: 20,
+		OfficeAccess:  transit.AccessLeg{DistanceM: 890, Mode: "win", Minutes: 3, OneWayCostTHB: 15},
+		Route:         transit.RouteResult{DestID: "MRT_BL19"},
+	}
+	if !isBetterStationOption(walkOption, winOption) {
+		t.Fatalf("expected walkable exit (12m, ฿22) to beat paid win exit (11m, ฿35)")
+	}
+	if isBetterStationOption(winOption, walkOption) {
+		t.Fatalf("expected paid win exit saving only 1 min not to beat walkable exit")
+	}
+
+	// If win saves >= 4 minutes (e.g. avoids a cross-system transfer), win should still win.
+	fastWinOption := winOption
+	fastWinOption.CommuteMins = 8
+	if !isBetterStationOption(fastWinOption, walkOption) {
+		t.Fatalf("expected win exit saving 4+ min to win over much slower walk exit")
+	}
+}
 
 func TestQuantizedCacheKey_NearbyPointsShareKey(t *testing.T) {
 	p1 := NormalizeParams(SearchParams{Lat: 13.73671, Lng: 100.56031, MaxMinutes: 35, MaxBudget: 18000, Workdays: 22, WalkMaxM: 800})
@@ -74,7 +171,7 @@ func TestPostGISIntegration_SearchAndCompare(t *testing.T) {
 
 	cacheClient := cache.New(cfg.RedisAddr, cfg.RedisPassword, cfg.RedisDB)
 	defer func() { _ = cacheClient.Close() }()
-	_, _ = cacheClient.DeleteByPrefix(ctx, "commute:search:v1:13.737:100.560")
+	_, _ = cacheClient.DeleteByPrefix(ctx, "commute:search:")
 
 	svc := NewService(repo, graph, cacheClient)
 

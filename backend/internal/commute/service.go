@@ -149,7 +149,7 @@ func NormalizeParams(p SearchParams) SearchParams {
 func QuantizedCacheKey(p SearchParams) string {
 	qLat := math.Round(p.Lat*1000) / 1000
 	qLng := math.Round(p.Lng*1000) / 1000
-	return fmt.Sprintf("commute:search:v1:%.3f:%.3f:%d:%d:%d:%d",
+	return fmt.Sprintf("commute:search:v2:%.3f:%.3f:%d:%d:%d:%d",
 		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.Workdays, p.WalkMaxM)
 }
 
@@ -281,7 +281,11 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 		return CompareResponse{}, fmt.Errorf("no transit stations found in database")
 	}
 
-	records, err := s.repo.FindListingsByIDs(ctx, req.ListingIDs)
+	searchRadiusM := walkMaxM
+	if searchRadiusM < 1000 {
+		searchRadiusM = 1000
+	}
+	records, err := s.repo.FindListingsByIDsNearStations(ctx, req.ListingIDs, searchRadiusM)
 	if err != nil {
 		return CompareResponse{}, err
 	}
@@ -292,17 +296,9 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 	// Precompute unrestricted best routes to the office from every station.
 	bestStationOption := s.computeBestStationOptions(nearest, -1, walkMaxM)
 
-	recordByID := make(map[string]ListingRecord, len(records))
+	// Pick the optimal nearby station per listing using the exact same criterion as Search().
+	bestByListing := make(map[string]ListingResult, len(req.ListingIDs))
 	for _, rec := range records {
-		recordByID[rec.ID] = rec
-	}
-
-	items := make([]ListingResult, 0, len(req.ListingIDs))
-	for _, id := range req.ListingIDs {
-		rec, ok := recordByID[id]
-		if !ok {
-			continue
-		}
 		stOpt, ok := bestStationOption[rec.StationID]
 		if !ok {
 			continue
@@ -311,7 +307,7 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 		cost := transit.CalculateMonthlyCost(rec.MonthlyRentTHB, homeAccess, stOpt.OfficeAccess, stOpt.Route, workdays)
 		destSt, _ := s.graph.Station(stOpt.Route.DestID)
 
-		items = append(items, ListingResult{
+		candidate := ListingResult{
 			ID:             rec.ID,
 			TitleTH:        rec.TitleTH,
 			TitleEN:        rec.TitleEN,
@@ -329,7 +325,17 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 			Route:          stOpt.Route,
 			Cost:           cost,
 			ZoneColor:      zoneColorForMinutes(cost.OneWayMinutes),
-		})
+		}
+		if existing, exists := bestByListing[rec.ID]; !exists || isBetterOption(candidate, existing) {
+			bestByListing[rec.ID] = candidate
+		}
+	}
+
+	items := make([]ListingResult, 0, len(req.ListingIDs))
+	for _, id := range req.ListingIDs {
+		if item, ok := bestByListing[id]; ok {
+			items = append(items, item)
+		}
 	}
 
 	summary := buildCompareSummary(items)
@@ -388,15 +394,39 @@ func (s *Service) computeBestStationOptions(nearest []NearestStation, maxMinutes
 				OfficeAccess:  officeAccess,
 			}
 
-			if prev, exists := best[stationID]; !exists ||
-				candidate.CommuteMins < prev.CommuteMins ||
-				(candidate.CommuteMins == prev.CommuteMins && candidate.OneWayFareTHB < prev.OneWayFareTHB) {
+			if prev, exists := best[stationID]; !exists || isBetterStationOption(candidate, prev) {
 				best[stationID] = candidate
 			}
 		}
 	}
 
 	return best
+}
+
+// isBetterStationOption compares two destination-station choices from the same origin station.
+// When a walkable office exit is within 3 minutes of a paid motorcycle-taxi (win) exit,
+// it prefers walking to avoid adding an unnecessary THB 15–25/trip feeder surcharge.
+func isBetterStationOption(cand, prev ReachableStation) bool {
+	candWalk := cand.OfficeAccess.Mode == "walk"
+	prevWalk := prev.OfficeAccess.Mode == "walk"
+	if candWalk != prevWalk {
+		if candWalk && cand.CommuteMins <= prev.CommuteMins+3 {
+			return true
+		}
+		if prevWalk && prev.CommuteMins <= cand.CommuteMins+3 {
+			return false
+		}
+	}
+
+	if cand.CommuteMins != prev.CommuteMins {
+		return cand.CommuteMins < prev.CommuteMins
+	}
+	candCost := cand.OneWayFareTHB + cand.OfficeAccess.OneWayCostTHB
+	prevCost := prev.OneWayFareTHB + prev.OfficeAccess.OneWayCostTHB
+	if candCost != prevCost {
+		return candCost < prevCost
+	}
+	return cand.Route.DestID < prev.Route.DestID
 }
 
 func zoneColorForMinutes(mins int) string {
@@ -432,13 +462,15 @@ func buildCompareSummary(items []ListingResult) CompareSummary {
 	slowest := items[0]
 
 	for _, it := range items[1:] {
-		if it.Cost.TrueMonthlyCostTHB < lowestCost.Cost.TrueMonthlyCostTHB {
+		if it.Cost.TrueMonthlyCostTHB < lowestCost.Cost.TrueMonthlyCostTHB ||
+			(it.Cost.TrueMonthlyCostTHB == lowestCost.Cost.TrueMonthlyCostTHB && it.Cost.OneWayMinutes < lowestCost.Cost.OneWayMinutes) {
 			lowestCost = it
 		}
 		if it.Cost.TrueMonthlyCostTHB > highestCost.Cost.TrueMonthlyCostTHB {
 			highestCost = it
 		}
-		if it.Cost.OneWayMinutes < fastest.Cost.OneWayMinutes {
+		if it.Cost.OneWayMinutes < fastest.Cost.OneWayMinutes ||
+			(it.Cost.OneWayMinutes == fastest.Cost.OneWayMinutes && it.Cost.TrueMonthlyCostTHB < fastest.Cost.TrueMonthlyCostTHB) {
 			fastest = it
 		}
 		if it.Cost.OneWayMinutes > slowest.Cost.OneWayMinutes {

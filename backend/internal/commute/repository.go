@@ -186,6 +186,45 @@ func (r *Repository) FindListingsNearStations(ctx context.Context, stationIDs []
 	return out, rows.Err()
 }
 
+// FindListingsByIDsNearStations fetches specific listings paired with all stations within radiusMeters
+// (plus each listing's precomputed nearest_station_id as fallback), matching Search() station evaluation.
+func (r *Repository) FindListingsByIDsNearStations(ctx context.Context, ids []string, radiusMeters int) ([]ListingRecord, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	rows, err := r.pool.Query(ctx, `
+		SELECT l.id, l.title_th, l.title_en, l.property_type, l.district,
+		       l.monthly_rent_thb, l.room_size_sqm::double precision, l.bedrooms,
+		       ST_Y(l.location::geometry) AS lat,
+		       ST_X(l.location::geometry) AS lng,
+		       s.id AS station_id,
+		       ST_Distance(l.location, s.location) AS walk_m
+		FROM listings l
+		JOIN stations s
+		  ON ST_DWithin(l.location, s.location, $2)
+		  OR s.id = l.nearest_station_id
+		WHERE l.id = ANY($1)
+	`, ids, float64(radiusMeters))
+	if err != nil {
+		return nil, fmt.Errorf("query listings by ids with nearby stations: %w", err)
+	}
+	defer rows.Close()
+
+	var out []ListingRecord
+	for rows.Next() {
+		var rec ListingRecord
+		if err := rows.Scan(
+			&rec.ID, &rec.TitleTH, &rec.TitleEN, &rec.PropertyType, &rec.District,
+			&rec.MonthlyRentTHB, &rec.RoomSizeSqm, &rec.Bedrooms,
+			&rec.Lat, &rec.Lng, &rec.StationID, &rec.WalkToStationM,
+		); err != nil {
+			return nil, fmt.Errorf("scan listing by id: %w", err)
+		}
+		out = append(out, rec)
+	}
+	return out, rows.Err()
+}
+
 // FindListingsByIDs fetches specific listings along with their precomputed nearest station.
 func (r *Repository) FindListingsByIDs(ctx context.Context, ids []string) ([]ListingRecord, error) {
 	if len(ids) == 0 {
