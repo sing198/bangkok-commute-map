@@ -85,14 +85,56 @@ func TestBuildListingResult_SameStationAvoidsDoubleWinDetour(t *testing.T) {
 	office := OfficePoint{Lat: 13.7880, Lng: 100.5510} // ~900m straight line -> ~1,260m direct detour -> 1 win (฿20), NOT ฿20+฿25!
 
 	res := buildListingResult(rec, stOpt, st, office, 22, 800)
-	if res.PriceStatus != "unverified" || res.MonthlyRentTHB != 0 {
-		t.Fatalf("expected unverified 0 rent (no guessing), got status=%s rent=%d", res.PriceStatus, res.MonthlyRentTHB)
+	if res.PriceStatus != "unverified" || res.MonthlyRentTHB != 0 || res.PriceTier != "none" {
+		t.Fatalf("expected unverified 0 rent (no guessing), got status=%s tier=%s rent=%d", res.PriceStatus, res.PriceTier, res.MonthlyRentTHB)
 	}
 	if res.OfficeAccess.OneWayCostTHB != 0 {
 		t.Fatalf("expected zero second-leg office feeder on same-station direct trip, got %+v", res.OfficeAccess)
 	}
 	if res.Cost.OneWayFeederTHB > 25 {
 		t.Fatalf("expected single direct feeder <= 25 THB instead of double-win 45 THB, got %d", res.Cost.OneWayFeederTHB)
+	}
+}
+
+func TestBuildListingResult_PriceTiers(t *testing.T) {
+	st := transit.Station{ID: "BTS_N18", NameTH: "พหลโยธิน 59", Operator: "BTS", Lat: 13.8825, Lng: 100.5986}
+	stOpt := ReachableStation{
+		Station:      st,
+		Route:        transit.RouteResult{OriginID: st.ID, DestID: "BTS_E4", StationIDs: []string{st.ID, "BTS_E4"}, TotalRailMinutes: 30, FareTHB: 62},
+		OfficeAccess: transit.AccessLeg{DistanceM: 100, Mode: "walk", Minutes: 2, OneWayCostTHB: 0},
+	}
+	office := OfficePoint{Lat: 13.7367, Lng: 100.5603}
+
+	// 1. Baseline zone estimate
+	zoneRec := ListingRecord{
+		ID: "LST_ZONE", Lat: 13.88, Lng: 100.60, StationID: st.ID, WalkToStationM: 400,
+		MonthlyRentTHB: 8500, EstimatedRentMinTHB: 7000, EstimatedRentMaxTHB: 10000,
+		PriceSource: "ประเมินจากสถิติค่าเช่าต่อ ตร.ม. ตามโซนรถไฟฟ้า (DDproperty / Hipflat / FazWaz 2026)",
+	}
+	zoneRes := buildListingResult(zoneRec, stOpt, st, office, 22, 800)
+	if zoneRes.PriceTier != "estimated" || zoneRes.EstimatedRentTHB != 8500 || zoneRes.MonthlyRentTHB != 0 {
+		t.Fatalf("expected estimated tier with 8500 estimate & 0 verified rent, got %+v", zoneRes)
+	}
+
+	// 2. HAR market benchmark tier
+	harRec := zoneRec
+	harRec.ID = "LST_HAR"
+	harRec.MonthlyRentTHB = 13000
+	harRec.EstimatedRentMinTHB = 11500
+	harRec.EstimatedRentMaxTHB = 15000
+	harRec.PriceSource = "ปรับเทียบจาก HAR สถานี BTS_N18 (11 ประกาศ · 2026-11)"
+	harRes := buildListingResult(harRec, stOpt, st, office, 22, 800)
+	if harRes.PriceTier != "market_har" || harRes.EstimatedRentTHB != 13000 || harRes.EstimatedRentMinTHB != 11500 {
+		t.Fatalf("expected market_har tier with 13000 estimate, got %+v", harRes)
+	}
+
+	// 3. Verified tenant report overrides tier
+	verRec := harRec
+	verRec.VerifiedReportCount = 2
+	verRec.VerifiedRentMedianTHB = 14000
+	verRes := buildListingResult(verRec, stOpt, st, office, 22, 800)
+	if verRes.PriceTier != "verified" || verRes.PriceStatus != "verified" || verRes.MonthlyRentTHB != 14000 {
+		t.Fatalf("expected verified tier with 14000 verified rent, got %+v", verRes)
 	}
 }
 

@@ -161,6 +161,8 @@ export function CommuteMap({
       const isSelected = item.id === selectedListingId;
       const isCompared = compareIds.includes(item.id);
       const isVerified = item.price_status === 'verified';
+      const estRent = item.estimated_rent_thb ?? 0;
+      const isHarCalibrated = item.price_tier === 'market_har';
       const color = ZONE_HEX[item.zone_color] || '#475569';
       const opLabel = OPERATOR_LABEL[item.origin_station.operator] || item.origin_station.operator;
       const isDirect = item.route.station_ids.length <= 1;
@@ -169,20 +171,27 @@ export function CommuteMap({
         : item.home_access.distance_source === 'osrm_foot'
           ? `เดินตามถนน ${item.home_access.distance_m} ม.`
           : `~${item.home_access.distance_m} ม.`;
+      const estTotal = estRent + item.cost.monthly_commute_thb;
       const priceLine = isVerified
         ? `<div>รวมจริง <strong>฿${item.cost.true_monthly_cost_thb.toLocaleString()}/ด.</strong> <span style="color:#047857;font-weight:700">(เช่าจริง ฿${item.monthly_rent_thb.toLocaleString()})</span></div>`
-        : `<div>ค่าเดินทางจริง <strong>฿${item.cost.monthly_commute_thb.toLocaleString()}/ด.</strong> <span style="color:#64748b">(กดการ์ดเพื่อเช็กราคาห้องจริง ↗)</span></div>`;
+        : estRent > 0
+          ? isHarCalibrated
+            ? `<div>เช่าอ้างอิง HAR <strong style="color:#0369a1">~฿${estRent.toLocaleString()}/ด.</strong> <span style="color:#4338ca">(รวม ~฿${estTotal.toLocaleString()})</span></div>`
+            : `<div>เช่าประเมิน <strong>~฿${estRent.toLocaleString()}/ด.</strong> <span style="color:#475569">(รวม ~฿${estTotal.toLocaleString()})</span></div>`
+          : `<div>ค่าเดินทางจริง <strong>฿${item.cost.monthly_commute_thb.toLocaleString()}/ด.</strong> <span style="color:#64748b">(กดการ์ดเพื่อเช็กราคาห้องจริง ↗)</span></div>`;
 
       const marker = L.circleMarker([item.lat, item.lng], {
         renderer,
-        radius: isSelected ? 9 : isCompared ? 8 : isVerified ? 6.5 : 5,
+        radius: isSelected ? 9 : isCompared ? 8 : isVerified ? 6.5 : isHarCalibrated ? 6 : 5,
         color: isSelected
           ? '#1e1b4b'
           : isCompared
             ? '#4f46e5'
             : isVerified
               ? '#059669'
-              : '#ffffff',
+              : isHarCalibrated
+                ? '#0284c7'
+                : '#ffffff',
         weight: isSelected || isCompared ? 3 : 1.75,
         fillColor: color,
         fillOpacity: isSelected || isCompared ? 1 : 0.88,

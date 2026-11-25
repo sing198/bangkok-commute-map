@@ -109,6 +109,8 @@ export interface ReachableStation {
   office_access: AccessLeg;
 }
 
+export type PriceTier = 'verified' | 'market_har' | 'estimated' | 'none';
+
 export interface ListingResult {
   id: string;
   osm_id?: string;
@@ -117,7 +119,12 @@ export interface ListingResult {
   property_type: 'condo' | 'apartment';
   district: string;
   monthly_rent_thb: number; // >0 ONLY when price_status === 'verified'
+  estimated_rent_thb?: number;
+  estimated_rent_min_thb?: number;
+  estimated_rent_max_thb?: number;
+  price_source?: string;
   price_status: 'verified' | 'unverified';
+  price_tier?: PriceTier;
   data_source?: string;
   listing_url?: string;
   listing_url_label?: string;

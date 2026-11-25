@@ -349,9 +349,30 @@ export function CompareModal({
                               [item.id]: e.target.value,
                             }))
                           }
-                          placeholder="เช็กลิงก์แล้วกรอก เช่น 12500"
+                          placeholder={
+                            (item.estimated_rent_thb ?? 0) > 0
+                              ? `${item.price_tier === 'market_har' ? 'อ้างอิง HAR' : 'ประเมิน'} ~${item.estimated_rent_thb?.toLocaleString()}`
+                              : 'เช็กลิงก์แล้วกรอก เช่น 12500'
+                          }
                           className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-sm font-bold text-slate-900 placeholder:text-xs placeholder:font-normal placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
+                        {item.price_status !== 'verified' &&
+                          !hasRent &&
+                          (item.estimated_rent_thb ?? 0) > 0 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setCustomRents((prev) => ({
+                                  ...prev,
+                                  [item.id]: String(item.estimated_rent_thb),
+                                }))
+                              }
+                              className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 hover:underline"
+                            >
+                              ใช้ราคา{item.price_tier === 'market_har' ? 'อ้างอิง HAR' : 'ประเมิน'} ~฿
+                              {item.estimated_rent_thb?.toLocaleString()} เทียบชั่วคราว
+                            </button>
+                          )}
                         {isCustomTyped && rent >= 1500 && (
                           <button
                             type="button"

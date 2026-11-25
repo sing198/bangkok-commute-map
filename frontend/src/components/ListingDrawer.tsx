@@ -193,6 +193,21 @@ export function ListingDrawer({
               const isCompared = compareIds.includes(item.id);
               const canAddMore = compareIds.length < 3 || isCompared;
               const isVerified = item.price_status === 'verified';
+              const estRent = item.estimated_rent_thb ?? 0;
+              const priceTier =
+                item.price_tier ??
+                (isVerified
+                  ? 'verified'
+                  : estRent > 0
+                    ? item.price_source?.startsWith('ปรับเทียบจาก HAR')
+                      ? 'market_har'
+                      : 'estimated'
+                    : 'none');
+              const isHarCalibrated = priceTier === 'market_har';
+              const hasEstimate = !isVerified && estRent > 0;
+              const estMin = item.estimated_rent_min_thb || estRent;
+              const estMax = item.estimated_rent_max_thb || estRent;
+              const estTrueMonthly = estRent + item.cost.monthly_commute_thb;
               const isDirect = item.route.station_ids.length <= 1;
               const priceLinks = getRealPriceLinks(item);
               const opLabel =
@@ -224,13 +239,28 @@ export function ListingDrawer({
                             <ShieldCheck className="h-3 w-3" />
                             ราคาจริงจากผู้เช่า ({item.verified_report_count})
                           </span>
-                        ) : priceLinks.primary.isDirectBuilding ? (
-                          <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
-                            มีลิงก์หน้าตึกจริง
+                        ) : isHarCalibrated ? (
+                          <span
+                            title={item.price_source}
+                            className="inline-flex items-center gap-0.5 rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-800"
+                          >
+                            อ้างอิงตลาด (HAR)
+                          </span>
+                        ) : hasEstimate ? (
+                          <span
+                            title={item.price_source}
+                            className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600"
+                          >
+                            ราคาประเมินตามโซน
                           </span>
                         ) : (
                           <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
                             เช็กราคาบนเว็บประกาศ
+                          </span>
+                        )}
+                        {!isVerified && priceLinks.primary.isDirectBuilding && (
+                          <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
+                            มีลิงก์หน้าตึกจริง
                           </span>
                         )}
                       </div>
@@ -259,8 +289,14 @@ export function ListingDrawer({
                     </span>
                   </div>
 
-                  {/* Factual Cost Box (Zero Guessed Rent!) */}
-                  <div className="mt-2.5 flex items-baseline justify-between rounded-xl bg-slate-50 px-3 py-2">
+                  {/* 3-Tier Cost Box: Verified Real Rent / HAR Market Reference / Zone Estimate */}
+                  <div
+                    className={`mt-2.5 flex items-baseline justify-between gap-2 rounded-xl px-3 py-2 ${
+                      isHarCalibrated
+                        ? 'border border-sky-100 bg-sky-50/70'
+                        : 'bg-slate-50'
+                    }`}
+                  >
                     {isVerified ? (
                       <>
                         <div>
@@ -281,6 +317,45 @@ export function ListingDrawer({
                           <div className="text-amber-700">
                             + เดินทาง{' '}
                             <strong>฿{item.cost.monthly_commute_thb.toLocaleString()}</strong>
+                          </div>
+                        </div>
+                      </>
+                    ) : hasEstimate ? (
+                      <>
+                        <div>
+                          <div
+                            className={`text-[10px] font-semibold ${
+                              isHarCalibrated ? 'text-sky-700' : 'text-slate-500'
+                            }`}
+                          >
+                            {isHarCalibrated
+                              ? 'ค่าเช่าอ้างอิง (HAR) / เดือน'
+                              : 'ค่าเช่าประเมิน / เดือน'}
+                          </div>
+                          <div
+                            className={`text-lg font-extrabold tracking-tight ${
+                              isHarCalibrated ? 'text-sky-800' : 'text-slate-800'
+                            }`}
+                          >
+                            ~฿{estRent.toLocaleString()}
+                          </div>
+                          {estMin > 0 && estMax > estMin && (
+                            <div className="text-[10px] text-slate-500">
+                              ช่วง ฿{estMin.toLocaleString()}–฿{estMax.toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right text-[11px] text-slate-600">
+                          <div>
+                            รวมประมาณ{' '}
+                            <strong className="text-indigo-700">
+                              ฿{estTrueMonthly.toLocaleString()}/ด.
+                            </strong>
+                          </div>
+                          <div className={item.cost.monthly_commute_thb > 0 ? 'text-amber-700' : 'text-emerald-700'}>
+                            {item.cost.monthly_commute_thb === 0
+                              ? 'เดินทาง ฿0 (เดินถึง)'
+                              : `+ เดินทาง ฿${item.cost.monthly_commute_thb.toLocaleString()}`}
                           </div>
                         </div>
                       </>

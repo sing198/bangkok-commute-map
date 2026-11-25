@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/tk/bangkok-commute-map/backend/internal/cache"
@@ -54,7 +55,12 @@ type ListingResult struct {
 	PropertyType          string                     `json:"property_type"`
 	District              string                     `json:"district"`
 	MonthlyRentTHB        int                        `json:"monthly_rent_thb"` // >0 ONLY when price_status == "verified"
-	PriceStatus           string                     `json:"price_status"`     // "verified" or "unverified"
+	EstimatedRentTHB      int                        `json:"estimated_rent_thb,omitempty"`
+	EstimatedRentMinTHB   int                        `json:"estimated_rent_min_thb,omitempty"`
+	EstimatedRentMaxTHB   int                        `json:"estimated_rent_max_thb,omitempty"`
+	PriceSource           string                     `json:"price_source,omitempty"`
+	PriceStatus           string                     `json:"price_status"` // "verified" or "unverified"
+	PriceTier             string                     `json:"price_tier"`   // "verified", "market_har", "estimated", or "none"
 	DataSource            string                     `json:"data_source,omitempty"`
 	ListingURL            string                     `json:"listing_url,omitempty"`
 	ListingURLLabel       string                     `json:"listing_url_label,omitempty"`
@@ -187,7 +193,7 @@ func NormalizeParams(p SearchParams) SearchParams {
 func QuantizedCacheKey(p SearchParams) string {
 	qLat := math.Round(p.Lat*1000) / 1000
 	qLng := math.Round(p.Lng*1000) / 1000
-	return fmt.Sprintf("commute:search:v5:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
+	return fmt.Sprintf("commute:search:v6:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
 		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.MaxCommuteBudget, p.VerifiedOnly, p.Workdays, p.WalkMaxM, p.Sort, p.Limit)
 }
 
@@ -232,12 +238,21 @@ func buildListingResult(
 		}
 	}
 
-	// Never guess room rent: only populate MonthlyRentTHB when tenant-verified reports exist.
+	// Keep MonthlyRentTHB strictly for tenant-verified reports; expose market HAR / zone
+	// estimates separately via EstimatedRent* and PriceTier so the UI can distinguish trust tiers.
 	verifiedRent := 0
 	priceStatus := "unverified"
+	priceTier := "none"
 	if rec.VerifiedReportCount > 0 && rec.VerifiedRentMedianTHB > 0 {
 		verifiedRent = rec.VerifiedRentMedianTHB
 		priceStatus = "verified"
+		priceTier = "verified"
+	} else if rec.MonthlyRentTHB > 0 {
+		if strings.HasPrefix(rec.PriceSource, "ปรับเทียบจาก HAR") {
+			priceTier = "market_har"
+		} else {
+			priceTier = "estimated"
+		}
 	}
 
 	cost := transit.CalculateMonthlyCost(verifiedRent, homeAccess, officeAccess, route, workdays)
@@ -250,7 +265,12 @@ func buildListingResult(
 		PropertyType:          rec.PropertyType,
 		District:              rec.District,
 		MonthlyRentTHB:        verifiedRent,
+		EstimatedRentTHB:      rec.MonthlyRentTHB,
+		EstimatedRentMinTHB:   rec.EstimatedRentMinTHB,
+		EstimatedRentMaxTHB:   rec.EstimatedRentMaxTHB,
+		PriceSource:           rec.PriceSource,
 		PriceStatus:           priceStatus,
+		PriceTier:             priceTier,
 		DataSource:            rec.DataSource,
 		ListingURL:            rec.ListingURL,
 		ListingURLLabel:       rec.ListingURLLabel,
