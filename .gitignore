@@ -17,7 +17,8 @@
 .vscode/
 .idea/
 
-# Local HAR captures & sync logs (may contain browser session metadata; never commit)
+# Local HAR captures, Kaggle CSVs & sync logs (never commit raw source dumps)
 *.har
 /data/har/
+/data/kaggle/
 /data/logs/

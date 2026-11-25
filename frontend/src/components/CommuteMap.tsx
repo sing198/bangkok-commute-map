@@ -129,11 +129,15 @@ export function CommuteMap({
         fillOpacity: 0.14,
       });
 
+      const benchLine = rs.station_rent_benchmark
+        ? `<br/><span style="color:#0369a1;font-weight:600">เช่ารายเดือนรอบสถานี ~฿${rs.station_rent_benchmark.p25_monthly_thb.toLocaleString()}–฿${rs.station_rent_benchmark.p75_monthly_thb.toLocaleString()}/ด.</span> <span style="color:#64748b">(Inside Airbnb · ${rs.station_rent_benchmark.sample_count} ห้อง)</span>`
+        : '';
+
       circle.bindTooltip(
         `<div style="font-size:12px;line-height:1.4">
           <strong>${opLabel} ${rs.station.name_th}</strong> (${rs.station.name_en})<br/>
           ถึงออฟฟิศ ~<strong>${rs.commute_minutes} นาที</strong> • ค่าโดยสาร ฿${rs.one_way_fare_thb}
-          ${rs.transfers > 0 ? `• เปลี่ยนสาย ${rs.transfers} ครั้ง` : '• ต่อเดียว'}
+          ${rs.transfers > 0 ? `• เปลี่ยนสาย ${rs.transfers} ครั้ง` : '• ต่อเดียว'}${benchLine}
         </div>`,
         { direction: 'top', sticky: true }
       );
@@ -162,7 +166,9 @@ export function CommuteMap({
       const isCompared = compareIds.includes(item.id);
       const isVerified = item.price_status === 'verified';
       const estRent = item.estimated_rent_thb ?? 0;
-      const isHarCalibrated = item.price_tier === 'market_har';
+      const isBuildingMarket =
+        (item.price_tier === 'market_har' || item.price_tier === 'market_kaggle') && estRent > 0;
+      const stBench = item.station_rent_benchmark;
       const color = ZONE_HEX[item.zone_color] || '#475569';
       const opLabel = OPERATOR_LABEL[item.origin_station.operator] || item.origin_station.operator;
       const isDirect = item.route.station_ids.length <= 1;
@@ -174,20 +180,22 @@ export function CommuteMap({
       const estTotal = estRent + item.cost.monthly_commute_thb;
       const priceLine = isVerified
         ? `<div>รวมจริง <strong>฿${item.cost.true_monthly_cost_thb.toLocaleString()}/ด.</strong> <span style="color:#047857;font-weight:700">(เช่าจริง ฿${item.monthly_rent_thb.toLocaleString()})</span></div>`
-        : isHarCalibrated && estRent > 0
-          ? `<div>เช่าตลาด HAR <strong style="color:#0369a1">฿${estRent.toLocaleString()}/ด.</strong> <span style="color:#4338ca">(รวม ~฿${estTotal.toLocaleString()})</span></div>`
-          : `<div>ค่าเดินทางจริง <strong>฿${item.cost.monthly_commute_thb.toLocaleString()}/ด.</strong> <span style="color:#64748b">(กดการ์ดเพื่อเช็กราคาห้องจริง ↗)</span></div>`;
+        : isBuildingMarket
+          ? `<div>เช่าตลาด (${item.price_tier === 'market_har' ? 'HAR' : 'Kaggle'}) <strong style="color:#0369a1">฿${estRent.toLocaleString()}/ด.</strong> <span style="color:#4338ca">(รวม ~฿${estTotal.toLocaleString()})</span></div>`
+          : stBench
+            ? `<div>ค่าเดินทางจริง <strong>฿${item.cost.monthly_commute_thb.toLocaleString()}/ด.</strong> • <span style="color:#0369a1">รอบสถานี ฿${stBench.p25_monthly_thb.toLocaleString()}–฿${stBench.p75_monthly_thb.toLocaleString()}</span></div>`
+            : `<div>ค่าเดินทางจริง <strong>฿${item.cost.monthly_commute_thb.toLocaleString()}/ด.</strong> <span style="color:#64748b">(กดการ์ดเพื่อเช็กราคาห้องจริง ↗)</span></div>`;
 
       const marker = L.circleMarker([item.lat, item.lng], {
         renderer,
-        radius: isSelected ? 9 : isCompared ? 8 : isVerified ? 6.5 : isHarCalibrated ? 6 : 5,
+        radius: isSelected ? 9 : isCompared ? 8 : isVerified ? 6.5 : isBuildingMarket ? 6 : 5,
         color: isSelected
           ? '#1e1b4b'
           : isCompared
             ? '#4f46e5'
             : isVerified
               ? '#059669'
-              : isHarCalibrated
+              : isBuildingMarket
                 ? '#0284c7'
                 : '#ffffff',
         weight: isSelected || isCompared ? 3 : 1.75,

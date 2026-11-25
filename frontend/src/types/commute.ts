@@ -99,6 +99,18 @@ export interface CommuteCostSummary {
 
 export type ZoneColor = 'green' | 'yellow' | 'orange' | 'red';
 
+export interface StationRentBenchmark {
+  station_id: string;
+  sample_count: number;
+  p25_monthly_thb: number;
+  median_monthly_thb: number;
+  p75_monthly_thb: number;
+  basis: 'monthly_28plus' | 'entire_home_30x' | string;
+  snapshot_date: string;
+  source: string;
+  license?: string;
+}
+
 export interface ReachableStation {
   station: Station;
   zone_color: ZoneColor;
@@ -107,9 +119,10 @@ export interface ReachableStation {
   transfers: number;
   route: RouteResult;
   office_access: AccessLeg;
+  station_rent_benchmark?: StationRentBenchmark;
 }
 
-export type PriceTier = 'verified' | 'market_har' | 'none';
+export type PriceTier = 'verified' | 'market_har' | 'market_kaggle' | 'none';
 
 export interface ListingResult {
   id: string;
@@ -125,6 +138,7 @@ export interface ListingResult {
   price_source?: string;
   price_status: 'verified' | 'unverified';
   price_tier?: PriceTier;
+  station_rent_benchmark?: StationRentBenchmark;
   data_source?: string;
   listing_url?: string;
   listing_url_label?: string;

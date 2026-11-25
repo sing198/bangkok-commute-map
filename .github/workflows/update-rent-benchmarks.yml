@@ -1,0 +1,49 @@
+name: Monthly Open-Data Rent Benchmark Sync
+
+on:
+  schedule:
+    # 1st of every month at 02:00 UTC (09:00 Bangkok time)
+    - cron: '0 2 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-inside-airbnb:
+    name: Sync Inside Airbnb Bangkok Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache-dependency-path: backend/go.sum
+
+      - name: Fetch latest Inside Airbnb Bangkok snapshot
+        run: python3 scripts/fetch_inside_airbnb.py
+
+      - name: Verify Go dataset and unit tests
+        working-directory: backend
+        run: go test -count=1 ./cmd/seed ./internal/commute ./internal/transit
+
+      - name: Commit and push updated benchmarks if changed
+        run: |
+          if git diff --quiet backend/data/station_rent_benchmarks.json; then
+            echo "No benchmark changes detected."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/data/station_rent_benchmarks.json
+          git commit -m "chore(data): update Inside Airbnb Bangkok station rent benchmarks"
+          git push

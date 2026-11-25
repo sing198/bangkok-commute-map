@@ -128,6 +128,18 @@ func TestBuildListingResult_PriceTiers(t *testing.T) {
 		t.Fatalf("expected market_har tier with 14000 estimate, got %+v", harRes)
 	}
 
+	// 2b. Exact building-matched Kaggle CSV tier
+	kaggleRec := zoneRec
+	kaggleRec.ID = "LST_KAGGLE"
+	kaggleRec.MonthlyRentTHB = 18000
+	kaggleRec.EstimatedRentMinTHB = 16000
+	kaggleRec.EstimatedRentMaxTHB = 20000
+	kaggleRec.PriceSource = "ฐานข้อมูลตลาด (Kaggle CSV · 5 ประกาศ · 2026-11)"
+	kaggleRes := buildListingResult(kaggleRec, stOpt, st, office, 22, 800)
+	if kaggleRes.PriceTier != "market_kaggle" || kaggleRes.EstimatedRentTHB != 18000 {
+		t.Fatalf("expected market_kaggle tier with 18000 estimate, got %+v", kaggleRes)
+	}
+
 	// 3. Verified tenant report overrides tier
 	verRec := harRec
 	verRec.VerifiedReportCount = 2

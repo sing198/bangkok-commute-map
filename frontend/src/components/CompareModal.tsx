@@ -350,15 +350,18 @@ export function CompareModal({
                             }))
                           }
                           placeholder={
-                            item.price_tier === 'market_har' && (item.estimated_rent_thb ?? 0) > 0
-                              ? `ราคาตลาด HAR ฿${item.estimated_rent_thb?.toLocaleString()}`
-                              : 'เช็กลิงก์แล้วกรอก เช่น 12500'
+                            (item.price_tier === 'market_har' || item.price_tier === 'market_kaggle') &&
+                            (item.estimated_rent_thb ?? 0) > 0
+                              ? `ราคาตลาด ฿${item.estimated_rent_thb?.toLocaleString()}`
+                              : item.station_rent_benchmark
+                                ? `รอบสถานี ~฿${item.station_rent_benchmark.median_monthly_thb.toLocaleString()} (Airbnb)`
+                                : 'เช็กลิงก์แล้วกรอก เช่น 12500'
                           }
                           className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-sm font-bold text-slate-900 placeholder:text-xs placeholder:font-normal placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
-                        {item.price_tier === 'market_har' &&
-                          !hasRent &&
-                          (item.estimated_rent_thb ?? 0) > 0 && (
+                        {!hasRent &&
+                          ((item.price_tier === 'market_har' || item.price_tier === 'market_kaggle') &&
+                          (item.estimated_rent_thb ?? 0) > 0 ? (
                             <button
                               type="button"
                               onClick={() =>
@@ -369,9 +372,24 @@ export function CompareModal({
                               }
                               className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 hover:underline"
                             >
-                              ใช้ราคาตลาด HAR ฿{item.estimated_rent_thb?.toLocaleString()} เทียบชั่วคราว
+                              ใช้ราคาตลาด ({item.price_tier === 'market_har' ? 'HAR' : 'Kaggle'}) ฿
+                              {item.estimated_rent_thb?.toLocaleString()} เทียบชั่วคราว
                             </button>
-                          )}
+                          ) : item.station_rent_benchmark ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setCustomRents((prev) => ({
+                                  ...prev,
+                                  [item.id]: String(item.station_rent_benchmark?.median_monthly_thb ?? ''),
+                                }))
+                              }
+                              className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 hover:underline"
+                            >
+                              ใช้ค่ากลางรอบสถานี ~฿
+                              {item.station_rent_benchmark.median_monthly_thb.toLocaleString()} (Inside Airbnb)
+                            </button>
+                          ) : null)}
                         {isCustomTyped && rent >= 1500 && (
                           <button
                             type="button"

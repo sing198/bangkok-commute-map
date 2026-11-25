@@ -1,6 +1,7 @@
-.PHONY: up down logs seed api web build-web test import-har preview-prices update-prices
+.PHONY: up down logs seed api web build-web test import-har preview-prices update-prices sync-airbnb import-kaggle update-kaggle-prices
 
 HAR_INPUT ?= data/har
+KAGGLE_INPUT ?= data/kaggle
 
 up:
 	docker compose up -d
@@ -34,4 +35,15 @@ preview-prices:
 
 update-prices:
 	python3 scripts/import_har_prices.py --input $(HAR_INPUT) --apply-to-listings
+	cd backend && go run ./cmd/seed -validate-only
+
+sync-airbnb:
+	python3 scripts/fetch_inside_airbnb.py
+	cd backend && go test ./cmd/seed ./internal/commute
+
+import-kaggle:
+	python3 scripts/import_kaggle_prices.py --input $(KAGGLE_INPUT) --preview-listings-diff
+
+update-kaggle-prices:
+	python3 scripts/import_kaggle_prices.py --input $(KAGGLE_INPUT) --apply-to-listings
 	cd backend && go run ./cmd/seed -validate-only

@@ -1,0 +1,960 @@
+{
+  "meta": {
+    "source": "Inside Airbnb (Bangkok)",
+    "license": "CC0 1.0 Public Domain",
+    "snapshot_date": "2026-09-22",
+    "source_url": "https://data.insideairbnb.com/thailand/central-thailand/bangkok/2026-09-22/visualisations/listings.csv",
+    "generated_at": "2026-11-25T14:27:35.716726+00:00",
+    "max_station_radius_m": 1500,
+    "total_csv_rows": 30922,
+    "matched_entire_home_rows": 15746,
+    "matched_monthly_28plus_rows": 4034,
+    "covered_stations": 94,
+    "total_stations": 192,
+    "basis_breakdown": {
+      "monthly_28plus": 94
+    }
+  },
+  "stations": [
+    {
+      "station_id": "ARL_A4",
+      "name_th": "หัวหมาก",
+      "sample_count": 14,
+      "p25_monthly_thb": 23000,
+      "median_monthly_thb": 25500,
+      "p75_monthly_thb": 29500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "ARL_A5",
+      "name_th": "รามคำแหง",
+      "sample_count": 65,
+      "p25_monthly_thb": 24000,
+      "median_monthly_thb": 31000,
+      "p75_monthly_thb": 41000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "ARL_A6",
+      "name_th": "มักกะสัน",
+      "sample_count": 225,
+      "p25_monthly_thb": 27500,
+      "median_monthly_thb": 36500,
+      "p75_monthly_thb": 47000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "ARL_A7",
+      "name_th": "ราชปรารภ",
+      "sample_count": 98,
+      "p25_monthly_thb": 35000,
+      "median_monthly_thb": 40000,
+      "p75_monthly_thb": 54500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "ARL_A8",
+      "name_th": "พญาไท",
+      "sample_count": 32,
+      "p25_monthly_thb": 34500,
+      "median_monthly_thb": 39000,
+      "p75_monthly_thb": 44500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E1",
+      "name_th": "ชิดลม",
+      "sample_count": 77,
+      "p25_monthly_thb": 44500,
+      "median_monthly_thb": 52500,
+      "p75_monthly_thb": 66000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E10",
+      "name_th": "บางจาก",
+      "sample_count": 54,
+      "p25_monthly_thb": 24500,
+      "median_monthly_thb": 31000,
+      "p75_monthly_thb": 35500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E11",
+      "name_th": "ปุณณวิถี",
+      "sample_count": 78,
+      "p25_monthly_thb": 23000,
+      "median_monthly_thb": 26500,
+      "p75_monthly_thb": 37500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E12",
+      "name_th": "อุดมสุข",
+      "sample_count": 34,
+      "p25_monthly_thb": 22000,
+      "median_monthly_thb": 25000,
+      "p75_monthly_thb": 29000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E13",
+      "name_th": "บางนา",
+      "sample_count": 147,
+      "p25_monthly_thb": 20000,
+      "median_monthly_thb": 21000,
+      "p75_monthly_thb": 25000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E14",
+      "name_th": "แบริ่ง",
+      "sample_count": 9,
+      "p25_monthly_thb": 22000,
+      "median_monthly_thb": 24000,
+      "p75_monthly_thb": 26000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E2",
+      "name_th": "เพลินจิต",
+      "sample_count": 50,
+      "p25_monthly_thb": 44000,
+      "median_monthly_thb": 59000,
+      "p75_monthly_thb": 77000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E3",
+      "name_th": "นานา",
+      "sample_count": 79,
+      "p25_monthly_thb": 41500,
+      "median_monthly_thb": 49000,
+      "p75_monthly_thb": 67500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E4",
+      "name_th": "อโศก",
+      "sample_count": 39,
+      "p25_monthly_thb": 42000,
+      "median_monthly_thb": 50000,
+      "p75_monthly_thb": 90500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E5",
+      "name_th": "พร้อมพงษ์",
+      "sample_count": 137,
+      "p25_monthly_thb": 40000,
+      "median_monthly_thb": 50500,
+      "p75_monthly_thb": 81500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E6",
+      "name_th": "ทองหล่อ",
+      "sample_count": 269,
+      "p25_monthly_thb": 39500,
+      "median_monthly_thb": 51000,
+      "p75_monthly_thb": 69000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E7",
+      "name_th": "เอกมัย",
+      "sample_count": 116,
+      "p25_monthly_thb": 34500,
+      "median_monthly_thb": 43000,
+      "p75_monthly_thb": 58000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E8",
+      "name_th": "พระโขนง",
+      "sample_count": 115,
+      "p25_monthly_thb": 28000,
+      "median_monthly_thb": 37500,
+      "p75_monthly_thb": 49500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_E9",
+      "name_th": "อ่อนนุช",
+      "sample_count": 223,
+      "p25_monthly_thb": 26000,
+      "median_monthly_thb": 33000,
+      "p75_monthly_thb": 40000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_G1",
+      "name_th": "กรุงธนบุรี",
+      "sample_count": 35,
+      "p25_monthly_thb": 24500,
+      "median_monthly_thb": 29500,
+      "p75_monthly_thb": 51000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_G3",
+      "name_th": "คลองสาน",
+      "sample_count": 7,
+      "p25_monthly_thb": 33000,
+      "median_monthly_thb": 33500,
+      "p75_monthly_thb": 39500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N1",
+      "name_th": "ราชเทวี",
+      "sample_count": 67,
+      "p25_monthly_thb": 48000,
+      "median_monthly_thb": 55000,
+      "p75_monthly_thb": 56500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N10",
+      "name_th": "พหลโยธิน 24",
+      "sample_count": 9,
+      "p25_monthly_thb": 31500,
+      "median_monthly_thb": 39000,
+      "p75_monthly_thb": 50500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N11",
+      "name_th": "รัชโยธิน",
+      "sample_count": 9,
+      "p25_monthly_thb": 31500,
+      "median_monthly_thb": 37000,
+      "p75_monthly_thb": 39500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N12",
+      "name_th": "เสนานิคม",
+      "sample_count": 3,
+      "p25_monthly_thb": 19500,
+      "median_monthly_thb": 20000,
+      "p75_monthly_thb": 23000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N19",
+      "name_th": "สายหยุด",
+      "sample_count": 3,
+      "p25_monthly_thb": 23000,
+      "median_monthly_thb": 25500,
+      "p75_monthly_thb": 26000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N2",
+      "name_th": "พญาไท",
+      "sample_count": 6,
+      "p25_monthly_thb": 35000,
+      "median_monthly_thb": 42000,
+      "p75_monthly_thb": 66500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N3",
+      "name_th": "อนุสาวรีย์ชัยสมรภูมิ",
+      "sample_count": 6,
+      "p25_monthly_thb": 33500,
+      "median_monthly_thb": 33500,
+      "p75_monthly_thb": 36500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N4",
+      "name_th": "สนามเป้า",
+      "sample_count": 9,
+      "p25_monthly_thb": 30000,
+      "median_monthly_thb": 45500,
+      "p75_monthly_thb": 47000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N5",
+      "name_th": "อารีย์",
+      "sample_count": 26,
+      "p25_monthly_thb": 30000,
+      "median_monthly_thb": 33500,
+      "p75_monthly_thb": 47000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N7",
+      "name_th": "สะพานควาย",
+      "sample_count": 12,
+      "p25_monthly_thb": 29000,
+      "median_monthly_thb": 33500,
+      "p75_monthly_thb": 39500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N8",
+      "name_th": "หมอชิต",
+      "sample_count": 15,
+      "p25_monthly_thb": 26000,
+      "median_monthly_thb": 39000,
+      "p75_monthly_thb": 45500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_N9",
+      "name_th": "ห้าแยกลาดพร้าว",
+      "sample_count": 24,
+      "p25_monthly_thb": 31500,
+      "median_monthly_thb": 42000,
+      "p75_monthly_thb": 52000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S1",
+      "name_th": "ราชดำริ",
+      "sample_count": 44,
+      "p25_monthly_thb": 40000,
+      "median_monthly_thb": 60000,
+      "p75_monthly_thb": 107000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S10",
+      "name_th": "ตลาดพลู",
+      "sample_count": 43,
+      "p25_monthly_thb": 21500,
+      "median_monthly_thb": 25500,
+      "p75_monthly_thb": 26500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S11",
+      "name_th": "วุฒากาศ",
+      "sample_count": 36,
+      "p25_monthly_thb": 20000,
+      "median_monthly_thb": 22500,
+      "p75_monthly_thb": 25500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S12",
+      "name_th": "บางหว้า",
+      "sample_count": 5,
+      "p25_monthly_thb": 20500,
+      "median_monthly_thb": 29500,
+      "p75_monthly_thb": 31000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S2",
+      "name_th": "ศาลาแดง",
+      "sample_count": 8,
+      "p25_monthly_thb": 52000,
+      "median_monthly_thb": 59500,
+      "p75_monthly_thb": 80500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S3",
+      "name_th": "ช่องนนทรี",
+      "sample_count": 39,
+      "p25_monthly_thb": 45000,
+      "median_monthly_thb": 58000,
+      "p75_monthly_thb": 70500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S4",
+      "name_th": "เซนต์หลุยส์",
+      "sample_count": 34,
+      "p25_monthly_thb": 47000,
+      "median_monthly_thb": 62500,
+      "p75_monthly_thb": 70500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S5",
+      "name_th": "สุรศักดิ์",
+      "sample_count": 93,
+      "p25_monthly_thb": 21000,
+      "median_monthly_thb": 27000,
+      "p75_monthly_thb": 34500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S6",
+      "name_th": "สะพานตากสิน",
+      "sample_count": 26,
+      "p25_monthly_thb": 25500,
+      "median_monthly_thb": 37000,
+      "p75_monthly_thb": 48000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S7",
+      "name_th": "กรุงธนบุรี",
+      "sample_count": 30,
+      "p25_monthly_thb": 27000,
+      "median_monthly_thb": 36000,
+      "p75_monthly_thb": 46000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S8",
+      "name_th": "วงเวียนใหญ่",
+      "sample_count": 92,
+      "p25_monthly_thb": 20000,
+      "median_monthly_thb": 23000,
+      "p75_monthly_thb": 27000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_S9",
+      "name_th": "โพธิ์นิมิตร",
+      "sample_count": 10,
+      "p25_monthly_thb": 24000,
+      "median_monthly_thb": 25500,
+      "p75_monthly_thb": 39500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "BTS_W1",
+      "name_th": "สนามกีฬาแห่งชาติ",
+      "sample_count": 10,
+      "p25_monthly_thb": 48500,
+      "median_monthly_thb": 58000,
+      "p75_monthly_thb": 81000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL01",
+      "name_th": "ท่าพระ",
+      "sample_count": 3,
+      "p25_monthly_thb": 18500,
+      "median_monthly_thb": 26000,
+      "p75_monthly_thb": 26000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL03",
+      "name_th": "ไฟฉาย",
+      "sample_count": 8,
+      "p25_monthly_thb": 20000,
+      "median_monthly_thb": 23000,
+      "p75_monthly_thb": 25000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL04",
+      "name_th": "บางขุนนนท์",
+      "sample_count": 3,
+      "p25_monthly_thb": 18000,
+      "median_monthly_thb": 23000,
+      "p75_monthly_thb": 77500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL05",
+      "name_th": "บางยี่ขัน",
+      "sample_count": 6,
+      "p25_monthly_thb": 21000,
+      "median_monthly_thb": 26000,
+      "p75_monthly_thb": 30000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL06",
+      "name_th": "สิรินธร",
+      "sample_count": 16,
+      "p25_monthly_thb": 21000,
+      "median_monthly_thb": 23000,
+      "p75_monthly_thb": 33000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL07",
+      "name_th": "บางพลัด",
+      "sample_count": 39,
+      "p25_monthly_thb": 19500,
+      "median_monthly_thb": 20000,
+      "p75_monthly_thb": 23500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL08",
+      "name_th": "บางอ้อ",
+      "sample_count": 143,
+      "p25_monthly_thb": 19500,
+      "median_monthly_thb": 20500,
+      "p75_monthly_thb": 22500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL09",
+      "name_th": "บางโพ",
+      "sample_count": 27,
+      "p25_monthly_thb": 19500,
+      "median_monthly_thb": 25500,
+      "p75_monthly_thb": 36000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL10",
+      "name_th": "เตาปูน",
+      "sample_count": 11,
+      "p25_monthly_thb": 19500,
+      "median_monthly_thb": 23500,
+      "p75_monthly_thb": 25500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL12",
+      "name_th": "กำแพงเพชร",
+      "sample_count": 3,
+      "p25_monthly_thb": 30500,
+      "median_monthly_thb": 33000,
+      "p75_monthly_thb": 51500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL14",
+      "name_th": "พหลโยธิน",
+      "sample_count": 11,
+      "p25_monthly_thb": 37500,
+      "median_monthly_thb": 44000,
+      "p75_monthly_thb": 46500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL15",
+      "name_th": "ลาดพร้าว",
+      "sample_count": 6,
+      "p25_monthly_thb": 27500,
+      "median_monthly_thb": 31000,
+      "p75_monthly_thb": 47000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL16",
+      "name_th": "รัชดาภิเษก",
+      "sample_count": 3,
+      "p25_monthly_thb": 26500,
+      "median_monthly_thb": 27000,
+      "p75_monthly_thb": 28500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL17",
+      "name_th": "สุทธิสาร",
+      "sample_count": 11,
+      "p25_monthly_thb": 20500,
+      "median_monthly_thb": 23500,
+      "p75_monthly_thb": 28000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL18",
+      "name_th": "ห้วยขวาง",
+      "sample_count": 103,
+      "p25_monthly_thb": 25500,
+      "median_monthly_thb": 38500,
+      "p75_monthly_thb": 77500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL19",
+      "name_th": "ศูนย์วัฒนธรรมแห่งประเทศไทย",
+      "sample_count": 26,
+      "p25_monthly_thb": 29500,
+      "median_monthly_thb": 35500,
+      "p75_monthly_thb": 41000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL20",
+      "name_th": "พระราม 9",
+      "sample_count": 298,
+      "p25_monthly_thb": 29000,
+      "median_monthly_thb": 35500,
+      "p75_monthly_thb": 48000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL21",
+      "name_th": "เพชรบุรี",
+      "sample_count": 57,
+      "p25_monthly_thb": 28000,
+      "median_monthly_thb": 34500,
+      "p75_monthly_thb": 43000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL22",
+      "name_th": "สุขุมวิท",
+      "sample_count": 88,
+      "p25_monthly_thb": 42500,
+      "median_monthly_thb": 53000,
+      "p75_monthly_thb": 74500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL23",
+      "name_th": "ศูนย์การประชุมแห่งชาติสิริกิติ์",
+      "sample_count": 109,
+      "p25_monthly_thb": 38000,
+      "median_monthly_thb": 49000,
+      "p75_monthly_thb": 81000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL24",
+      "name_th": "คลองเตย",
+      "sample_count": 10,
+      "p25_monthly_thb": 28500,
+      "median_monthly_thb": 29500,
+      "p75_monthly_thb": 49500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL25",
+      "name_th": "ลุมพินี",
+      "sample_count": 6,
+      "p25_monthly_thb": 43000,
+      "median_monthly_thb": 49500,
+      "p75_monthly_thb": 62500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL26",
+      "name_th": "สีลม",
+      "sample_count": 12,
+      "p25_monthly_thb": 101500,
+      "median_monthly_thb": 127000,
+      "p75_monthly_thb": 137500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL27",
+      "name_th": "สามย่าน",
+      "sample_count": 43,
+      "p25_monthly_thb": 36500,
+      "median_monthly_thb": 41000,
+      "p75_monthly_thb": 59000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL28",
+      "name_th": "หัวลำโพง",
+      "sample_count": 8,
+      "p25_monthly_thb": 41500,
+      "median_monthly_thb": 45500,
+      "p75_monthly_thb": 47500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL34",
+      "name_th": "บางหว้า",
+      "sample_count": 3,
+      "p25_monthly_thb": 23000,
+      "median_monthly_thb": 24500,
+      "p75_monthly_thb": 28500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL35",
+      "name_th": "เพชรเกษม 48",
+      "sample_count": 8,
+      "p25_monthly_thb": 22500,
+      "median_monthly_thb": 25000,
+      "p75_monthly_thb": 30000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL36",
+      "name_th": "ภาษีเจริญ",
+      "sample_count": 4,
+      "p25_monthly_thb": 20500,
+      "median_monthly_thb": 25500,
+      "p75_monthly_thb": 28500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_BL37",
+      "name_th": "บางแค",
+      "sample_count": 3,
+      "p25_monthly_thb": 20500,
+      "median_monthly_thb": 23500,
+      "p75_monthly_thb": 40000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_PK15",
+      "name_th": "ราชภัฏพระนคร",
+      "sample_count": 7,
+      "p25_monthly_thb": 18500,
+      "median_monthly_thb": 19000,
+      "p75_monthly_thb": 30500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_PK25",
+      "name_th": "วงแหวนรามอินทรา",
+      "sample_count": 3,
+      "p25_monthly_thb": 34500,
+      "median_monthly_thb": 39000,
+      "p75_monthly_thb": 55500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_PK26",
+      "name_th": "นพรัตน์",
+      "sample_count": 3,
+      "p25_monthly_thb": 22000,
+      "median_monthly_thb": 30000,
+      "p75_monthly_thb": 50500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_PP14",
+      "name_th": "วงศ์สว่าง",
+      "sample_count": 22,
+      "p25_monthly_thb": 22000,
+      "median_monthly_thb": 24000,
+      "p75_monthly_thb": 27000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_PP15",
+      "name_th": "บางซ่อน",
+      "sample_count": 62,
+      "p25_monthly_thb": 19500,
+      "median_monthly_thb": 21500,
+      "p75_monthly_thb": 26500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL01",
+      "name_th": "ลาดพร้าว",
+      "sample_count": 9,
+      "p25_monthly_thb": 28500,
+      "median_monthly_thb": 29000,
+      "p75_monthly_thb": 34000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL03",
+      "name_th": "โชคชัย 4",
+      "sample_count": 6,
+      "p25_monthly_thb": 21500,
+      "median_monthly_thb": 23500,
+      "p75_monthly_thb": 25500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL05",
+      "name_th": "ลาดพร้าว 83",
+      "sample_count": 3,
+      "p25_monthly_thb": 21000,
+      "median_monthly_thb": 22000,
+      "p75_monthly_thb": 25500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL08",
+      "name_th": "บางกะปิ",
+      "sample_count": 3,
+      "p25_monthly_thb": 24000,
+      "median_monthly_thb": 25500,
+      "p75_monthly_thb": 25500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL09",
+      "name_th": "แยกลำสาลี",
+      "sample_count": 32,
+      "p25_monthly_thb": 21500,
+      "median_monthly_thb": 25500,
+      "p75_monthly_thb": 28000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL11",
+      "name_th": "หัวหมาก",
+      "sample_count": 118,
+      "p25_monthly_thb": 22000,
+      "median_monthly_thb": 24500,
+      "p75_monthly_thb": 27500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL12",
+      "name_th": "กลันตัน",
+      "sample_count": 17,
+      "p25_monthly_thb": 22000,
+      "median_monthly_thb": 22500,
+      "p75_monthly_thb": 23000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL13",
+      "name_th": "ศรีนุช",
+      "sample_count": 4,
+      "p25_monthly_thb": 11500,
+      "median_monthly_thb": 19000,
+      "p75_monthly_thb": 34000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL14",
+      "name_th": "ศรีนครินทร์ 38",
+      "sample_count": 23,
+      "p25_monthly_thb": 26500,
+      "median_monthly_thb": 26500,
+      "p75_monthly_thb": 26500,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL15",
+      "name_th": "สวนหลวง ร.9",
+      "sample_count": 8,
+      "p25_monthly_thb": 17500,
+      "median_monthly_thb": 27500,
+      "p75_monthly_thb": 34000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL16",
+      "name_th": "ศรีอุดม",
+      "sample_count": 9,
+      "p25_monthly_thb": 21000,
+      "median_monthly_thb": 23000,
+      "p75_monthly_thb": 24000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "MRT_YL17",
+      "name_th": "ศรีเอี่ยม",
+      "sample_count": 19,
+      "p25_monthly_thb": 19500,
+      "median_monthly_thb": 22000,
+      "p75_monthly_thb": 26000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "SRT_RN05",
+      "name_th": "ทุ่งสองห้อง",
+      "sample_count": 3,
+      "p25_monthly_thb": 54500,
+      "median_monthly_thb": 63500,
+      "p75_monthly_thb": 67000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    },
+    {
+      "station_id": "SRT_RW02",
+      "name_th": "บางซ่อน",
+      "sample_count": 11,
+      "p25_monthly_thb": 17000,
+      "median_monthly_thb": 23000,
+      "p75_monthly_thb": 31000,
+      "basis": "monthly_28plus",
+      "snapshot_date": "2026-09-22"
+    }
+  ]
+}

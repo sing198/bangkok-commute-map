@@ -36,17 +36,19 @@ type SearchParams struct {
 
 // ReachableStation is a station reachable within max_minutes with its zone color tier.
 type ReachableStation struct {
-	Station       transit.Station     `json:"station"`
-	ZoneColor     string              `json:"zone_color"` // "green" (<=20), "yellow" (21-35), "orange" (36-45), "red" (>45)
-	CommuteMins   int                 `json:"commute_minutes"`
-	OneWayFareTHB int                 `json:"one_way_fare_thb"`
-	Transfers     int                 `json:"transfers"`
-	Route         transit.RouteResult `json:"route"`
-	OfficeAccess  transit.AccessLeg   `json:"office_access"`
+	Station              transit.Station       `json:"station"`
+	ZoneColor            string                `json:"zone_color"` // "green" (<=20), "yellow" (21-35), "orange" (36-45), "red" (>45)
+	CommuteMins          int                   `json:"commute_minutes"`
+	OneWayFareTHB        int                   `json:"one_way_fare_thb"`
+	Transfers            int                   `json:"transfers"`
+	Route                transit.RouteResult   `json:"route"`
+	OfficeAccess         transit.AccessLeg     `json:"office_access"`
+	StationRentBenchmark *StationRentBenchmark `json:"station_rent_benchmark,omitempty"`
 }
 
 // ListingResult is a real Bangkok building enriched with factual OSRM street walking distance,
-// real BTS/MRT/ARL/SRT rail time & fare, and verified user-reported rent (never guessed).
+// real BTS/MRT/ARL/SRT rail time & fare, verified user-reported rent, exact building HAR/Kaggle
+// market prices, and open-data station rental benchmarks.
 type ListingResult struct {
 	ID                    string                     `json:"id"`
 	OSMID                 string                     `json:"osm_id,omitempty"`
@@ -60,7 +62,8 @@ type ListingResult struct {
 	EstimatedRentMaxTHB   int                        `json:"estimated_rent_max_thb,omitempty"`
 	PriceSource           string                     `json:"price_source,omitempty"`
 	PriceStatus           string                     `json:"price_status"` // "verified" or "unverified"
-	PriceTier             string                     `json:"price_tier"`   // "verified", "market_har", or "none"
+	PriceTier             string                     `json:"price_tier"`   // "verified", "market_har", "market_kaggle", or "none"
+	StationRentBenchmark  *StationRentBenchmark      `json:"station_rent_benchmark,omitempty"`
 	DataSource            string                     `json:"data_source,omitempty"`
 	ListingURL            string                     `json:"listing_url,omitempty"`
 	ListingURLLabel       string                     `json:"listing_url_label,omitempty"`
@@ -138,19 +141,22 @@ type CompareResponse struct {
 }
 
 // Service orchestrates PostGIS spatial queries, OSRM precomputed walking access,
-// in-memory Dijkstra routing, crowdsourced price reports, and Redis caching.
+// in-memory Dijkstra routing, crowdsourced price reports, open-data station benchmarks,
+// and Redis caching.
 type Service struct {
-	repo  *Repository
-	graph *transit.Graph
-	cache *cache.Client
+	repo       *Repository
+	graph      *transit.Graph
+	cache      *cache.Client
+	benchmarks map[string]StationRentBenchmark
 }
 
 // NewService creates a Commute Service.
 func NewService(repo *Repository, graph *transit.Graph, cacheClient *cache.Client) *Service {
 	return &Service{
-		repo:  repo,
-		graph: graph,
-		cache: cacheClient,
+		repo:       repo,
+		graph:      graph,
+		cache:      cacheClient,
+		benchmarks: LoadStationRentBenchmarks(),
 	}
 }
 
@@ -193,7 +199,7 @@ func NormalizeParams(p SearchParams) SearchParams {
 func QuantizedCacheKey(p SearchParams) string {
 	qLat := math.Round(p.Lat*1000) / 1000
 	qLng := math.Round(p.Lng*1000) / 1000
-	return fmt.Sprintf("commute:search:v7:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
+	return fmt.Sprintf("commute:search:v8:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
 		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.MaxCommuteBudget, p.VerifiedOnly, p.Workdays, p.WalkMaxM, p.Sort, p.Limit)
 }
 
@@ -239,12 +245,13 @@ func buildListingResult(
 	}
 
 	// Never expose inaccurate baseline OSM zone guesses to the UI.
-	// Only populate rent when tenant-verified reports exist ("verified") or when exact
-	// building-matched HAR market data has been imported ("market_har").
+	// Only populate building-level rent when tenant-verified reports exist ("verified") or
+	// when exact building-matched HAR ("market_har") or Kaggle ("market_kaggle") data exists.
+	// Station-level open-data benchmarks (Inside Airbnb CC0) are attached separately.
 	verifiedRent := 0
-	harRent := 0
-	harRentMin := 0
-	harRentMax := 0
+	marketRent := 0
+	marketRentMin := 0
+	marketRentMax := 0
 	priceSource := ""
 	priceStatus := "unverified"
 	priceTier := "none"
@@ -253,11 +260,17 @@ func buildListingResult(
 		priceStatus = "verified"
 		priceTier = "verified"
 	} else if rec.MonthlyRentTHB > 0 && strings.HasPrefix(rec.PriceSource, "ราคาอ้างอิงจาก HAR") {
-		harRent = rec.MonthlyRentTHB
-		harRentMin = rec.EstimatedRentMinTHB
-		harRentMax = rec.EstimatedRentMaxTHB
+		marketRent = rec.MonthlyRentTHB
+		marketRentMin = rec.EstimatedRentMinTHB
+		marketRentMax = rec.EstimatedRentMaxTHB
 		priceSource = rec.PriceSource
 		priceTier = "market_har"
+	} else if rec.MonthlyRentTHB > 0 && strings.HasPrefix(rec.PriceSource, "ฐานข้อมูลตลาด (Kaggle") {
+		marketRent = rec.MonthlyRentTHB
+		marketRentMin = rec.EstimatedRentMinTHB
+		marketRentMax = rec.EstimatedRentMaxTHB
+		priceSource = rec.PriceSource
+		priceTier = "market_kaggle"
 	}
 
 	cost := transit.CalculateMonthlyCost(verifiedRent, homeAccess, officeAccess, route, workdays)
@@ -270,12 +283,13 @@ func buildListingResult(
 		PropertyType:          rec.PropertyType,
 		District:              rec.District,
 		MonthlyRentTHB:        verifiedRent,
-		EstimatedRentTHB:      harRent,
-		EstimatedRentMinTHB:   harRentMin,
-		EstimatedRentMaxTHB:   harRentMax,
+		EstimatedRentTHB:      marketRent,
+		EstimatedRentMinTHB:   marketRentMin,
+		EstimatedRentMaxTHB:   marketRentMax,
 		PriceSource:           priceSource,
 		PriceStatus:           priceStatus,
 		PriceTier:             priceTier,
+		StationRentBenchmark:  stOpt.StationRentBenchmark,
 		DataSource:            rec.DataSource,
 		ListingURL:            rec.ListingURL,
 		ListingURLLabel:       rec.ListingURLLabel,
@@ -506,14 +520,21 @@ func (s *Service) computeBestStationOptions(nearest []NearestStation, maxMinutes
 				continue
 			}
 
+			var benchPtr *StationRentBenchmark
+			if b, hasBench := s.benchmarks[stationID]; hasBench {
+				bCopy := b
+				benchPtr = &bCopy
+			}
+
 			candidate := ReachableStation{
-				Station:       st,
-				ZoneColor:     zoneColorForMinutes(stationCommuteMins),
-				CommuteMins:   stationCommuteMins,
-				OneWayFareTHB: route.FareTHB,
-				Transfers:     route.TransferCount,
-				Route:         route,
-				OfficeAccess:  officeAccess,
+				Station:              st,
+				ZoneColor:            zoneColorForMinutes(stationCommuteMins),
+				CommuteMins:          stationCommuteMins,
+				OneWayFareTHB:        route.FareTHB,
+				Transfers:            route.TransferCount,
+				Route:                route,
+				OfficeAccess:         officeAccess,
+				StationRentBenchmark: benchPtr,
 			}
 
 			if prev, exists := best[stationID]; !exists || isBetterStationOption(candidate, prev) {
