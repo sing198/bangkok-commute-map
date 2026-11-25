@@ -174,10 +174,8 @@ export function CommuteMap({
       const estTotal = estRent + item.cost.monthly_commute_thb;
       const priceLine = isVerified
         ? `<div>รวมจริง <strong>฿${item.cost.true_monthly_cost_thb.toLocaleString()}/ด.</strong> <span style="color:#047857;font-weight:700">(เช่าจริง ฿${item.monthly_rent_thb.toLocaleString()})</span></div>`
-        : estRent > 0
-          ? isHarCalibrated
-            ? `<div>เช่าอ้างอิง HAR <strong style="color:#0369a1">~฿${estRent.toLocaleString()}/ด.</strong> <span style="color:#4338ca">(รวม ~฿${estTotal.toLocaleString()})</span></div>`
-            : `<div>เช่าประเมิน <strong>~฿${estRent.toLocaleString()}/ด.</strong> <span style="color:#475569">(รวม ~฿${estTotal.toLocaleString()})</span></div>`
+        : isHarCalibrated && estRent > 0
+          ? `<div>เช่าตลาด HAR <strong style="color:#0369a1">฿${estRent.toLocaleString()}/ด.</strong> <span style="color:#4338ca">(รวม ~฿${estTotal.toLocaleString()})</span></div>`
           : `<div>ค่าเดินทางจริง <strong>฿${item.cost.monthly_commute_thb.toLocaleString()}/ด.</strong> <span style="color:#64748b">(กดการ์ดเพื่อเช็กราคาห้องจริง ↗)</span></div>`;
 
       const marker = L.circleMarker([item.lat, item.lng], {

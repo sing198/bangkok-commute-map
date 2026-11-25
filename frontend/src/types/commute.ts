@@ -109,7 +109,7 @@ export interface ReachableStation {
   office_access: AccessLeg;
 }
 
-export type PriceTier = 'verified' | 'market_har' | 'estimated' | 'none';
+export type PriceTier = 'verified' | 'market_har' | 'none';
 
 export interface ListingResult {
   id: string;

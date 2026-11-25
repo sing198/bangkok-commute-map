@@ -515,47 +515,94 @@ def collect_har_files(inputs: Iterable[str]) -> list[Path]:
     return unique
 
 
+def normalize_building_name(name: str) -> str:
+    s = (name or "").lower()
+    # Strip trailing ", กรุงเทพ" / ", bangkok" and generic words
+    s = re.sub(r",\s*(กรุงเทพ|bangkok).*$", "", s)
+    s = re.sub(r"[^a-z0-9\u0e00-\u0e7f]+", " ", s)
+    stop = {"condo", "condominium", "คอนโด", "คอนโดมิเนียม", "residence", "apartment", "อพาร์ทเม้นท์", "อพาร์ตเมนต์", "the", "at", "bangkok", "กรุงเทพ"}
+    tokens = [t for t in s.split() if t and t not in stop]
+    return " ".join(tokens)
+
+
+def building_matches_project(row: dict[str, Any], proj: dict[str, Any]) -> bool:
+    """Strictly match same physical building/project (never cross-match different branches or locations)."""
+    plat, plng = proj.get("lat"), proj.get("lng")
+    rlat, rlng = row.get("lat"), row.get("lng")
+    dist_m: float | None = None
+    if plat is not None and plng is not None and rlat is not None and rlng is not None:
+        dist_m = haversine_m(rlat, rlng, plat, plng)
+        # Hard geographic gate: two buildings > 500m apart are never the same project
+        if dist_m > 500.0:
+            return False
+
+    proj_parts = [p.strip() for p in re.split(r"[:|/\-–—]", proj.get("project_name", "")) if p.strip()]
+    proj_norms = [normalize_building_name(proj.get("project_name", ""))] + [
+        normalize_building_name(p) for p in proj_parts
+    ]
+    proj_norms = [n for n in proj_norms if len(n) >= 4]
+
+    row_norms = [
+        normalize_building_name(row.get("title_th", "")),
+        normalize_building_name(row.get("title_en", "")),
+    ]
+    row_norms = [n for n in row_norms if len(n) >= 4]
+
+    # 1. Exact or high-Jaccard normalized name match
+    for rn in row_norms:
+        for pn in proj_norms:
+            if rn == pn:
+                return True
+            r_toks, p_toks = set(rn.split()), set(pn.split())
+            if len(r_toks) >= 2 and len(p_toks) >= 2:
+                jaccard = len(r_toks & p_toks) / len(r_toks | p_toks)
+                if jaccard >= 0.75:
+                    return True
+
+    # 2. Very close physical building coordinates (<= 90m) with at least 1 shared distinctive token
+    if dist_m is not None and dist_m <= 90.0:
+        r_all = set(" ".join(row_norms).split())
+        p_all = set(" ".join(proj_norms).split())
+        if r_all & p_all:
+            return True
+
+    return False
+
+
 def apply_benchmarks_to_listings(
     listings_path: Path,
-    station_summaries: dict[str, dict[str, Any]],
+    project_summaries: list[dict[str, Any]],
     min_samples: int,
     month_label: str,
     dry_run: bool,
 ) -> list[dict[str, Any]]:
+    """Update only listings that match an observed HAR project (never overwrite different buildings)."""
     listings: list[dict[str, Any]] = json.loads(listings_path.read_text(encoding="utf-8"))
+    eligible_projects = [p for p in project_summaries if p["sample_count"] >= min_samples]
     changes: list[dict[str, Any]] = []
 
     for row in listings:
-        sid = row.get("nearest_station_id")
-        ptype = normalize_property_type(row.get("property_type"))
-        if not sid or sid not in station_summaries:
-            continue
-        bucket = station_summaries[sid].get("by_property_type", {}).get(ptype)
-        if not bucket or bucket["sample_count"] < min_samples:
+        matched_proj = None
+        for proj in eligible_projects:
+            if building_matches_project(row, proj):
+                matched_proj = proj
+                break
+        if not matched_proj:
             continue
 
-        med_psqm = bucket.get("median_price_per_sqm")
-        room_sqm = to_float(row.get("room_size_sqm"))
-        if med_psqm and room_sqm and room_sqm >= 12.0:
-            new_med = round_to_500(med_psqm * room_sqm)
-            spread_low = bucket["p25_rent_thb"] / max(1, bucket["median_rent_thb"])
-            spread_high = bucket["p75_rent_thb"] / max(1, bucket["median_rent_thb"])
-            new_min = min(new_med, round_to_500(new_med * min(spread_low, 0.90)))
-            new_max = max(new_med, round_to_500(new_med * max(spread_high, 1.15)))
-        else:
-            new_med = round_to_500(bucket["median_rent_thb"])
-            new_min = min(new_med, round_to_500(bucket["p25_rent_thb"]))
-            new_max = max(new_med, round_to_500(bucket["p75_rent_thb"]))
-
+        new_med = round_to_500(matched_proj["median_rent_thb"])
+        new_min = min(new_med, round_to_500(matched_proj["p25_rent_thb"]))
+        new_max = max(new_med, round_to_500(matched_proj["p75_rent_thb"]))
         old_med = row.get("monthly_rent_thb")
         new_source = (
-            f"ปรับเทียบจาก HAR สถานี {sid} ({bucket['sample_count']} ประกาศ · {month_label})"
+            f"ราคาอ้างอิงจาก HAR โครงการจริง ({matched_proj['sample_count']} ประกาศ · {month_label})"
         )
         changes.append(
             {
                 "id": row["id"],
-                "station_id": sid,
+                "station_id": row.get("nearest_station_id", ""),
                 "title": row.get("title_th") or row.get("title_en"),
+                "matched_project": matched_proj["project_name"],
                 "old_rent": old_med,
                 "new_rent": new_med,
                 "new_range": [new_min, new_max],
@@ -614,8 +661,8 @@ def main() -> int:
     parser.add_argument(
         "--min-samples",
         type=int,
-        default=3,
-        help="Minimum unique listings per station+type required to recalibrate listings.json",
+        default=1,
+        help="Minimum unique listings per matched project required to update listings.json",
     )
     parser.add_argument(
         "--preview-listings-diff",
@@ -690,10 +737,14 @@ def main() -> int:
 
     project_summaries = []
     for pid, items in sorted(by_project.items()):
+        lat_val = next((x.lat for x in items if x.lat is not None), None)
+        lng_val = next((x.lng for x in items if x.lng is not None), None)
         project_summaries.append(
             {
                 "project_id": pid,
                 "project_name": items[0].project_name,
+                "lat": lat_val,
+                "lng": lng_val,
                 **summarize_group(items),
             }
         )
@@ -741,16 +792,16 @@ def main() -> int:
         dry_run = not args.apply_to_listings
         changes = apply_benchmarks_to_listings(
             listings_path=Path(args.listings),
-            station_summaries=station_summaries,
+            project_summaries=project_summaries,
             min_samples=args.min_samples,
             month_label=month_label,
             dry_run=dry_run,
         )
         mode = "DRY-RUN" if dry_run else "APPLIED"
-        print(f"\n[{mode}] Recalibration changes for {args.listings} ({len(changes)} listing(s)):")
+        print(f"\n[{mode}] Exact project matches for {args.listings} ({len(changes)} listing(s)):")
         for c in changes:
             print(
-                f"  {c['id']} ({c['station_id']}) {c['title']}: "
+                f"  {c['id']} ({c['station_id']}) {c['title']} <- {c['matched_project']}: "
                 f"฿{c['old_rent']:,} -> ฿{c['new_rent']:,} (range ฿{c['new_range'][0]:,}-฿{c['new_range'][1]:,})"
             )
 

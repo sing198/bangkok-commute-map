@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-11-25T10:35:52.967883+00:00",
+    "generated_at": "2026-11-25T11:30:14.167218+00:00",
     "month": "2026-11",
     "intent": "RENT",
     "source_files": [
@@ -78,6 +78,8 @@
     {
       "project_id": "5459",
       "project_name": "Kensington พหลโยธิน 63, กรุงเทพ",
+      "lat": null,
+      "lng": null,
       "sample_count": 1,
       "min_rent_thb": 12000,
       "p25_rent_thb": 12000,
@@ -93,6 +95,8 @@
     {
       "project_id": "5639",
       "project_name": "Rich Park Terminal @ Phahonyothin 59 : ริชพาร์ค ลอฟท์ แอท หลักสี่ สเตชั่น",
+      "lat": 13.882498,
+      "lng": 100.600485,
       "sample_count": 11,
       "min_rent_thb": 11000,
       "p25_rent_thb": 13500,

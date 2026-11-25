@@ -105,36 +105,36 @@ func TestBuildListingResult_PriceTiers(t *testing.T) {
 	}
 	office := OfficePoint{Lat: 13.7367, Lng: 100.5603}
 
-	// 1. Baseline zone estimate
+	// 1. Baseline OSM zone estimate must NOT be exposed (prevents wrong prices like ฿9,000 for luxury apartments)
 	zoneRec := ListingRecord{
 		ID: "LST_ZONE", Lat: 13.88, Lng: 100.60, StationID: st.ID, WalkToStationM: 400,
-		MonthlyRentTHB: 8500, EstimatedRentMinTHB: 7000, EstimatedRentMaxTHB: 10000,
+		MonthlyRentTHB: 9000, EstimatedRentMinTHB: 7500, EstimatedRentMaxTHB: 10500,
 		PriceSource: "ประเมินจากสถิติค่าเช่าต่อ ตร.ม. ตามโซนรถไฟฟ้า (DDproperty / Hipflat / FazWaz 2026)",
 	}
 	zoneRes := buildListingResult(zoneRec, stOpt, st, office, 22, 800)
-	if zoneRes.PriceTier != "estimated" || zoneRes.EstimatedRentTHB != 8500 || zoneRes.MonthlyRentTHB != 0 {
-		t.Fatalf("expected estimated tier with 8500 estimate & 0 verified rent, got %+v", zoneRes)
+	if zoneRes.PriceTier != "none" || zoneRes.EstimatedRentTHB != 0 || zoneRes.MonthlyRentTHB != 0 {
+		t.Fatalf("expected baseline OSM guess to be hidden (tier=none, rent=0), got %+v", zoneRes)
 	}
 
-	// 2. HAR market benchmark tier
+	// 2. Exact building-matched HAR market data tier
 	harRec := zoneRec
 	harRec.ID = "LST_HAR"
-	harRec.MonthlyRentTHB = 13000
-	harRec.EstimatedRentMinTHB = 11500
+	harRec.MonthlyRentTHB = 14000
+	harRec.EstimatedRentMinTHB = 13500
 	harRec.EstimatedRentMaxTHB = 15000
-	harRec.PriceSource = "ปรับเทียบจาก HAR สถานี BTS_N18 (11 ประกาศ · 2026-11)"
+	harRec.PriceSource = "ราคาอ้างอิงจาก HAR โครงการจริง (11 ประกาศ · 2026-11)"
 	harRes := buildListingResult(harRec, stOpt, st, office, 22, 800)
-	if harRes.PriceTier != "market_har" || harRes.EstimatedRentTHB != 13000 || harRes.EstimatedRentMinTHB != 11500 {
-		t.Fatalf("expected market_har tier with 13000 estimate, got %+v", harRes)
+	if harRes.PriceTier != "market_har" || harRes.EstimatedRentTHB != 14000 || harRes.EstimatedRentMinTHB != 13500 {
+		t.Fatalf("expected market_har tier with 14000 estimate, got %+v", harRes)
 	}
 
 	// 3. Verified tenant report overrides tier
 	verRec := harRec
 	verRec.VerifiedReportCount = 2
-	verRec.VerifiedRentMedianTHB = 14000
+	verRec.VerifiedRentMedianTHB = 14500
 	verRes := buildListingResult(verRec, stOpt, st, office, 22, 800)
-	if verRes.PriceTier != "verified" || verRes.PriceStatus != "verified" || verRes.MonthlyRentTHB != 14000 {
-		t.Fatalf("expected verified tier with 14000 verified rent, got %+v", verRes)
+	if verRes.PriceTier != "verified" || verRes.PriceStatus != "verified" || verRes.MonthlyRentTHB != 14500 {
+		t.Fatalf("expected verified tier with 14500 verified rent, got %+v", verRes)
 	}
 }
 

@@ -194,17 +194,7 @@ export function ListingDrawer({
               const canAddMore = compareIds.length < 3 || isCompared;
               const isVerified = item.price_status === 'verified';
               const estRent = item.estimated_rent_thb ?? 0;
-              const priceTier =
-                item.price_tier ??
-                (isVerified
-                  ? 'verified'
-                  : estRent > 0
-                    ? item.price_source?.startsWith('ปรับเทียบจาก HAR')
-                      ? 'market_har'
-                      : 'estimated'
-                    : 'none');
-              const isHarCalibrated = priceTier === 'market_har';
-              const hasEstimate = !isVerified && estRent > 0;
+              const isHarCalibrated = !isVerified && item.price_tier === 'market_har' && estRent > 0;
               const estMin = item.estimated_rent_min_thb || estRent;
               const estMax = item.estimated_rent_max_thb || estRent;
               const estTrueMonthly = estRent + item.cost.monthly_commute_thb;
@@ -244,21 +234,18 @@ export function ListingDrawer({
                             title={item.price_source}
                             className="inline-flex items-center gap-0.5 rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-800"
                           >
-                            อ้างอิงตลาด (HAR)
+                            ราคาตลาด (HAR)
                           </span>
-                        ) : hasEstimate ? (
-                          <span
-                            title={item.price_source}
-                            className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600"
-                          >
-                            ราคาประเมินตามโซน
+                        ) : priceLinks.primary.isDirectBuilding ? (
+                          <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
+                            มีลิงก์หน้าตึกจริง
                           </span>
                         ) : (
                           <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
                             เช็กราคาบนเว็บประกาศ
                           </span>
                         )}
-                        {!isVerified && priceLinks.primary.isDirectBuilding && (
+                        {isHarCalibrated && priceLinks.primary.isDirectBuilding && (
                           <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
                             มีลิงก์หน้าตึกจริง
                           </span>
@@ -320,24 +307,14 @@ export function ListingDrawer({
                           </div>
                         </div>
                       </>
-                    ) : hasEstimate ? (
+                    ) : isHarCalibrated ? (
                       <>
                         <div>
-                          <div
-                            className={`text-[10px] font-semibold ${
-                              isHarCalibrated ? 'text-sky-700' : 'text-slate-500'
-                            }`}
-                          >
-                            {isHarCalibrated
-                              ? 'ค่าเช่าอ้างอิง (HAR) / เดือน'
-                              : 'ค่าเช่าประเมิน / เดือน'}
+                          <div className="text-[10px] font-semibold text-sky-700">
+                            ค่าเช่าตลาด (HAR) / เดือน
                           </div>
-                          <div
-                            className={`text-lg font-extrabold tracking-tight ${
-                              isHarCalibrated ? 'text-sky-800' : 'text-slate-800'
-                            }`}
-                          >
-                            ~฿{estRent.toLocaleString()}
+                          <div className="text-lg font-extrabold tracking-tight text-sky-800">
+                            ฿{estRent.toLocaleString()}
                           </div>
                           {estMin > 0 && estMax > estMin && (
                             <div className="text-[10px] text-slate-500">
