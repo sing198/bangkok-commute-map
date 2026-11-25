@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "generated_at": "2026-11-25T10:35:52.967883+00:00",
+    "month": "2026-11",
+    "intent": "RENT",
+    "source_files": [
+      {
+        "file": "ddproperty.har",
+        "sha256": "1752fc08de6489024312d8ab46776a81eb0e5b07f4fdb35408f19cc0b2e5f94b",
+        "har_entries": 224,
+        "raw_observations": 17
+      }
+    ],
+    "total_raw_observations": 17,
+    "unique_listings": 12,
+    "matched_stations": 1,
+    "match_methods": {
+      "coordinates": 11,
+      "unmatched": 1
+    },
+    "unmatched_count": 1
+  },
+  "stations": [
+    {
+      "station_id": "BTS_N18",
+      "name_th": "พหลโยธิน 59",
+      "name_en": "Phahonyothin 59",
+      "line_code": "BTS_SUK",
+      "sample_count": 11,
+      "min_rent_thb": 11000,
+      "p25_rent_thb": 13500,
+      "median_rent_thb": 14000,
+      "p75_rent_thb": 15000,
+      "max_rent_thb": 16500,
+      "median_price_per_sqm": 478.26,
+      "median_floor_area_sqm": 29.5,
+      "listing_ids": [
+        "500730297",
+        "500730301",
+        "500731950",
+        "500732040",
+        "500759820",
+        "500763269",
+        "500763862",
+        "500765935",
+        "500765940",
+        "500767532",
+        "500767538"
+      ],
+      "by_property_type": {
+        "condo": {
+          "sample_count": 11,
+          "min_rent_thb": 11000,
+          "p25_rent_thb": 13500,
+          "median_rent_thb": 14000,
+          "p75_rent_thb": 15000,
+          "max_rent_thb": 16500,
+          "median_price_per_sqm": 478.26,
+          "median_floor_area_sqm": 29.5,
+          "listing_ids": [
+            "500730297",
+            "500730301",
+            "500731950",
+            "500732040",
+            "500759820",
+            "500763269",
+            "500763862",
+            "500765935",
+            "500765940",
+            "500767532",
+            "500767538"
+          ]
+        }
+      }
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "5459",
+      "project_name": "Kensington พหลโยธิน 63, กรุงเทพ",
+      "sample_count": 1,
+      "min_rent_thb": 12000,
+      "p25_rent_thb": 12000,
+      "median_rent_thb": 12000,
+      "p75_rent_thb": 12000,
+      "max_rent_thb": 12000,
+      "median_price_per_sqm": 413.79,
+      "median_floor_area_sqm": 29.0,
+      "listing_ids": [
+        "500721285"
+      ]
+    },
+    {
+      "project_id": "5639",
+      "project_name": "Rich Park Terminal @ Phahonyothin 59 : ริชพาร์ค ลอฟท์ แอท หลักสี่ สเตชั่น",
+      "sample_count": 11,
+      "min_rent_thb": 11000,
+      "p25_rent_thb": 13500,
+      "median_rent_thb": 14000,
+      "p75_rent_thb": 15000,
+      "max_rent_thb": 16500,
+      "median_price_per_sqm": 478.26,
+      "median_floor_area_sqm": 29.5,
+      "listing_ids": [
+        "500730297",
+        "500730301",
+        "500731950",
+        "500732040",
+        "500759820",
+        "500763269",
+        "500763862",
+        "500765935",
+        "500765940",
+        "500767532",
+        "500767538"
+      ]
+    }
+  ],
+  "unmatched": [
+    {
+      "listing_id": "500721285",
+      "project_name": "Kensington พหลโยธิน 63, กรุงเทพ",
+      "price_thb": 12000,
+      "floor_area_sqm": 29.0
+    }
+  ]
+}

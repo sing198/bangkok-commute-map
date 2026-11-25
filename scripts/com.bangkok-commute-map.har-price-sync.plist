@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.bangkok-commute-map.har-price-sync</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/tk/Downloads/bangkok-commute-map/scripts/monthly_price_sync.sh</string>
+  </array>
+
+  <!-- Set APPLY_TO_LISTINGS=1 (and RESEED_DB=1 if local DB is running) to auto-apply changes -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <key>APPLY_TO_LISTINGS</key>
+    <string>1</string>
+    <key>RESEED_DB</key>
+    <string>0</string>
+  </dict>
+
+  <!-- Auto-run whenever a new .har file is dropped into data/har/ -->
+  <key>WatchPaths</key>
+  <array>
+    <string>/Users/tk/Downloads/bangkok-commute-map/data/har</string>
+  </array>
+
+  <!-- Also run on the 1st of every month at 09:00 for freshness check & reminder -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Day</key>
+    <integer>1</integer>
+    <key>Hour</key>
+    <integer>9</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/tk/Downloads/bangkok-commute-map/data/logs/launchd-stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/tk/Downloads/bangkok-commute-map/data/logs/launchd-stderr.log</string>
+</dict>
+</plist>

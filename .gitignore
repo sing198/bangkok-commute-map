@@ -16,3 +16,8 @@
 .DS_Store
 .vscode/
 .idea/
+
+# Local HAR captures & sync logs (may contain browser session metadata; never commit)
+*.har
+/data/har/
+/data/logs/
