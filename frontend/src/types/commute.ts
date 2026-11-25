@@ -48,6 +48,8 @@ export interface Station {
   is_extension: boolean;
   lat: number;
   lng: number;
+  portal_condo_url?: string;
+  portal_apt_url?: string;
 }
 
 export interface NearestStation {
@@ -117,6 +119,8 @@ export interface ListingResult {
   monthly_rent_thb: number; // >0 ONLY when price_status === 'verified'
   price_status: 'verified' | 'unverified';
   data_source?: string;
+  listing_url?: string;
+  listing_url_label?: string;
   verified_rent_median_thb?: number;
   verified_report_count: number;
   latest_report_month?: string;

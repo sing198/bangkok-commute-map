@@ -18,19 +18,21 @@ type edgeInput struct {
 	IsTransfer    bool   `json:"is_transfer"`
 }
 
-// EnsureSeeded checks whether the database already has the full Bangkok rail network
-// and precomputed OSRM walking distances; if not, it applies the embedded dataset
-// idempotently inside a single advisory-locked transaction (~300ms via jsonb_to_recordset).
+// EnsureSeeded checks whether the database already has the full Bangkok rail network,
+// precomputed OSRM walking distances, and verified building/station portal URLs; if not,
+// it applies the embedded dataset idempotently inside a single advisory-locked transaction.
 func EnsureSeeded(ctx context.Context, pool *pgxpool.Pool, dataFS fs.FS) (bool, error) {
-	var stationCount, accessCount int
+	var stationCount, accessCount, listingURLCount, stationURLCount int
 	if err := pool.QueryRow(ctx, `
 		SELECT
 			(SELECT COUNT(*)::int FROM stations),
-			(SELECT COUNT(*)::int FROM listing_station_access)
-	`).Scan(&stationCount, &accessCount); err != nil {
+			(SELECT COUNT(*)::int FROM listing_station_access),
+			(SELECT COUNT(*)::int FROM listings WHERE listing_url <> ''),
+			(SELECT COUNT(*)::int FROM stations WHERE portal_condo_url <> '' OR portal_apt_url <> '')
+	`).Scan(&stationCount, &accessCount, &listingURLCount, &stationURLCount); err != nil {
 		return false, fmt.Errorf("check seed status: %w", err)
 	}
-	if stationCount >= 190 && accessCount >= 4000 {
+	if stationCount >= 190 && accessCount >= 4000 && listingURLCount >= 100 && stationURLCount >= 50 {
 		return false, nil
 	}
 
@@ -49,11 +51,13 @@ func EnsureSeeded(ctx context.Context, pool *pgxpool.Pool, dataFS fs.FS) (bool, 
 	if err := tx.QueryRow(ctx, `
 		SELECT
 			(SELECT COUNT(*)::int FROM stations),
-			(SELECT COUNT(*)::int FROM listing_station_access)
-	`).Scan(&stationCount, &accessCount); err != nil {
+			(SELECT COUNT(*)::int FROM listing_station_access),
+			(SELECT COUNT(*)::int FROM listings WHERE listing_url <> ''),
+			(SELECT COUNT(*)::int FROM stations WHERE portal_condo_url <> '' OR portal_apt_url <> '')
+	`).Scan(&stationCount, &accessCount, &listingURLCount, &stationURLCount); err != nil {
 		return false, fmt.Errorf("recheck seed status: %w", err)
 	}
-	if stationCount >= 190 && accessCount >= 4000 {
+	if stationCount >= 190 && accessCount >= 4000 && listingURLCount >= 100 && stationURLCount >= 50 {
 		return false, nil
 	}
 
@@ -97,23 +101,27 @@ func EnsureSeeded(ctx context.Context, pool *pgxpool.Pool, dataFS fs.FS) (bool, 
 		return false, fmt.Errorf("marshal directed edges: %w", err)
 	}
 
-	// 1. Upsert all stations
+	// 1. Upsert all stations (including verified station-level portal URLs)
 	if _, err := tx.Exec(ctx, `
-		INSERT INTO stations (id, name_th, name_en, line_code, operator, is_extension, location, updated_at)
+		INSERT INTO stations (id, name_th, name_en, line_code, operator, is_extension, location, portal_condo_url, portal_apt_url, updated_at)
 		SELECT x.id, x.name_th, x.name_en, x.line_code, x.operator, x.is_extension,
-		       ST_SetSRID(ST_MakePoint(x.lng, x.lat), 4326)::geography, NOW()
+		       ST_SetSRID(ST_MakePoint(x.lng, x.lat), 4326)::geography,
+		       COALESCE(x.portal_condo_url, ''), COALESCE(x.portal_apt_url, ''), NOW()
 		FROM jsonb_to_recordset($1::jsonb) AS x(
 			id text, name_th text, name_en text, line_code text, operator text,
-			is_extension boolean, lat double precision, lng double precision
+			is_extension boolean, lat double precision, lng double precision,
+			portal_condo_url text, portal_apt_url text
 		)
 		ON CONFLICT (id) DO UPDATE SET
-			name_th      = EXCLUDED.name_th,
-			name_en      = EXCLUDED.name_en,
-			line_code    = EXCLUDED.line_code,
-			operator     = EXCLUDED.operator,
-			is_extension = EXCLUDED.is_extension,
-			location     = EXCLUDED.location,
-			updated_at   = NOW()
+			name_th          = EXCLUDED.name_th,
+			name_en          = EXCLUDED.name_en,
+			line_code        = EXCLUDED.line_code,
+			operator         = EXCLUDED.operator,
+			is_extension     = EXCLUDED.is_extension,
+			location         = EXCLUDED.location,
+			portal_condo_url = EXCLUDED.portal_condo_url,
+			portal_apt_url   = EXCLUDED.portal_apt_url,
+			updated_at       = NOW()
 	`, string(stationsJSON)); err != nil {
 		return false, fmt.Errorf("upsert stations: %w", err)
 	}
@@ -149,12 +157,13 @@ func EnsureSeeded(ctx context.Context, pool *pgxpool.Pool, dataFS fs.FS) (bool, 
 		return false, fmt.Errorf("upsert fare_rules: %w", err)
 	}
 
-	// 4. Upsert all real OSM + curated listings
+	// 4. Upsert all real OSM + curated listings (including verified direct building rental URLs)
 	if _, err := tx.Exec(ctx, `
 		INSERT INTO listings (
 			id, osm_id, title_th, title_en, property_type, district,
 			monthly_rent_thb, estimated_rent_min_thb, estimated_rent_max_thb,
-			price_source, data_source, room_size_sqm, bedrooms,
+			price_source, data_source, listing_url, listing_url_label,
+			room_size_sqm, bedrooms,
 			location, nearest_station_id, walk_to_station_m, updated_at
 		)
 		SELECT
@@ -163,13 +172,15 @@ func EnsureSeeded(ctx context.Context, pool *pgxpool.Pool, dataFS fs.FS) (bool, 
 			CASE WHEN COALESCE(x.estimated_rent_min_thb, 0) > 0 THEN x.estimated_rent_min_thb ELSE x.monthly_rent_thb END,
 			CASE WHEN COALESCE(x.estimated_rent_max_thb, 0) > 0 THEN x.estimated_rent_max_thb ELSE x.monthly_rent_thb END,
 			COALESCE(x.price_source, ''), COALESCE(NULLIF(x.source, ''), 'osm'),
+			COALESCE(x.listing_url, ''), COALESCE(x.listing_url_label, ''),
 			x.room_size_sqm, x.bedrooms,
 			ST_SetSRID(ST_MakePoint(x.lng, x.lat), 4326)::geography,
 			x.nearest_station_id, x.walk_to_station_m, NOW()
 		FROM jsonb_to_recordset($1::jsonb) AS x(
 			id text, osm_id text, title_th text, title_en text, property_type text, district text,
 			monthly_rent_thb int, estimated_rent_min_thb int, estimated_rent_max_thb int,
-			price_source text, source text, room_size_sqm numeric, bedrooms int,
+			price_source text, source text, listing_url text, listing_url_label text,
+			room_size_sqm numeric, bedrooms int,
 			lat double precision, lng double precision,
 			nearest_station_id text, walk_to_station_m int
 		)
@@ -184,6 +195,8 @@ func EnsureSeeded(ctx context.Context, pool *pgxpool.Pool, dataFS fs.FS) (bool, 
 			estimated_rent_max_thb = EXCLUDED.estimated_rent_max_thb,
 			price_source           = EXCLUDED.price_source,
 			data_source            = EXCLUDED.data_source,
+			listing_url            = EXCLUDED.listing_url,
+			listing_url_label      = EXCLUDED.listing_url_label,
 			room_size_sqm          = EXCLUDED.room_size_sqm,
 			bedrooms               = EXCLUDED.bedrooms,
 			location               = EXCLUDED.location,

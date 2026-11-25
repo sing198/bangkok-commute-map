@@ -18,14 +18,16 @@ import (
 )
 
 type StationInput struct {
-	ID          string  `json:"id"`
-	NameTH      string  `json:"name_th"`
-	NameEN      string  `json:"name_en"`
-	LineCode    string  `json:"line_code"`
-	Operator    string  `json:"operator"`
-	IsExtension bool    `json:"is_extension"`
-	Lat         float64 `json:"lat"`
-	Lng         float64 `json:"lng"`
+	ID             string  `json:"id"`
+	NameTH         string  `json:"name_th"`
+	NameEN         string  `json:"name_en"`
+	LineCode       string  `json:"line_code"`
+	Operator       string  `json:"operator"`
+	IsExtension    bool    `json:"is_extension"`
+	Lat            float64 `json:"lat"`
+	Lng            float64 `json:"lng"`
+	PortalCondoURL string  `json:"portal_condo_url,omitempty"`
+	PortalAptURL   string  `json:"portal_apt_url,omitempty"`
 }
 
 type EdgeInput struct {
@@ -54,6 +56,8 @@ type ListingInput struct {
 	EstimatedRentMinTHB int     `json:"estimated_rent_min_thb"`
 	EstimatedRentMaxTHB int     `json:"estimated_rent_max_thb"`
 	PriceSource         string  `json:"price_source,omitempty"`
+	ListingURL          string  `json:"listing_url,omitempty"`
+	ListingURLLabel     string  `json:"listing_url_label,omitempty"`
 	RoomSizeSqm         float64 `json:"room_size_sqm"`
 	Bedrooms            int     `json:"bedrooms"`
 	Lat                 float64 `json:"lat"`
@@ -344,19 +348,21 @@ func validateDataset(ds *Dataset) error {
 
 func upsertStations(ctx context.Context, tx pgx.Tx, stations []StationInput) error {
 	const q = `
-		INSERT INTO stations (id, name_th, name_en, line_code, operator, is_extension, location, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint($7, $8), 4326)::geography, NOW())
+		INSERT INTO stations (id, name_th, name_en, line_code, operator, is_extension, location, portal_condo_url, portal_apt_url, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, ST_SetSRID(ST_MakePoint($7, $8), 4326)::geography, $9, $10, NOW())
 		ON CONFLICT (id) DO UPDATE SET
-			name_th      = EXCLUDED.name_th,
-			name_en      = EXCLUDED.name_en,
-			line_code    = EXCLUDED.line_code,
-			operator     = EXCLUDED.operator,
-			is_extension = EXCLUDED.is_extension,
-			location     = EXCLUDED.location,
-			updated_at   = NOW();
+			name_th          = EXCLUDED.name_th,
+			name_en          = EXCLUDED.name_en,
+			line_code        = EXCLUDED.line_code,
+			operator         = EXCLUDED.operator,
+			is_extension     = EXCLUDED.is_extension,
+			location         = EXCLUDED.location,
+			portal_condo_url = EXCLUDED.portal_condo_url,
+			portal_apt_url   = EXCLUDED.portal_apt_url,
+			updated_at       = NOW();
 	`
 	for _, s := range stations {
-		if _, err := tx.Exec(ctx, q, s.ID, s.NameTH, s.NameEN, s.LineCode, s.Operator, s.IsExtension, s.Lng, s.Lat); err != nil {
+		if _, err := tx.Exec(ctx, q, s.ID, s.NameTH, s.NameEN, s.LineCode, s.Operator, s.IsExtension, s.Lng, s.Lat, s.PortalCondoURL, s.PortalAptURL); err != nil {
 			return fmt.Errorf("station %s: %w", s.ID, err)
 		}
 	}
@@ -415,12 +421,14 @@ func upsertListings(ctx context.Context, tx pgx.Tx, listings []ListingInput) err
 		INSERT INTO listings (
 			id, osm_id, title_th, title_en, property_type, district,
 			monthly_rent_thb, estimated_rent_min_thb, estimated_rent_max_thb, price_source, data_source,
+			listing_url, listing_url_label,
 			room_size_sqm, bedrooms,
 			location, nearest_station_id, walk_to_station_m, updated_at
 		)
 		SELECT
 			$1, $2, $3, $4, $5, $6,
 			$7, $8, $9, $10, $11,
+			$18, $19,
 			$12, $15,
 			pt.loc,
 			COALESCE(NULLIF($16, ''), nearest.id),
@@ -438,6 +446,8 @@ func upsertListings(ctx context.Context, tx pgx.Tx, listings []ListingInput) err
 			estimated_rent_max_thb = EXCLUDED.estimated_rent_max_thb,
 			price_source           = EXCLUDED.price_source,
 			data_source            = EXCLUDED.data_source,
+			listing_url            = EXCLUDED.listing_url,
+			listing_url_label      = EXCLUDED.listing_url_label,
 			room_size_sqm          = EXCLUDED.room_size_sqm,
 			bedrooms               = EXCLUDED.bedrooms,
 			location               = EXCLUDED.location,
@@ -464,6 +474,7 @@ func upsertListings(ctx context.Context, tx pgx.Tx, listings []ListingInput) err
 			l.ID, l.OSMID, l.TitleTH, l.TitleEN, l.PropertyType, l.District,
 			l.MonthlyRentTHB, estMin, estMax, l.PriceSource, src,
 			l.RoomSizeSqm, l.Lng, l.Lat, l.Bedrooms, l.NearestStationID, l.WalkToStationM,
+			l.ListingURL, l.ListingURLLabel,
 		); err != nil {
 			return fmt.Errorf("listing %s: %w", l.ID, err)
 		}
@@ -511,17 +522,17 @@ func writeSeedSQL(path string, ds *Dataset) error {
 	var b strings.Builder
 	b.WriteString("BEGIN;\n\n")
 
-	b.WriteString("INSERT INTO public.stations (id, name_th, name_en, line_code, operator, is_extension, location, updated_at) VALUES\n")
+	b.WriteString("INSERT INTO public.stations (id, name_th, name_en, line_code, operator, is_extension, location, portal_condo_url, portal_apt_url, updated_at) VALUES\n")
 	for i, s := range ds.Stations {
 		sep := ","
 		if i == len(ds.Stations)-1 {
 			sep = ""
 		}
-		fmt.Fprintf(&b, "  (%s, %s, %s, %s, %s, %t, ST_SetSRID(ST_MakePoint(%.6f, %.6f), 4326)::geography, NOW())%s\n",
-			sqlQuote(s.ID), sqlQuote(s.NameTH), sqlQuote(s.NameEN), sqlQuote(s.LineCode), sqlQuote(s.Operator), s.IsExtension, s.Lng, s.Lat, sep,
+		fmt.Fprintf(&b, "  (%s, %s, %s, %s, %s, %t, ST_SetSRID(ST_MakePoint(%.6f, %.6f), 4326)::geography, %s, %s, NOW())%s\n",
+			sqlQuote(s.ID), sqlQuote(s.NameTH), sqlQuote(s.NameEN), sqlQuote(s.LineCode), sqlQuote(s.Operator), s.IsExtension, s.Lng, s.Lat, sqlQuote(s.PortalCondoURL), sqlQuote(s.PortalAptURL), sep,
 		)
 	}
-	b.WriteString("ON CONFLICT (id) DO UPDATE SET name_th=EXCLUDED.name_th, name_en=EXCLUDED.name_en, line_code=EXCLUDED.line_code, operator=EXCLUDED.operator, is_extension=EXCLUDED.is_extension, location=EXCLUDED.location, updated_at=NOW();\n\n")
+	b.WriteString("ON CONFLICT (id) DO UPDATE SET name_th=EXCLUDED.name_th, name_en=EXCLUDED.name_en, line_code=EXCLUDED.line_code, operator=EXCLUDED.operator, is_extension=EXCLUDED.is_extension, location=EXCLUDED.location, portal_condo_url=EXCLUDED.portal_condo_url, portal_apt_url=EXCLUDED.portal_apt_url, updated_at=NOW();\n\n")
 
 	b.WriteString("INSERT INTO public.transit_edges (from_station_id, to_station_id, travel_minutes, is_transfer) VALUES\n")
 	for i, e := range ds.Edges {
@@ -548,7 +559,7 @@ func writeSeedSQL(path string, ds *Dataset) error {
 	}
 	b.WriteString("ON CONFLICT (operator, hops, effective_date) DO UPDATE SET fare_thb=EXCLUDED.fare_thb, source=EXCLUDED.source;\n\n")
 
-	b.WriteString("INSERT INTO public.listings (id, osm_id, title_th, title_en, property_type, district, monthly_rent_thb, estimated_rent_min_thb, estimated_rent_max_thb, price_source, data_source, room_size_sqm, bedrooms, location, nearest_station_id, walk_to_station_m, updated_at) VALUES\n")
+	b.WriteString("INSERT INTO public.listings (id, osm_id, title_th, title_en, property_type, district, monthly_rent_thb, estimated_rent_min_thb, estimated_rent_max_thb, price_source, data_source, listing_url, listing_url_label, room_size_sqm, bedrooms, location, nearest_station_id, walk_to_station_m, updated_at) VALUES\n")
 	for i, l := range ds.Listings {
 		sep := ","
 		if i == len(ds.Listings)-1 {
@@ -558,13 +569,14 @@ func writeSeedSQL(path string, ds *Dataset) error {
 		if src == "" {
 			src = "osm"
 		}
-		fmt.Fprintf(&b, "  (%s, %s, %s, %s, %s, %s, %d, %d, %d, %s, %s, %.1f, %d, ST_SetSRID(ST_MakePoint(%.6f, %.6f), 4326)::geography, %s, %d, NOW())%s\n",
+		fmt.Fprintf(&b, "  (%s, %s, %s, %s, %s, %s, %d, %d, %d, %s, %s, %s, %s, %.1f, %d, ST_SetSRID(ST_MakePoint(%.6f, %.6f), 4326)::geography, %s, %d, NOW())%s\n",
 			sqlQuote(l.ID), sqlQuote(l.OSMID), sqlQuote(l.TitleTH), sqlQuote(l.TitleEN), sqlQuote(l.PropertyType), sqlQuote(l.District),
 			l.MonthlyRentTHB, l.EstimatedRentMinTHB, l.EstimatedRentMaxTHB, sqlQuote(l.PriceSource), sqlQuote(src),
+			sqlQuote(l.ListingURL), sqlQuote(l.ListingURLLabel),
 			l.RoomSizeSqm, l.Bedrooms, l.Lng, l.Lat, sqlQuote(l.NearestStationID), l.WalkToStationM, sep,
 		)
 	}
-	b.WriteString("ON CONFLICT (id) DO UPDATE SET osm_id=EXCLUDED.osm_id, title_th=EXCLUDED.title_th, title_en=EXCLUDED.title_en, property_type=EXCLUDED.property_type, district=EXCLUDED.district, monthly_rent_thb=EXCLUDED.monthly_rent_thb, estimated_rent_min_thb=EXCLUDED.estimated_rent_min_thb, estimated_rent_max_thb=EXCLUDED.estimated_rent_max_thb, price_source=EXCLUDED.price_source, data_source=EXCLUDED.data_source, room_size_sqm=EXCLUDED.room_size_sqm, bedrooms=EXCLUDED.bedrooms, location=EXCLUDED.location, nearest_station_id=EXCLUDED.nearest_station_id, walk_to_station_m=EXCLUDED.walk_to_station_m, updated_at=NOW();\n\n")
+	b.WriteString("ON CONFLICT (id) DO UPDATE SET osm_id=EXCLUDED.osm_id, title_th=EXCLUDED.title_th, title_en=EXCLUDED.title_en, property_type=EXCLUDED.property_type, district=EXCLUDED.district, monthly_rent_thb=EXCLUDED.monthly_rent_thb, estimated_rent_min_thb=EXCLUDED.estimated_rent_min_thb, estimated_rent_max_thb=EXCLUDED.estimated_rent_max_thb, price_source=EXCLUDED.price_source, data_source=EXCLUDED.data_source, listing_url=EXCLUDED.listing_url, listing_url_label=EXCLUDED.listing_url_label, room_size_sqm=EXCLUDED.room_size_sqm, bedrooms=EXCLUDED.bedrooms, location=EXCLUDED.location, nearest_station_id=EXCLUDED.nearest_station_id, walk_to_station_m=EXCLUDED.walk_to_station_m, updated_at=NOW();\n\n")
 
 	if len(ds.Access) > 0 {
 		b.WriteString("INSERT INTO public.listing_station_access (listing_id, station_id, walk_distance_m, walk_minutes, straight_line_m, distance_source, updated_at) VALUES\n")

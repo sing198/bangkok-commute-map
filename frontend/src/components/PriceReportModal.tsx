@@ -7,7 +7,7 @@ import {
   type ListingResult,
   type RoomType,
 } from '../types/commute';
-import { buildGoogleMapsUrl, buildRealPriceSearchUrl } from '../utils/externalLinks';
+import { buildGoogleMapsUrl, getRealPriceLinks } from '../utils/externalLinks';
 
 interface PriceReportModalProps {
   listing: ListingResult | null;
@@ -61,7 +61,7 @@ export function PriceReportModal({
     setRoomSize(String(listing.room_size_sqm || 28));
     setRoomType(listing.property_type === 'apartment' ? 'dorm' : '1br');
     setReportedMonth(currentYearMonth());
-    setSourceUrl(listing.latest_source_url || '');
+    setSourceUrl(listing.latest_source_url || listing.listing_url || '');
     setNote('');
     setError(null);
     setSuccessMsg(null);
@@ -166,41 +166,61 @@ export function PriceReportModal({
         {/* Body */}
         <div className="flex-1 space-y-4 overflow-y-auto p-6">
           {/* Quick Links to Check Real Price First */}
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-3.5">
-            <div className="text-xs font-semibold text-slate-700">
-              เช็กราคาห้องจริงก่อนบันทึกหรือเปรียบเทียบ:
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <a
-                href={buildRealPriceSearchUrl(listing)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-indigo-700"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                ค้นหาราคาจริงบน Google
-              </a>
-              <a
-                href={buildGoogleMapsUrl(listing)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                <MapPin className="h-3.5 w-3.5" />
-                ดูรูปตึก / รีวิวบน Maps
-              </a>
-            </div>
-            {existing && existing.stats.report_count > 0 && (
-              <div className="mt-2.5 flex items-center justify-between border-t border-indigo-100 pt-2 text-xs text-emerald-800">
-                <span className="font-semibold">
-                  ราคามัธยฐานจากผู้เช่า ({existing.stats.report_count} รายงาน):
-                </span>
-                <strong className="text-sm">
-                  ฿{existing.stats.median_rent_thb.toLocaleString()}/ด.
-                </strong>
+          {(() => {
+            const priceLinks = getRealPriceLinks(listing);
+            return (
+              <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-3.5">
+                <div className="text-xs font-semibold text-slate-700">
+                  เช็กราคาห้องจริงจากเว็บประกาศเช่าก่อนบันทึก:
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a
+                    href={priceLinks.primary.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-white transition ${
+                      priceLinks.primary.tone === 'emerald'
+                        ? 'bg-emerald-600 hover:bg-emerald-700'
+                        : 'bg-indigo-600 hover:bg-indigo-700'
+                    }`}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    {priceLinks.primary.label}
+                  </a>
+                  {priceLinks.secondary && (
+                    <a
+                      href={priceLinks.secondary.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      {priceLinks.secondary.label}
+                    </a>
+                  )}
+                  <a
+                    href={buildGoogleMapsUrl(listing)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    <MapPin className="h-3.5 w-3.5" />
+                    ดูรูปตึก / รีวิวบน Maps
+                  </a>
+                </div>
+                {existing && existing.stats.report_count > 0 && (
+                  <div className="mt-2.5 flex items-center justify-between border-t border-indigo-100 pt-2 text-xs text-emerald-800">
+                    <span className="font-semibold">
+                      ราคามัธยฐานจากผู้เช่า ({existing.stats.report_count} รายงาน):
+                    </span>
+                    <strong className="text-sm">
+                      ฿{existing.stats.median_rent_thb.toLocaleString()}/ด.
+                    </strong>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })()}
 
           {/* Report Form */}
           <form onSubmit={handleSubmit} className="space-y-3.5">

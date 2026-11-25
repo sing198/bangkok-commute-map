@@ -2,14 +2,16 @@ package transit
 
 // Station represents a Bangkok rail transit station node in the graph.
 type Station struct {
-	ID          string  `json:"id"`
-	NameTH      string  `json:"name_th"`
-	NameEN      string  `json:"name_en"`
-	LineCode    string  `json:"line_code"`
-	Operator    string  `json:"operator"`
-	IsExtension bool    `json:"is_extension"`
-	Lat         float64 `json:"lat"`
-	Lng         float64 `json:"lng"`
+	ID             string  `json:"id"`
+	NameTH         string  `json:"name_th"`
+	NameEN         string  `json:"name_en"`
+	LineCode       string  `json:"line_code"`
+	Operator       string  `json:"operator"`
+	IsExtension    bool    `json:"is_extension"`
+	Lat            float64 `json:"lat"`
+	Lng            float64 `json:"lng"`
+	PortalCondoURL string  `json:"portal_condo_url,omitempty"`
+	PortalAptURL   string  `json:"portal_apt_url,omitempty"`
 }
 
 // Edge represents a directed rail or interchange transfer link between two stations.

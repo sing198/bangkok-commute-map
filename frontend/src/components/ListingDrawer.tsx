@@ -22,7 +22,7 @@ import {
   type SortMode,
   type ZoneColor,
 } from '../types/commute';
-import { buildGoogleMapsUrl, buildRealPriceSearchUrl } from '../utils/externalLinks';
+import { buildGoogleMapsUrl, getRealPriceLinks } from '../utils/externalLinks';
 
 interface ListingDrawerProps {
   listings: ListingResult[];
@@ -162,7 +162,7 @@ export function ListingDrawer({
         </div>
 
         <p className="mt-1.5 text-[10px] leading-snug text-slate-400">
-          อาคารจริงจาก OSM • ระยะเดินถนนจริง (OSRM) • ไม่เดาราคาห้อง กดลิงก์เช็กราคาจริงได้ทุกแห่ง
+          อาคารจริงจาก OSM • ระยะเดินถนนจริง (OSRM) • ลิงก์ตรงเข้าหน้าประกาศเช่าจริง (PropertyHub / RentHub / DDproperty)
         </p>
       </div>
 
@@ -194,6 +194,7 @@ export function ListingDrawer({
               const canAddMore = compareIds.length < 3 || isCompared;
               const isVerified = item.price_status === 'verified';
               const isDirect = item.route.station_ids.length <= 1;
+              const priceLinks = getRealPriceLinks(item);
               const opLabel =
                 OPERATOR_LABEL[item.origin_station.operator] ||
                 item.origin_station.operator;
@@ -223,9 +224,13 @@ export function ListingDrawer({
                             <ShieldCheck className="h-3 w-3" />
                             ราคาจริงจากผู้เช่า ({item.verified_report_count})
                           </span>
+                        ) : priceLinks.primary.isDirectBuilding ? (
+                          <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
+                            มีลิงก์หน้าตึกจริง
+                          </span>
                         ) : (
                           <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                            เช็กราคาห้องจากลิงก์ด้านล่าง
+                            เช็กราคาบนเว็บประกาศ
                           </span>
                         )}
                       </div>
@@ -379,30 +384,38 @@ export function ListingDrawer({
                     )}
                   </div>
 
-                  {/* Direct External Links to Real Room Prices & Building Reviews */}
+                  {/* Direct External Links to Real Rental Pages & Building Reviews */}
                   <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-                    {item.latest_source_url && (
-                      <a
-                        href={item.latest_source_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-800 transition hover:bg-emerald-100"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                        เว็บหอ / แหล่งราคาจริง
-                      </a>
-                    )}
                     <a
-                      href={buildRealPriceSearchUrl(item)}
+                      href={priceLinks.primary.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50/70 px-2 py-1 text-[11px] font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                      className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-bold transition ${
+                        priceLinks.primary.tone === 'emerald'
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                          : 'border-indigo-200 bg-indigo-50/80 text-indigo-700 hover:bg-indigo-100'
+                      }`}
                     >
                       <ExternalLink className="h-3 w-3" />
-                      เช็กราคาเช่าจริง
+                      {priceLinks.primary.label}
                     </a>
+                    {priceLinks.secondary && (
+                      <a
+                        href={priceLinks.secondary.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold transition ${
+                          priceLinks.secondary.tone === 'indigo'
+                            ? 'border-indigo-200 bg-indigo-50/50 text-indigo-700 hover:bg-indigo-100'
+                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        }`}
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        {priceLinks.secondary.label}
+                      </a>
+                    )}
                     <a
                       href={buildGoogleMapsUrl(item)}
                       target="_blank"

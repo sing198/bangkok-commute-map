@@ -56,6 +56,8 @@ type ListingResult struct {
 	MonthlyRentTHB        int                        `json:"monthly_rent_thb"` // >0 ONLY when price_status == "verified"
 	PriceStatus           string                     `json:"price_status"`     // "verified" or "unverified"
 	DataSource            string                     `json:"data_source,omitempty"`
+	ListingURL            string                     `json:"listing_url,omitempty"`
+	ListingURLLabel       string                     `json:"listing_url_label,omitempty"`
 	VerifiedRentMedianTHB int                        `json:"verified_rent_median_thb,omitempty"`
 	VerifiedReportCount   int                        `json:"verified_report_count"`
 	LatestReportMonth     string                     `json:"latest_report_month,omitempty"`
@@ -185,7 +187,7 @@ func NormalizeParams(p SearchParams) SearchParams {
 func QuantizedCacheKey(p SearchParams) string {
 	qLat := math.Round(p.Lat*1000) / 1000
 	qLng := math.Round(p.Lng*1000) / 1000
-	return fmt.Sprintf("commute:search:v4:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
+	return fmt.Sprintf("commute:search:v5:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
 		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.MaxCommuteBudget, p.VerifiedOnly, p.Workdays, p.WalkMaxM, p.Sort, p.Limit)
 }
 
@@ -250,6 +252,8 @@ func buildListingResult(
 		MonthlyRentTHB:        verifiedRent,
 		PriceStatus:           priceStatus,
 		DataSource:            rec.DataSource,
+		ListingURL:            rec.ListingURL,
+		ListingURLLabel:       rec.ListingURLLabel,
 		VerifiedRentMedianTHB: rec.VerifiedRentMedianTHB,
 		VerifiedReportCount:   rec.VerifiedReportCount,
 		LatestReportMonth:     rec.LatestReportMonth,

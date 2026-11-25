@@ -31,6 +31,8 @@ type ListingRecord struct {
 	EstimatedRentMaxTHB   int     `json:"estimated_rent_max_thb"`
 	PriceSource           string  `json:"price_source"`
 	DataSource            string  `json:"data_source"`
+	ListingURL            string  `json:"listing_url"`
+	ListingURLLabel       string  `json:"listing_url_label"`
 	RoomSizeSqm           float64 `json:"room_size_sqm"`
 	Bedrooms              int     `json:"bedrooms"`
 	Lat                   float64 `json:"lat"`
@@ -91,7 +93,9 @@ func (r *Repository) LoadTransitGraph(ctx context.Context) (*transit.Graph, erro
 	stationRows, err := r.pool.Query(ctx, `
 		SELECT id, name_th, name_en, line_code, operator, is_extension,
 		       ST_Y(location::geometry) AS lat,
-		       ST_X(location::geometry) AS lng
+		       ST_X(location::geometry) AS lng,
+		       COALESCE(portal_condo_url, ''),
+		       COALESCE(portal_apt_url, '')
 		FROM stations
 		ORDER BY id
 	`)
@@ -103,7 +107,10 @@ func (r *Repository) LoadTransitGraph(ctx context.Context) (*transit.Graph, erro
 	var stations []transit.Station
 	for stationRows.Next() {
 		var s transit.Station
-		if err := stationRows.Scan(&s.ID, &s.NameTH, &s.NameEN, &s.LineCode, &s.Operator, &s.IsExtension, &s.Lat, &s.Lng); err != nil {
+		if err := stationRows.Scan(
+			&s.ID, &s.NameTH, &s.NameEN, &s.LineCode, &s.Operator, &s.IsExtension,
+			&s.Lat, &s.Lng, &s.PortalCondoURL, &s.PortalAptURL,
+		); err != nil {
 			return nil, fmt.Errorf("scan station: %w", err)
 		}
 		stations = append(stations, s)
@@ -167,6 +174,8 @@ func (r *Repository) FindNearestStations(ctx context.Context, lat, lng float64, 
 		SELECT id, name_th, name_en, line_code, operator, is_extension,
 		       ST_Y(location::geometry) AS lat,
 		       ST_X(location::geometry) AS lng,
+		       COALESCE(portal_condo_url, ''),
+		       COALESCE(portal_apt_url, ''),
 		       ST_Distance(location, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography) AS distance_m
 		FROM stations
 		ORDER BY location <-> ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
@@ -183,7 +192,9 @@ func (r *Repository) FindNearestStations(ctx context.Context, lat, lng float64, 
 		if err := rows.Scan(
 			&ns.Station.ID, &ns.Station.NameTH, &ns.Station.NameEN,
 			&ns.Station.LineCode, &ns.Station.Operator, &ns.Station.IsExtension,
-			&ns.Station.Lat, &ns.Station.Lng, &ns.DistanceM,
+			&ns.Station.Lat, &ns.Station.Lng,
+			&ns.Station.PortalCondoURL, &ns.Station.PortalAptURL,
+			&ns.DistanceM,
 		); err != nil {
 			return nil, fmt.Errorf("scan nearest station: %w", err)
 		}
@@ -216,6 +227,7 @@ func (r *Repository) FindListingsNearStations(ctx context.Context, stationIDs []
 			l.id, l.osm_id, l.title_th, l.title_en, l.property_type, l.district,
 			l.monthly_rent_thb, l.estimated_rent_min_thb, l.estimated_rent_max_thb,
 			l.price_source, l.data_source,
+			COALESCE(l.listing_url, ''), COALESCE(l.listing_url_label, ''),
 			l.room_size_sqm::double precision, l.bedrooms,
 			ST_Y(l.location::geometry) AS lat,
 			ST_X(l.location::geometry) AS lng,
@@ -252,6 +264,7 @@ func (r *Repository) FindListingsNearStations(ctx context.Context, stationIDs []
 			l.id, l.osm_id, l.title_th, l.title_en, l.property_type, l.district,
 			l.monthly_rent_thb, l.estimated_rent_min_thb, l.estimated_rent_max_thb,
 			l.price_source, l.data_source,
+			COALESCE(l.listing_url, ''), COALESCE(l.listing_url_label, ''),
 			l.room_size_sqm::double precision, l.bedrooms,
 			ST_Y(l.location::geometry) AS lat,
 			ST_X(l.location::geometry) AS lng,
@@ -296,6 +309,7 @@ func (r *Repository) FindListingsByIDsNearStations(ctx context.Context, ids []st
 			l.id, l.osm_id, l.title_th, l.title_en, l.property_type, l.district,
 			l.monthly_rent_thb, l.estimated_rent_min_thb, l.estimated_rent_max_thb,
 			l.price_source, l.data_source,
+			COALESCE(l.listing_url, ''), COALESCE(l.listing_url_label, ''),
 			l.room_size_sqm::double precision, l.bedrooms,
 			ST_Y(l.location::geometry) AS lat,
 			ST_X(l.location::geometry) AS lng,
@@ -331,6 +345,7 @@ func (r *Repository) FindListingsByIDsNearStations(ctx context.Context, ids []st
 			l.id, l.osm_id, l.title_th, l.title_en, l.property_type, l.district,
 			l.monthly_rent_thb, l.estimated_rent_min_thb, l.estimated_rent_max_thb,
 			l.price_source, l.data_source,
+			COALESCE(l.listing_url, ''), COALESCE(l.listing_url_label, ''),
 			l.room_size_sqm::double precision, l.bedrooms,
 			ST_Y(l.location::geometry) AS lat,
 			ST_X(l.location::geometry) AS lng,
@@ -360,6 +375,7 @@ func scanListingRecords(rows pgx.Rows) ([]ListingRecord, error) {
 			&rec.ID, &rec.OSMID, &rec.TitleTH, &rec.TitleEN, &rec.PropertyType, &rec.District,
 			&rec.MonthlyRentTHB, &rec.EstimatedRentMinTHB, &rec.EstimatedRentMaxTHB,
 			&rec.PriceSource, &rec.DataSource,
+			&rec.ListingURL, &rec.ListingURLLabel,
 			&rec.RoomSizeSqm, &rec.Bedrooms,
 			&rec.Lat, &rec.Lng,
 			&rec.StationID, &rec.WalkToStationM, &rec.DistanceSource,

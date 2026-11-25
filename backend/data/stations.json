@@ -7,7 +7,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.932348,
-    "lng": 100.646523
+    "lng": 100.646523,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-คูคต",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-คูคต"
   },
   {
     "id": "BTS_N23",
@@ -17,7 +19,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.925001,
-    "lng": 100.625855
+    "lng": 100.625855,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-แยก-คปอ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-แยก-คปอ"
   },
   {
     "id": "BTS_N22",
@@ -27,7 +31,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.917962,
-    "lng": 100.621714
+    "lng": 100.621714,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-พิพิธภัณฑ์กองทัพอากาศ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-พิพิธภัณฑ์กองทัพอากาศ"
   },
   {
     "id": "BTS_N21",
@@ -37,7 +43,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.910705,
-    "lng": 100.617417
+    "lng": 100.617417,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-รพ-ภูมิพลอดุลยเดช",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/รพ-ภูมิพลอดุลยเดช"
   },
   {
     "id": "BTS_N20",
@@ -47,7 +55,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.896604,
-    "lng": 100.609098
+    "lng": 100.609098,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สะพานใหม่",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สะพานใหม่"
   },
   {
     "id": "BTS_N19",
@@ -57,7 +67,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.888441,
-    "lng": 100.604288
+    "lng": 100.604288,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สายหยุด",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สายหยุด"
   },
   {
     "id": "BTS_N18",
@@ -67,7 +79,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.882439,
-    "lng": 100.60075
+    "lng": 100.60075,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-พหลโยธิน-59",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-พหลโยธิน-59"
   },
   {
     "id": "BTS_N17",
@@ -77,7 +91,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.875222,
-    "lng": 100.59682
+    "lng": 100.59682,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-วัดพระศรีมหาธาตุ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-วัดพระศรีมหาธาตุ"
   },
   {
     "id": "BTS_N16",
@@ -87,7 +103,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.867571,
-    "lng": 100.591993
+    "lng": 100.591993,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-กรมทหารราบที่-11",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-กรมทหารราบที่-11"
   },
   {
     "id": "BTS_N15",
@@ -97,7 +115,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.856037,
-    "lng": 100.585199
+    "lng": 100.585199,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-บางบัว",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-บางบัว"
   },
   {
     "id": "BTS_N14",
@@ -107,7 +127,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.850317,
-    "lng": 100.581835
+    "lng": 100.581835,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-กรมป่าไม้",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-กรมป่าไม้"
   },
   {
     "id": "BTS_N13",
@@ -117,7 +139,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.842302,
-    "lng": 100.577123
+    "lng": 100.577123,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-มหาวิทยาลัยเกษตรศาสตร์",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-มหาวิทยาลัยเกษตรศาสตร์"
   },
   {
     "id": "BTS_N12",
@@ -127,7 +151,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.836392,
-    "lng": 100.573648
+    "lng": 100.573648,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-เสนานิคม",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-เสนานิคม"
   },
   {
     "id": "BTS_N11",
@@ -137,7 +163,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.829738,
-    "lng": 100.56974
+    "lng": 100.56974,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-รัชโยธิน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-รัชโยธิน"
   },
   {
     "id": "BTS_N10",
@@ -147,7 +175,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.824114,
-    "lng": 100.566441
+    "lng": 100.566441,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-พหลโยธิน-24",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-พหลโยธิน-24"
   },
   {
     "id": "BTS_N9",
@@ -157,7 +187,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.816634,
-    "lng": 100.562128
+    "lng": 100.562128,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ห้าแยกลาดพร้าว",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ห้าแยกลาดพร้าว"
   },
   {
     "id": "BTS_N8",
@@ -167,7 +199,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.802598,
-    "lng": 100.553811
+    "lng": 100.553811,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-หมอชิต",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-หมอชิต"
   },
   {
     "id": "BTS_N7",
@@ -177,7 +211,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.793819,
-    "lng": 100.549724
+    "lng": 100.549724,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สะพานควาย",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สะพานควาย"
   },
   {
     "id": "BTS_N5",
@@ -187,7 +223,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.779706,
-    "lng": 100.54464
+    "lng": 100.54464,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-อารีย์",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-อารีย์"
   },
   {
     "id": "BTS_N4",
@@ -197,7 +235,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.772615,
-    "lng": 100.542093
+    "lng": 100.542093,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สนามเป้า",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สนามเป้า"
   },
   {
     "id": "BTS_N3",
@@ -207,7 +247,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.762753,
-    "lng": 100.537067
+    "lng": 100.537067,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-อนุสาวรีย์ชัยสมรภูมิ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-อนุสาวรีย์ชัยสมรภูมิ"
   },
   {
     "id": "BTS_N2",
@@ -217,7 +259,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.756968,
-    "lng": 100.53385
+    "lng": 100.53385,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-พญาไท",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-พญาไท"
   },
   {
     "id": "BTS_N1",
@@ -227,7 +271,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.751879,
-    "lng": 100.531572
+    "lng": 100.531572,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ราชเทวี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ราชเทวี"
   },
   {
     "id": "BTS_CEN",
@@ -237,7 +283,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.745697,
-    "lng": 100.534234
+    "lng": 100.534234,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สยาม",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สยาม"
   },
   {
     "id": "BTS_E1",
@@ -247,7 +295,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.744119,
-    "lng": 100.543073
+    "lng": 100.543073,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ชิดลม",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ชิดลม"
   },
   {
     "id": "BTS_E2",
@@ -257,7 +307,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.74309,
-    "lng": 100.548979
+    "lng": 100.548979,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-เพลินจิต",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-เพลินจิต"
   },
   {
     "id": "BTS_E3",
@@ -267,7 +319,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.740555,
-    "lng": 100.555443
+    "lng": 100.555443,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-นานา",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-นานา"
   },
   {
     "id": "BTS_E4",
@@ -277,7 +331,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.737068,
-    "lng": 100.560364
+    "lng": 100.560364,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-อโศก",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-อโศก"
   },
   {
     "id": "BTS_E5",
@@ -287,7 +343,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.730452,
-    "lng": 100.569724
+    "lng": 100.569724,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-พร้อมพงษ์",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-พร้อมพงษ์"
   },
   {
     "id": "BTS_E6",
@@ -297,7 +355,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.724257,
-    "lng": 100.57853
+    "lng": 100.57853,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ทองหล่อ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ทองหล่อ"
   },
   {
     "id": "BTS_E7",
@@ -307,7 +367,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.719551,
-    "lng": 100.585128
+    "lng": 100.585128,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-เอกมัย",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-เอกมัย"
   },
   {
     "id": "BTS_E8",
@@ -317,7 +379,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.715189,
-    "lng": 100.591248
+    "lng": 100.591248,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-พระโขนง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-พระโขนง"
   },
   {
     "id": "BTS_E9",
@@ -327,7 +391,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.705632,
-    "lng": 100.601023
+    "lng": 100.601023,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-อ่อนนุช",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-อ่อนนุช"
   },
   {
     "id": "BTS_E10",
@@ -337,7 +403,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.696772,
-    "lng": 100.605357
+    "lng": 100.605357,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-บางจาก",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-บางจาก"
   },
   {
     "id": "BTS_E11",
@@ -347,7 +415,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.689289,
-    "lng": 100.609014
+    "lng": 100.609014,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ปุณณวิถี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ปุณณวิถี"
   },
   {
     "id": "BTS_E12",
@@ -357,7 +427,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.679868,
-    "lng": 100.60949
+    "lng": 100.60949,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-อุดมสุข",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-อุดมสุข"
   },
   {
     "id": "BTS_E13",
@@ -367,7 +439,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.668136,
-    "lng": 100.604681
+    "lng": 100.604681,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-บางนา",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-บางนา"
   },
   {
     "id": "BTS_E14",
@@ -377,7 +451,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.66118,
-    "lng": 100.601825
+    "lng": 100.601825,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-แบริ่ง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-แบริ่ง"
   },
   {
     "id": "BTS_E15",
@@ -387,7 +463,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.64647,
-    "lng": 100.595855
+    "lng": 100.595855,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สำโรง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สำโรง"
   },
   {
     "id": "BTS_E16",
@@ -397,7 +475,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.637274,
-    "lng": 100.592027
+    "lng": 100.592027,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ปู่เจ้า",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ปู่เจ้า"
   },
   {
     "id": "BTS_E17",
@@ -407,7 +487,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.621542,
-    "lng": 100.590165
+    "lng": 100.590165,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ช้างเอราวัณ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ช้างเอราวัณ"
   },
   {
     "id": "BTS_E18",
@@ -417,7 +499,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.608433,
-    "lng": 100.59494
+    "lng": 100.59494,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-โรงเรียนนายเรือ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-โรงเรียนนายเรือ"
   },
   {
     "id": "BTS_E19",
@@ -427,7 +511,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.602095,
-    "lng": 100.597137
+    "lng": 100.597137,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ปากน้ำ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ปากน้ำ"
   },
   {
     "id": "BTS_E20",
@@ -437,7 +523,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.592023,
-    "lng": 100.609025
+    "lng": 100.609025,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ศรีนครินทร์",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ศรีนครินทร์"
   },
   {
     "id": "BTS_E21",
@@ -447,7 +535,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.584224,
-    "lng": 100.607882
+    "lng": 100.607882,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-แพรกษา",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-แพรกษา"
   },
   {
     "id": "BTS_E22",
@@ -457,7 +547,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.577864,
-    "lng": 100.605488
+    "lng": 100.605488,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สายลวด--2",
+    "portal_apt_url": ""
   },
   {
     "id": "BTS_E23",
@@ -467,7 +559,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.567706,
-    "lng": 100.607726
+    "lng": 100.607726,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-เคหะฯ--2",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-เคหะฯ"
   },
   {
     "id": "BTS_W1",
@@ -477,7 +571,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.746532,
-    "lng": 100.52909
+    "lng": 100.52909,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สนามกีฬาแห่งชาติ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สนามกีฬาแห่งชาติ"
   },
   {
     "id": "BTS_S1",
@@ -487,7 +583,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.739471,
-    "lng": 100.53945
+    "lng": 100.53945,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ราชดำริ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ราชดำริ"
   },
   {
     "id": "BTS_S2",
@@ -497,7 +595,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.728568,
-    "lng": 100.534342
+    "lng": 100.534342,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ศาลาแดง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ศาลาแดง"
   },
   {
     "id": "BTS_S3",
@@ -507,7 +607,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.723797,
-    "lng": 100.529325
+    "lng": 100.529325,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ช่องนนทรี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ช่องนนทรี"
   },
   {
     "id": "BTS_S4",
@@ -517,7 +619,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.720816,
-    "lng": 100.526686
+    "lng": 100.526686,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-เซนต์หลุยส์",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-เซนต์หลุยส์"
   },
   {
     "id": "BTS_S5",
@@ -527,7 +631,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.719268,
-    "lng": 100.521462
+    "lng": 100.521462,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สุรศักดิ์",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สุรศักดิ์"
   },
   {
     "id": "BTS_S6",
@@ -537,7 +643,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.718778,
-    "lng": 100.514213
+    "lng": 100.514213,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-สะพานตากสิน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-สะพานตากสิน"
   },
   {
     "id": "BTS_S7",
@@ -547,7 +655,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.720931,
-    "lng": 100.502718
+    "lng": 100.502718,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-กรุงธนบุรี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-กรุงธนบุรี"
   },
   {
     "id": "BTS_S8",
@@ -557,7 +667,9 @@
     "operator": "BTS",
     "is_extension": false,
     "lat": 13.721082,
-    "lng": 100.495159
+    "lng": 100.495159,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-วงเวียนใหญ่",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-วงเวียนใหญ่"
   },
   {
     "id": "BTS_S9",
@@ -567,7 +679,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.719243,
-    "lng": 100.485968
+    "lng": 100.485968,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-โพธิ์นิมิตร",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-โพธิ์นิมิตร"
   },
   {
     "id": "BTS_S10",
@@ -577,7 +691,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.71422,
-    "lng": 100.476691
+    "lng": 100.476691,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-ตลาดพลู",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-ตลาดพลู"
   },
   {
     "id": "BTS_S11",
@@ -587,7 +703,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.713023,
-    "lng": 100.468903
+    "lng": 100.468903,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-วุฒากาศ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-วุฒากาศ"
   },
   {
     "id": "BTS_S12",
@@ -597,7 +715,9 @@
     "operator": "BTS",
     "is_extension": true,
     "lat": 13.720796,
-    "lng": 100.457802
+    "lng": 100.457802,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-บางหว้า",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-บางหว้า"
   },
   {
     "id": "BTS_G1",
@@ -607,7 +727,9 @@
     "operator": "BTS_GOLD",
     "is_extension": false,
     "lat": 13.721168,
-    "lng": 100.503714
+    "lng": 100.503714,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/bts-กรุงธนบุรี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-กรุงธนบุรี"
   },
   {
     "id": "BTS_G2",
@@ -617,7 +739,9 @@
     "operator": "BTS_GOLD",
     "is_extension": false,
     "lat": 13.726462,
-    "lng": 100.509052
+    "lng": 100.509052,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "BTS_G3",
@@ -627,7 +751,9 @@
     "operator": "BTS_GOLD",
     "is_extension": false,
     "lat": 13.730325,
-    "lng": 100.507728
+    "lng": 100.507728,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_BL01",
@@ -637,7 +763,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.729609,
-    "lng": 100.473966
+    "lng": 100.473966,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ท่าพระ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ท่าพระ"
   },
   {
     "id": "MRT_BL02",
@@ -647,7 +775,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.740179,
-    "lng": 100.470688
+    "lng": 100.470688,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-จรัญฯ-13",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-จรัญฯ-13"
   },
   {
     "id": "MRT_BL03",
@@ -657,7 +787,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.755796,
-    "lng": 100.469299
+    "lng": 100.469299,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ไฟฉาย",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ไฟฉาย"
   },
   {
     "id": "MRT_BL04",
@@ -667,7 +799,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.763344,
-    "lng": 100.473274
+    "lng": 100.473274,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางขุนนนท์--3c4f0503",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางขุนนนท์"
   },
   {
     "id": "MRT_BL05",
@@ -677,7 +811,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.777413,
-    "lng": 100.485231
+    "lng": 100.485231,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางยี่ขัน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางยี่ขัน"
   },
   {
     "id": "MRT_BL06",
@@ -687,7 +823,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.783893,
-    "lng": 100.493306
+    "lng": 100.493306,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สิรินธร",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สิรินธร"
   },
   {
     "id": "MRT_BL07",
@@ -697,7 +835,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.79242,
-    "lng": 100.504859
+    "lng": 100.504859,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางพลัด",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางพลัด"
   },
   {
     "id": "MRT_BL08",
@@ -707,7 +847,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.799001,
-    "lng": 100.50976
+    "lng": 100.50976,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางอ้อ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางอ้อ"
   },
   {
     "id": "MRT_BL09",
@@ -717,7 +859,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.80645,
-    "lng": 100.521026
+    "lng": 100.521026,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางโพ--ad3f09bc",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางโพ"
   },
   {
     "id": "MRT_BL10",
@@ -727,7 +871,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.806198,
-    "lng": 100.530776
+    "lng": 100.530776,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-เตาปูน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-เตาปูน"
   },
   {
     "id": "MRT_BL11",
@@ -737,7 +883,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.802427,
-    "lng": 100.54106
+    "lng": 100.54106,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางซื่อ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางซื่อ"
   },
   {
     "id": "MRT_BL12",
@@ -747,7 +895,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.798043,
-    "lng": 100.547884
+    "lng": 100.547884,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-กำแพงเพชร",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-กำแพงเพชร"
   },
   {
     "id": "MRT_BL13",
@@ -757,7 +907,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.802996,
-    "lng": 100.553232
+    "lng": 100.553232,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สวนจตุจักร",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สวนจตุจักร"
   },
   {
     "id": "MRT_BL14",
@@ -767,7 +919,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.812961,
-    "lng": 100.561501
+    "lng": 100.561501,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-พหลโยธิน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-พหลโยธิน"
   },
   {
     "id": "MRT_BL15",
@@ -777,7 +931,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.806546,
-    "lng": 100.572891
+    "lng": 100.572891,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ลาดพร้าว",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ลาดพร้าว"
   },
   {
     "id": "MRT_BL16",
@@ -787,7 +943,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.799001,
-    "lng": 100.574617
+    "lng": 100.574617,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-รัชดาภิเษก",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-รัชดาภิเษก"
   },
   {
     "id": "MRT_BL17",
@@ -797,7 +955,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.789492,
-    "lng": 100.574165
+    "lng": 100.574165,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สุทธิสาร",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สุทธิสาร"
   },
   {
     "id": "MRT_BL18",
@@ -807,7 +967,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.778688,
-    "lng": 100.57366
+    "lng": 100.57366,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ห้วยขวาง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ห้วยขวาง"
   },
   {
     "id": "MRT_BL19",
@@ -817,7 +979,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.766104,
-    "lng": 100.570193
+    "lng": 100.570193,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศูนย์วัฒนธรรมแห่งประเทศไทย",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศูนย์วัฒนธรรมแห่งประเทศไทย"
   },
   {
     "id": "MRT_BL20",
@@ -827,7 +991,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.75784,
-    "lng": 100.565348
+    "lng": 100.565348,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-พระราม-9",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/เซ็นทรัล-พระราม-9"
   },
   {
     "id": "MRT_BL21",
@@ -837,7 +1003,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.749177,
-    "lng": 100.563483
+    "lng": 100.563483,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-เพชรบุรี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-เพชรบุรี"
   },
   {
     "id": "MRT_BL22",
@@ -847,7 +1015,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.737472,
-    "lng": 100.561609
+    "lng": 100.561609,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สุขุมวิท",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สุขุมวิท"
   },
   {
     "id": "MRT_BL23",
@@ -857,7 +1027,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.722622,
-    "lng": 100.560067
+    "lng": 100.560067,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศูนย์การประชุมแห่งชาติสิริกิติ์",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศูนย์การประชุมแห่งชาติสิริกิติ์"
   },
   {
     "id": "MRT_BL24",
@@ -867,7 +1039,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.722053,
-    "lng": 100.554306
+    "lng": 100.554306,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-คลองเตย",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-คลองเตย"
   },
   {
     "id": "MRT_BL25",
@@ -877,7 +1051,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.725594,
-    "lng": 100.545718
+    "lng": 100.545718,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ลุมพินี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ลุมพินี"
   },
   {
     "id": "MRT_BL26",
@@ -887,7 +1063,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.729174,
-    "lng": 100.537068
+    "lng": 100.537068,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สีลม",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สีลม"
   },
   {
     "id": "MRT_BL27",
@@ -897,7 +1075,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.732046,
-    "lng": 100.530114
+    "lng": 100.530114,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สามย่าน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สามย่าน"
   },
   {
     "id": "MRT_BL28",
@@ -907,7 +1087,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.737408,
-    "lng": 100.517047
+    "lng": 100.517047,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-หัวลำโพง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-หัวลำโพง"
   },
   {
     "id": "MRT_BL29",
@@ -917,7 +1099,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.742201,
-    "lng": 100.509905
+    "lng": 100.509905,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-วัดมังกร",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-วัดมังกร"
   },
   {
     "id": "MRT_BL30",
@@ -927,7 +1111,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.746981,
-    "lng": 100.502303
+    "lng": 100.502303,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สามยอด",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สามยอด"
   },
   {
     "id": "MRT_BL31",
@@ -937,7 +1123,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.744334,
-    "lng": 100.494692
+    "lng": 100.494692,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สนามไชย",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สนามไชย"
   },
   {
     "id": "MRT_BL32",
@@ -947,7 +1135,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.738327,
-    "lng": 100.485702
+    "lng": 100.485702,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-อิสรภาพ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-อิสรภาพ"
   },
   {
     "id": "MRT_BL33",
@@ -957,7 +1147,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.72461,
-    "lng": 100.465086
+    "lng": 100.465086,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางไผ่",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_BL34",
@@ -967,7 +1159,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.720259,
-    "lng": 100.457037
+    "lng": 100.457037,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางหว้า",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางหว้า"
   },
   {
     "id": "MRT_BL35",
@@ -977,7 +1171,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.715538,
-    "lng": 100.445453
+    "lng": 100.445453,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-เพชรเกษม-48",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-เพชรเกษม-48"
   },
   {
     "id": "MRT_BL36",
@@ -987,7 +1183,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.712898,
-    "lng": 100.434332
+    "lng": 100.434332,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ภาษีเจริญ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ภาษีเจริญ"
   },
   {
     "id": "MRT_BL37",
@@ -997,7 +1195,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.711917,
-    "lng": 100.422336
+    "lng": 100.422336,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางแค",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางแค"
   },
   {
     "id": "MRT_BL38",
@@ -1007,7 +1207,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.710856,
-    "lng": 100.409493
+    "lng": 100.409493,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-หลักสอง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-หลักสอง"
   },
   {
     "id": "MRT_PP01",
@@ -1017,7 +1219,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.89244,
-    "lng": 100.408285
+    "lng": 100.408285,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-คลองบางไผ่",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-คลองบางไผ่"
   },
   {
     "id": "MRT_PP02",
@@ -1027,7 +1231,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.881018,
-    "lng": 100.409354
+    "lng": 100.409354,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ตลาดบางใหญ่",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ตลาดบางใหญ่"
   },
   {
     "id": "MRT_PP03",
@@ -1037,7 +1243,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.874737,
-    "lng": 100.419357
+    "lng": 100.419357,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สามแยกบางใหญ่",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สามแยกบางใหญ่"
   },
   {
     "id": "MRT_PP04",
@@ -1047,7 +1255,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.875824,
-    "lng": 100.433798
+    "lng": 100.433798,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางพลู",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางพลู"
   },
   {
     "id": "MRT_PP05",
@@ -1057,7 +1267,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.876669,
-    "lng": 100.444934
+    "lng": 100.444934,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางรักใหญ่",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางรักใหญ่"
   },
   {
     "id": "MRT_PP06",
@@ -1067,7 +1279,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.874866,
-    "lng": 100.455998
+    "lng": 100.455998,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางรักน้อยท่าอิฐ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางรักน้อยท่าอิฐ"
   },
   {
     "id": "MRT_PP07",
@@ -1077,7 +1291,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.870573,
-    "lng": 100.466711
+    "lng": 100.466711,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ไทรม้า",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ไทรม้า"
   },
   {
     "id": "MRT_PP08",
@@ -1087,7 +1303,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.870348,
-    "lng": 100.480126
+    "lng": 100.480126,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-สะพานพระนั่งเกล้า",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สะพานพระนั่งเกล้า"
   },
   {
     "id": "MRT_PP09",
@@ -1097,7 +1315,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.866011,
-    "lng": 100.494108
+    "lng": 100.494108,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-แยกนนทบุรี-1",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-แยกนนทบุรี-1"
   },
   {
     "id": "MRT_PP10",
@@ -1107,7 +1327,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.861714,
-    "lng": 100.504668
+    "lng": 100.504668,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางกระสอ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางกระสอ"
   },
   {
     "id": "MRT_PP11",
@@ -1117,7 +1339,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.860233,
-    "lng": 100.513072
+    "lng": 100.513072,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศูนย์ราชการนนทบุรี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศูนย์ราชการนนทบุรี"
   },
   {
     "id": "MRT_PP12",
@@ -1127,7 +1351,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.848499,
-    "lng": 100.514776
+    "lng": 100.514776,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-กระทรวงสาธารณสุข",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-กระทรวงสาธารณสุข"
   },
   {
     "id": "MRT_PP13",
@@ -1137,7 +1363,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.839575,
-    "lng": 100.515011
+    "lng": 100.515011,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-แยกติวานนท์",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-แยกติวานนท์"
   },
   {
     "id": "MRT_PP14",
@@ -1147,7 +1375,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.829919,
-    "lng": 100.526532
+    "lng": 100.526532,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-วงศ์สว่าง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-วงศ์สว่าง"
   },
   {
     "id": "MRT_PP15",
@@ -1157,7 +1387,9 @@
     "operator": "MRT",
     "is_extension": false,
     "lat": 13.820087,
-    "lng": 100.532521
+    "lng": 100.532521,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางซ่อน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางซ่อน"
   },
   {
     "id": "MRT_YL01",
@@ -1167,7 +1399,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.806991,
-    "lng": 100.574808
+    "lng": 100.574808,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ลาดพร้าว",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ลาดพร้าว"
   },
   {
     "id": "MRT_YL02",
@@ -1177,7 +1411,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.800171,
-    "lng": 100.584217
+    "lng": 100.584217,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ภาวนา",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ภาวนา"
   },
   {
     "id": "MRT_YL03",
@@ -1187,7 +1423,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.794431,
-    "lng": 100.594465
+    "lng": 100.594465,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-โชคชัย-4",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-โชคชัย-4"
   },
   {
     "id": "MRT_YL04",
@@ -1197,7 +1435,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.787103,
-    "lng": 100.60759
+    "lng": 100.60759,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ลาดพร้าว-71",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ลาดพร้าว-71"
   },
   {
     "id": "MRT_YL05",
@@ -1207,7 +1447,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.783753,
-    "lng": 100.613605
+    "lng": 100.613605,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ลาดพร้าว-83",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ลาดพร้าว-83"
   },
   {
     "id": "MRT_YL06",
@@ -1217,7 +1459,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.778377,
-    "lng": 100.623187
+    "lng": 100.623187,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-มหาดไทย",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-มหาดไทย"
   },
   {
     "id": "MRT_YL07",
@@ -1227,7 +1471,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.774678,
-    "lng": 100.629803
+    "lng": 100.629803,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ลาดพร้าว-101",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ลาดพร้าว-101"
   },
   {
     "id": "MRT_YL08",
@@ -1237,7 +1483,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.769098,
-    "lng": 100.639756
+    "lng": 100.639756,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-บางกะปิ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-บางกะปิ"
   },
   {
     "id": "MRT_YL09",
@@ -1247,7 +1495,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.761844,
-    "lng": 100.645552
+    "lng": 100.645552,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-แยกลำสาลี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-แยกลำสาลี"
   },
   {
     "id": "MRT_YL10",
@@ -1257,7 +1507,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.750433,
-    "lng": 100.644812
+    "lng": 100.644812,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีกรีฑา--a94d0904",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีกรีฑา"
   },
   {
     "id": "MRT_YL11",
@@ -1267,7 +1519,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.736148,
-    "lng": 100.641138
+    "lng": 100.641138,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_YL12",
@@ -1277,7 +1531,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.725343,
-    "lng": 100.641796
+    "lng": 100.641796,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-กลันตัน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-กลันตัน"
   },
   {
     "id": "MRT_YL13",
@@ -1287,7 +1543,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.711144,
-    "lng": 100.644158
+    "lng": 100.644158,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีนุช--b1ef093b",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีนุช"
   },
   {
     "id": "MRT_YL14",
@@ -1297,7 +1555,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.701115,
-    "lng": 100.646484
+    "lng": 100.646484,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีนครินทร์-38",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีนครินทร์-38"
   },
   {
     "id": "MRT_YL15",
@@ -1307,7 +1567,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.690864,
-    "lng": 100.647103
+    "lng": 100.647103,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_YL16",
@@ -1317,7 +1579,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.676638,
-    "lng": 100.646171
+    "lng": 100.646171,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีอุดม",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีอุดม"
   },
   {
     "id": "MRT_YL17",
@@ -1327,7 +1591,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.667663,
-    "lng": 100.645081
+    "lng": 100.645081,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีเอี่ยม",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีเอี่ยม"
   },
   {
     "id": "MRT_YL18",
@@ -1337,7 +1603,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.654958,
-    "lng": 100.642136
+    "lng": 100.642136,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีลาซาล",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีลาซาล"
   },
   {
     "id": "MRT_YL19",
@@ -1347,7 +1615,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.643471,
-    "lng": 100.636241
+    "lng": 100.636241,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีแบริ่ง",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีแบริ่ง"
   },
   {
     "id": "MRT_YL20",
@@ -1357,7 +1627,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.633125,
-    "lng": 100.630104
+    "lng": 100.630104,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีด่าน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีด่าน"
   },
   {
     "id": "MRT_YL21",
@@ -1367,7 +1639,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.629879,
-    "lng": 100.622682
+    "lng": 100.622682,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศรีเทพา",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศรีเทพา"
   },
   {
     "id": "MRT_YL22",
@@ -1377,7 +1651,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.636736,
-    "lng": 100.609916
+    "lng": 100.609916,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ทิพวัล",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ทิพวัล"
   },
   {
     "id": "MRT_YL23",
@@ -1387,7 +1663,9 @@
     "operator": "MRT_YL",
     "is_extension": false,
     "lat": 13.645044,
-    "lng": 100.596616
+    "lng": 100.596616,
+    "portal_condo_url": "",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-สำโรง"
   },
   {
     "id": "MRT_PK01",
@@ -1397,7 +1675,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.8597,
-    "lng": 100.518106
+    "lng": 100.518106,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-ศูนย์ราชการนนทบุรี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-ศูนย์ราชการนนทบุรี"
   },
   {
     "id": "MRT_PK02",
@@ -1407,7 +1687,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.86264,
-    "lng": 100.520642
+    "lng": 100.520642,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK03",
@@ -1417,7 +1699,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.8741,
-    "lng": 100.516307
+    "lng": 100.516307,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK04",
@@ -1427,7 +1711,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.889258,
-    "lng": 100.510563
+    "lng": 100.510563,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK05",
@@ -1437,7 +1723,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.898537,
-    "lng": 100.507079
+    "lng": 100.507079,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK06",
@@ -1447,7 +1735,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.906148,
-    "lng": 100.5054
+    "lng": 100.5054,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK07",
@@ -1457,7 +1747,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.906477,
-    "lng": 100.515558
+    "lng": 100.515558,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK08",
@@ -1467,7 +1759,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.904138,
-    "lng": 100.529267
+    "lng": 100.529267,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK09",
@@ -1477,7 +1771,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.900635,
-    "lng": 100.540031
+    "lng": 100.540031,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK10",
@@ -1487,7 +1783,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.897398,
-    "lng": 100.548436
+    "lng": 100.548436,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK11",
@@ -1497,7 +1795,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.893283,
-    "lng": 100.560143
+    "lng": 100.560143,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK12",
@@ -1507,7 +1807,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.890753,
-    "lng": 100.567342
+    "lng": 100.567342,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK13",
@@ -1517,7 +1819,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.887563,
-    "lng": 100.575709
+    "lng": 100.575709,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK14",
@@ -1527,7 +1831,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.884049,
-    "lng": 100.582681
+    "lng": 100.582681,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK15",
@@ -1537,7 +1843,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.879928,
-    "lng": 100.589283
+    "lng": 100.589283,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK16",
@@ -1547,7 +1855,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.874461,
-    "lng": 100.597268
+    "lng": 100.597268,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK17",
@@ -1557,7 +1867,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.870939,
-    "lng": 100.602604
+    "lng": 100.602604,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK18",
@@ -1567,7 +1879,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.862778,
-    "lng": 100.617802
+    "lng": 100.617802,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK19",
@@ -1577,7 +1891,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.858291,
-    "lng": 100.626119
+    "lng": 100.626119,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK20",
@@ -1587,7 +1903,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.855001,
-    "lng": 100.632213
+    "lng": 100.632213,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK21",
@@ -1597,7 +1915,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.84925,
-    "lng": 100.642869
+    "lng": 100.642869,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK22",
@@ -1607,7 +1927,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.845243,
-    "lng": 100.650234
+    "lng": 100.650234,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK23",
@@ -1617,7 +1939,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.840609,
-    "lng": 100.658781
+    "lng": 100.658781,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK24",
@@ -1627,7 +1951,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.833766,
-    "lng": 100.667563
+    "lng": 100.667563,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK25",
@@ -1637,7 +1963,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.82444,
-    "lng": 100.677195
+    "lng": 100.677195,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK26",
@@ -1647,7 +1975,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.81652,
-    "lng": 100.685641
+    "lng": 100.685641,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK27",
@@ -1657,7 +1987,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.812702,
-    "lng": 100.702928
+    "lng": 100.702928,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK28",
@@ -1667,7 +1999,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.812678,
-    "lng": 100.712628
+    "lng": 100.712628,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK29",
@@ -1677,7 +2011,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.812493,
-    "lng": 100.725833
+    "lng": 100.725833,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_PK30",
@@ -1687,7 +2023,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.808402,
-    "lng": 100.732674
+    "lng": 100.732674,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/mrt-มีนบุรี",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-มีนบุรี"
   },
   {
     "id": "MRT_MT01",
@@ -1697,7 +2035,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.910445,
-    "lng": 100.544248
+    "lng": 100.544248,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "MRT_MT02",
@@ -1707,7 +2047,9 @@
     "operator": "MRT_PK",
     "is_extension": false,
     "lat": 13.918379,
-    "lng": 100.545652
+    "lng": 100.545652,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "ARL_A8",
@@ -1717,7 +2059,9 @@
     "operator": "ARL",
     "is_extension": false,
     "lat": 13.75683,
-    "lng": 100.53449
+    "lng": 100.53449,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/แอร์พอร์ต-ลิงค์-พญาไท",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/bts-พญาไท"
   },
   {
     "id": "ARL_A7",
@@ -1727,7 +2071,9 @@
     "operator": "ARL",
     "is_extension": false,
     "lat": 13.755068,
-    "lng": 100.542324
+    "lng": 100.542324,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/แอร์พอร์ต-ลิงค์-ราชปรารภ",
+    "portal_apt_url": ""
   },
   {
     "id": "ARL_A6",
@@ -1737,7 +2083,9 @@
     "operator": "ARL",
     "is_extension": false,
     "lat": 13.750749,
-    "lng": 100.562194
+    "lng": 100.562194,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/แอร์พอร์ต-ลิงค์-มักกะสัน",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/mrt-เพชรบุรี"
   },
   {
     "id": "ARL_A5",
@@ -1747,7 +2095,9 @@
     "operator": "ARL",
     "is_extension": false,
     "lat": 13.742973,
-    "lng": 100.600618
+    "lng": 100.600618,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/แอร์พอร์ต-ลิงค์-รามคำแหง--2",
+    "portal_apt_url": ""
   },
   {
     "id": "ARL_A4",
@@ -1757,7 +2107,9 @@
     "operator": "ARL",
     "is_extension": false,
     "lat": 13.73806,
-    "lng": 100.645878
+    "lng": 100.645878,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/แอร์พอร์ต-ลิงค์-หัวหมาก",
+    "portal_apt_url": ""
   },
   {
     "id": "ARL_A3",
@@ -1767,7 +2119,9 @@
     "operator": "ARL",
     "is_extension": false,
     "lat": 13.732915,
-    "lng": 100.690819
+    "lng": 100.690819,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/แอร์พอร์ต-ลิงค์-บ้านทับช้าง",
+    "portal_apt_url": ""
   },
   {
     "id": "ARL_A2",
@@ -1777,7 +2131,9 @@
     "operator": "ARL",
     "is_extension": false,
     "lat": 13.727708,
-    "lng": 100.74932
+    "lng": 100.74932,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/แอร์พอร์ต-ลิงค์-ลาดกระบัง",
+    "portal_apt_url": ""
   },
   {
     "id": "ARL_A1",
@@ -1787,7 +2143,9 @@
     "operator": "ARL",
     "is_extension": false,
     "lat": 13.694297,
-    "lng": 100.75134
+    "lng": 100.75134,
+    "portal_condo_url": "https://propertyhub.in.th/เช่าคอนโด/แอร์พอร์ต-ลิงค์-สุวรรณภูมิ",
+    "portal_apt_url": "https://www.renthub.in.th/อพาร์ทเม้นท์-ห้องพัก-หอพัก/สนามบินสุวรรณภูมิ"
   },
   {
     "id": "SRT_RN01",
@@ -1797,7 +2155,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.804043,
-    "lng": 100.541316
+    "lng": 100.541316,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN02",
@@ -1807,7 +2167,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.826645,
-    "lng": 100.549424
+    "lng": 100.549424,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN03",
@@ -1817,7 +2179,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.841626,
-    "lng": 100.557449
+    "lng": 100.557449,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN04",
@@ -1827,7 +2191,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.849392,
-    "lng": 100.561619
+    "lng": 100.561619,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN05",
@@ -1837,7 +2203,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.860232,
-    "lng": 100.567479
+    "lng": 100.567479,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN06",
@@ -1847,7 +2215,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.886341,
-    "lng": 100.581886
+    "lng": 100.581886,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN07",
@@ -1857,7 +2227,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.898683,
-    "lng": 100.588823
+    "lng": 100.588823,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN08",
@@ -1867,7 +2239,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.914751,
-    "lng": 100.597757
+    "lng": 100.597757,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN09",
@@ -1877,7 +2251,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.965721,
-    "lng": 100.605355
+    "lng": 100.605355,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RN10",
@@ -1887,7 +2263,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.990543,
-    "lng": 100.60214
+    "lng": 100.60214,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RW02",
@@ -1897,7 +2275,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.822113,
-    "lng": 100.534211
+    "lng": 100.534211,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RW05",
@@ -1907,7 +2287,9 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.792139,
-    "lng": 100.477464
+    "lng": 100.477464,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   },
   {
     "id": "SRT_RW06",
@@ -1917,6 +2299,8 @@
     "operator": "SRT_RED",
     "is_extension": false,
     "lat": 13.789258,
-    "lng": 100.440071
+    "lng": 100.440071,
+    "portal_condo_url": "",
+    "portal_apt_url": ""
   }
 ]

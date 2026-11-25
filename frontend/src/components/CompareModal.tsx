@@ -16,7 +16,7 @@ import {
   type CompareResponse,
   type ListingResult,
 } from '../types/commute';
-import { buildGoogleMapsUrl, buildRealPriceSearchUrl } from '../utils/externalLinks';
+import { buildGoogleMapsUrl, getRealPriceLinks } from '../utils/externalLinks';
 
 interface CompareModalProps {
   open: boolean;
@@ -282,38 +282,47 @@ export function CompareModal({
                           : `${OPERATOR_LABEL[item.origin_station.operator] || item.origin_station.operator} ${item.origin_station.name_th}`}
                       </p>
 
-                      {/* 1-Click Links to Real Room Prices */}
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {item.latest_source_url && (
-                          <a
-                            href={item.latest_source_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            เว็บหอ
-                          </a>
-                        )}
-                        <a
-                          href={buildRealPriceSearchUrl(item)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-100"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          เช็กราคาจริง
-                        </a>
-                        <a
-                          href={buildGoogleMapsUrl(item)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-600 hover:bg-slate-50"
-                        >
-                          <MapPin className="h-3 w-3" />
-                          Maps
-                        </a>
-                      </div>
+                      {/* 1-Click Direct Rental Page Links */}
+                      {(() => {
+                        const priceLinks = getRealPriceLinks(item);
+                        return (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            <a
+                              href={priceLinks.primary.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[11px] font-bold transition ${
+                                priceLinks.primary.tone === 'emerald'
+                                  ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                                  : 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                              }`}
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              {priceLinks.primary.compactLabel}
+                            </a>
+                            {priceLinks.secondary && (
+                              <a
+                                href={priceLinks.secondary.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                {priceLinks.secondary.compactLabel}
+                              </a>
+                            )}
+                            <a
+                              href={buildGoogleMapsUrl(item)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-600 hover:bg-slate-50"
+                            >
+                              <MapPin className="h-3 w-3" />
+                              Maps
+                            </a>
+                          </div>
+                        );
+                      })()}
 
                       {/* Interactive Real Rent Input */}
                       <div className="mt-3">
