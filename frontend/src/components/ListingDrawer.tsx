@@ -4,7 +4,9 @@ import {
   Bike,
   CheckSquare,
   Clock,
+  ExternalLink,
   Footprints,
+  MapPin,
   MessageSquarePlus,
   Scale,
   Search,
@@ -17,10 +19,10 @@ import {
   OPERATOR_LABEL,
   OPERATOR_PILL_STYLE,
   type ListingResult,
+  type SortMode,
   type ZoneColor,
 } from '../types/commute';
-
-export type SortMode = 'true_cost' | 'time';
+import { buildGoogleMapsUrl, buildRealPriceSearchUrl } from '../utils/externalLinks';
 
 interface ListingDrawerProps {
   listings: ListingResult[];
@@ -63,7 +65,6 @@ export function ListingDrawer({
   const [filterText, setFilterText] = useState('');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  // Reset pagination when dataset or sort changes
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [listings, sortMode, filterText]);
@@ -82,16 +83,16 @@ export function ListingDrawer({
       : listings;
 
     return [...base].sort((a, b) => {
-      if (sortMode === 'time') {
-        if (a.cost.one_way_minutes !== b.cost.one_way_minutes) {
-          return a.cost.one_way_minutes - b.cost.one_way_minutes;
+      if (sortMode === 'commute_cost') {
+        if (a.cost.monthly_commute_thb !== b.cost.monthly_commute_thb) {
+          return a.cost.monthly_commute_thb - b.cost.monthly_commute_thb;
         }
-        return a.cost.true_monthly_cost_thb - b.cost.true_monthly_cost_thb;
+        return a.cost.one_way_minutes - b.cost.one_way_minutes;
       }
-      if (a.cost.true_monthly_cost_thb !== b.cost.true_monthly_cost_thb) {
-        return a.cost.true_monthly_cost_thb - b.cost.true_monthly_cost_thb;
+      if (a.cost.one_way_minutes !== b.cost.one_way_minutes) {
+        return a.cost.one_way_minutes - b.cost.one_way_minutes;
       }
-      return a.cost.one_way_minutes - b.cost.one_way_minutes;
+      return a.cost.monthly_commute_thb - b.cost.monthly_commute_thb;
     });
   }, [listings, sortMode, filterText]);
 
@@ -101,7 +102,7 @@ export function ListingDrawer({
     : Math.max(totalListingsCount, listings.length);
 
   return (
-    <aside className="flex h-full w-full flex-col border-l border-slate-200 bg-slate-50/70 lg:w-[400px] lg:shrink-0">
+    <aside className="flex h-full w-full flex-col border-l border-slate-200 bg-slate-50/70 lg:w-[410px] lg:shrink-0">
       {/* Header & Sort */}
       <div className="border-b border-slate-200 bg-white px-4 py-3">
         <div className="flex items-center justify-between">
@@ -117,17 +118,6 @@ export function ListingDrawer({
         <div className="mt-2 grid grid-cols-2 gap-1.5 rounded-xl bg-slate-100 p-1">
           <button
             type="button"
-            onClick={() => onChangeSortMode('true_cost')}
-            className={`rounded-lg py-1.5 text-xs font-semibold transition ${
-              sortMode === 'true_cost'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            ค่าครองชีพรวมจริงต่ำสุด
-          </button>
-          <button
-            type="button"
             onClick={() => onChangeSortMode('time')}
             className={`rounded-lg py-1.5 text-xs font-semibold transition ${
               sortMode === 'time'
@@ -136,6 +126,17 @@ export function ListingDrawer({
             }`}
           >
             เวลาเดินทางเร็วสุด
+          </button>
+          <button
+            type="button"
+            onClick={() => onChangeSortMode('commute_cost')}
+            className={`rounded-lg py-1.5 text-xs font-semibold transition ${
+              sortMode === 'commute_cost'
+                ? 'bg-white text-indigo-700 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            ค่าเดินทาง/เดือนต่ำสุด
           </button>
         </div>
 
@@ -161,7 +162,7 @@ export function ListingDrawer({
         </div>
 
         <p className="mt-1.5 text-[10px] leading-snug text-slate-400">
-          อาคารจริงจาก OSM • ระยะเดินตามถนนจริง (OSRM) • ช่วงราคาประเมินตามโซน + รายงานผู้เช่าจริง
+          อาคารจริงจาก OSM • ระยะเดินถนนจริง (OSRM) • ไม่เดาราคาห้อง กดลิงก์เช็กราคาจริงได้ทุกแห่ง
         </p>
       </div>
 
@@ -182,7 +183,7 @@ export function ListingDrawer({
               ไม่พบที่พักที่ตรงเงื่อนไขนี้
             </p>
             <p className="mt-1 text-xs text-slate-500">
-              ลองเพิ่มเวลาเดินทางสูงสุด ขยายงบค่าเช่า หรือล้างคำค้นหาดูนะครับ
+              ลองเพิ่มเวลาเดินทางสูงสุด ปรับงบค่าเดินทาง หรือปิดตัวกรองเฉพาะราคาจริงดูนะครับ
             </p>
           </div>
         ) : (
@@ -192,6 +193,7 @@ export function ListingDrawer({
               const isCompared = compareIds.includes(item.id);
               const canAddMore = compareIds.length < 3 || isCompared;
               const isVerified = item.price_status === 'verified';
+              const isDirect = item.route.station_ids.length <= 1;
               const opLabel =
                 OPERATOR_LABEL[item.origin_station.operator] ||
                 item.origin_station.operator;
@@ -216,20 +218,14 @@ export function ListingDrawer({
                         <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-slate-600">
                           {item.property_type === 'condo' ? 'คอนโด' : 'อพาร์ตเมนต์'}
                         </span>
-                        <span className="text-[11px] text-slate-400">
-                          ~{item.room_size_sqm} ตร.ม.
-                        </span>
                         {isVerified ? (
                           <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800">
                             <ShieldCheck className="h-3 w-3" />
-                            ยืนยันโดยผู้ใช้ ({item.verified_report_count})
+                            ราคาจริงจากผู้เช่า ({item.verified_report_count})
                           </span>
                         ) : (
-                          <span
-                            title={item.price_source}
-                            className="rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700"
-                          >
-                            ราคาประเมิน
+                          <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                            เช็กราคาห้องจากลิงก์ด้านล่าง
                           </span>
                         )}
                       </div>
@@ -258,93 +254,169 @@ export function ListingDrawer({
                     </span>
                   </div>
 
-                  {/* Cost Breakdown Box */}
+                  {/* Factual Cost Box (Zero Guessed Rent!) */}
                   <div className="mt-2.5 flex items-baseline justify-between rounded-xl bg-slate-50 px-3 py-2">
-                    <div>
-                      <div className="text-[10px] font-medium text-slate-500">
-                        ค่าครองชีพรวมจริง / เดือน
-                      </div>
-                      <div className="text-lg font-extrabold tracking-tight text-indigo-700">
-                        ฿{item.cost.true_monthly_cost_thb.toLocaleString()}
-                      </div>
-                    </div>
-                    <div className="text-right text-[11px] text-slate-600">
-                      {isVerified ? (
+                    {isVerified ? (
+                      <>
                         <div>
-                          เช่าจริง{' '}
-                          <strong className="text-emerald-700">
-                            ฿{item.monthly_rent_thb.toLocaleString()}
-                          </strong>
+                          <div className="text-[10px] font-medium text-emerald-700">
+                            ค่าครองชีพรวมจริง / เดือน
+                          </div>
+                          <div className="text-lg font-extrabold tracking-tight text-indigo-700">
+                            ฿{item.cost.true_monthly_cost_thb.toLocaleString()}
+                          </div>
                         </div>
-                      ) : (
+                        <div className="text-right text-[11px] text-slate-600">
+                          <div>
+                            เช่าจริง{' '}
+                            <strong className="text-emerald-700">
+                              ฿{item.monthly_rent_thb.toLocaleString()}
+                            </strong>
+                          </div>
+                          <div className="text-amber-700">
+                            + เดินทาง{' '}
+                            <strong>฿{item.cost.monthly_commute_thb.toLocaleString()}</strong>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
                         <div>
-                          เช่า{' '}
-                          <strong>
-                            ฿{item.estimated_rent_min_thb.toLocaleString()}–฿
-                            {item.estimated_rent_max_thb.toLocaleString()}
-                          </strong>
+                          <div className="text-[10px] font-medium text-slate-500">
+                            ค่าเดินทางจริง / เดือน
+                          </div>
+                          <div className="text-lg font-extrabold tracking-tight text-indigo-700">
+                            {item.cost.monthly_commute_thb === 0
+                              ? '฿0 (เดินถึง)'
+                              : `฿${item.cost.monthly_commute_thb.toLocaleString()}`}
+                          </div>
                         </div>
-                      )}
-                      <div className="text-amber-700">
-                        + เดินทาง{' '}
-                        <strong>฿{item.cost.monthly_commute_thb.toLocaleString()}</strong>
-                      </div>
-                    </div>
+                        <div className="text-right text-[11px] text-slate-600">
+                          {item.cost.monthly_rail_thb > 0 && (
+                            <div>
+                              รถไฟฟ้า{' '}
+                              <strong>฿{item.cost.monthly_rail_thb.toLocaleString()}</strong>
+                            </div>
+                          )}
+                          {item.cost.monthly_feeder_thb > 0 ? (
+                            <div className="text-amber-700">
+                              วินฯ{' '}
+                              <strong>฿{item.cost.monthly_feeder_thb.toLocaleString()}</strong>
+                            </div>
+                          ) : (
+                            <div className="text-emerald-700">เดินเข้าสถานีฟรี</div>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Transit Route & Real OSRM Access Mode */}
                   <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-semibold ${opStyle}`}
-                    >
-                      <TrainFront className="h-3 w-3" />
-                      {opLabel} {item.origin_station.name_th}
-                    </span>
+                    {isDirect ? (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-800">
+                        {item.home_access.mode === 'walk' ? (
+                          <Footprints className="h-3 w-3" />
+                        ) : (
+                          <Bike className="h-3 w-3 text-orange-600" />
+                        )}
+                        ตรงถึงออฟฟิศ ~{item.home_access.distance_m} ม. (
+                        {item.home_access.mode === 'walk'
+                          ? `เดิน ${item.home_access.minutes} น.`
+                          : `วิน ฿${item.home_access.one_way_cost_thb}`}
+                        )
+                      </span>
+                    ) : (
+                      <>
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-semibold ${opStyle}`}
+                        >
+                          <TrainFront className="h-3 w-3" />
+                          {opLabel} {item.origin_station.name_th}
+                        </span>
 
-                    <span
-                      title={
-                        item.home_access.distance_source === 'osrm_foot'
-                          ? 'ระยะเดินตามถนนและซอยจริง (คำนวณจาก OpenStreetMap + OSRM)'
-                          : 'ระยะทางประเมินด้วยตัวคูณถนน กทม. (1.40x)'
-                      }
-                      className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-slate-600"
-                    >
-                      {item.home_access.mode === 'walk' ? (
-                        <Footprints className="h-3 w-3" />
-                      ) : (
-                        <Bike className="h-3 w-3 text-orange-600" />
-                      )}
-                      {item.home_access.distance_source === 'osrm_foot'
-                        ? `ถนน ${item.home_access.distance_m} ม.`
-                        : `~${item.home_access.distance_m} ม.`}{' '}
-                      ({item.home_access.minutes} น.
-                      {item.home_access.one_way_cost_thb > 0
-                        ? ` • วิน ฿${item.home_access.one_way_cost_thb}`
-                        : ''}
-                      )
-                    </span>
-
-                    {item.route.legs && item.route.legs.length > 0 && (
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-600">
-                        {item.route.legs
-                          .map(
-                            (leg) =>
-                              `${OPERATOR_LABEL[leg.operator] || leg.operator} ฿${leg.fare_thb}`
+                        <span
+                          title={
+                            item.home_access.distance_source === 'osrm_foot'
+                              ? 'ระยะเดินตามถนนและซอยจริง (คำนวณจาก OpenStreetMap + OSRM)'
+                              : 'ระยะทางประเมินด้วยตัวคูณถนน กทม. (1.40x)'
+                          }
+                          className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-slate-600"
+                        >
+                          {item.home_access.mode === 'walk' ? (
+                            <Footprints className="h-3 w-3" />
+                          ) : (
+                            <Bike className="h-3 w-3 text-orange-600" />
+                          )}
+                          {item.home_access.distance_source === 'osrm_foot'
+                            ? `ถนน ${item.home_access.distance_m} ม.`
+                            : `~${item.home_access.distance_m} ม.`}{' '}
+                          ({item.home_access.minutes} น.
+                          {item.home_access.one_way_cost_thb > 0
+                            ? ` • วิน ฿${item.home_access.one_way_cost_thb}`
+                            : ''}
                           )
-                          .join(' + ')}
-                      </span>
-                    )}
+                        </span>
 
-                    {item.office_access.one_way_cost_thb > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-amber-800">
-                        <Bike className="h-3 w-3 text-amber-600" />
-                        ต่อวินถึงออฟฟิศ ฿{item.office_access.one_way_cost_thb}
-                      </span>
+                        {item.route.legs && item.route.legs.length > 0 && (
+                          <span className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-600">
+                            {item.route.legs
+                              .map(
+                                (leg) =>
+                                  `${OPERATOR_LABEL[leg.operator] || leg.operator} ฿${leg.fare_thb}`
+                              )
+                              .join(' + ')}
+                          </span>
+                        )}
+
+                        {item.office_access.one_way_cost_thb > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-amber-800">
+                            <Bike className="h-3 w-3 text-amber-600" />
+                            ต่อวินถึงออฟฟิศ ฿{item.office_access.one_way_cost_thb}
+                          </span>
+                        )}
+                      </>
                     )}
                   </div>
 
+                  {/* Direct External Links to Real Room Prices & Building Reviews */}
+                  <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                    {item.latest_source_url && (
+                      <a
+                        href={item.latest_source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-800 transition hover:bg-emerald-100"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        เว็บหอ / แหล่งราคาจริง
+                      </a>
+                    )}
+                    <a
+                      href={buildRealPriceSearchUrl(item)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50/70 px-2 py-1 text-[11px] font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      เช็กราคาเช่าจริง
+                    </a>
+                    <a
+                      href={buildGoogleMapsUrl(item)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                    >
+                      <MapPin className="h-3 w-3" />
+                      แผนที่ / รีวิว
+                    </a>
+                  </div>
+
                   {/* Footer Actions: Report Real Price + Compare */}
-                  <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-2.5">
+                  <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-slate-100 pt-2">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -354,7 +426,7 @@ export function ListingDrawer({
                       className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-emerald-700 transition hover:bg-emerald-50"
                     >
                       <MessageSquarePlus className="h-3.5 w-3.5" />
-                      รายงานราคาจริง
+                      บันทึกราคาจริง + แนบลิงก์
                     </button>
 
                     <button
@@ -409,7 +481,7 @@ export function ListingDrawer({
               <div className="text-[11px] text-slate-500">
                 {compareIds.length < 2
                   ? 'เลือกอีกอย่างน้อย 1 แห่งเพื่อเปรียบเทียบ'
-                  : 'พร้อมเปรียบเทียบค่าใช้จ่ายและเวลาชีวิต'}
+                  : 'เทียบค่าเดินทาง + กรอกค่าเช่าจริงเทียบได้ทันที'}
               </div>
             </div>
             <div className="flex items-center gap-1.5">

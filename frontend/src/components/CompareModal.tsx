@@ -1,5 +1,22 @@
-import { Award, Clock, ShieldCheck, Sparkles, TrainFront, X, Zap } from 'lucide-react';
-import { OPERATOR_LABEL, type CompareResponse } from '../types/commute';
+import { useEffect, useState } from 'react';
+import {
+  Award,
+  Clock,
+  ExternalLink,
+  MapPin,
+  MessageSquarePlus,
+  ShieldCheck,
+  Sparkles,
+  TrainFront,
+  X,
+  Zap,
+} from 'lucide-react';
+import {
+  OPERATOR_LABEL,
+  type CompareResponse,
+  type ListingResult,
+} from '../types/commute';
+import { buildGoogleMapsUrl, buildRealPriceSearchUrl } from '../utils/externalLinks';
 
 interface CompareModalProps {
   open: boolean;
@@ -7,6 +24,7 @@ interface CompareModalProps {
   error: string | null;
   data: CompareResponse | null;
   onClose: () => void;
+  onSharePrice: (listing: ListingResult, rentTHB: number) => void;
 }
 
 export function CompareModal({
@@ -15,23 +33,72 @@ export function CompareModal({
   error,
   data,
   onClose,
+  onSharePrice,
 }: CompareModalProps) {
+  // User-entered real rent per listing ID (pre-populated ONLY from verified crowdsourced prices)
+  const [customRents, setCustomRents] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!data) return;
+    setCustomRents((prev) => {
+      const next: Record<string, string> = {};
+      for (const item of data.items) {
+        if (prev[item.id] !== undefined) {
+          next[item.id] = prev[item.id];
+        } else if (item.price_status === 'verified' && item.monthly_rent_thb > 0) {
+          next[item.id] = String(item.monthly_rent_thb);
+        } else {
+          next[item.id] = '';
+        }
+      }
+      return next;
+    });
+  }, [data]);
+
   if (!open) return null;
 
-  const maxTrueCost = data
-    ? Math.max(...data.items.map((i) => i.cost.true_monthly_cost_thb), 1)
+  const items = data?.items ?? [];
+
+  // Compute live effective rent & true monthly cost per item
+  const computed = items.map((item) => {
+    const raw = (customRents[item.id] || '').replace(/[^0-9]/g, '');
+    const parsedRent = raw ? parseInt(raw, 10) : 0;
+    const hasRent = parsedRent > 0;
+    const trueMonthly = hasRent ? parsedRent + item.cost.monthly_commute_thb : 0;
+    const isCustomTyped =
+      hasRent &&
+      (item.price_status !== 'verified' || parsedRent !== item.monthly_rent_thb);
+    return { item, rent: parsedRent, hasRent, trueMonthly, isCustomTyped };
+  });
+
+  const allHaveRent = computed.length > 0 && computed.every((c) => c.hasRent);
+  const maxTrueCost = allHaveRent
+    ? Math.max(...computed.map((c) => c.trueMonthly), 1)
     : 1;
-  const minTrueCost = data && data.items.length > 0
-    ? Math.min(...data.items.map((i) => i.cost.true_monthly_cost_thb))
+  const minTrueCost = allHaveRent
+    ? Math.min(...computed.map((c) => c.trueMonthly))
     : 0;
-  const maxHours = data
-    ? Math.max(...data.items.map((i) => i.cost.monthly_commute_hours), 1)
+  const maxTrueSavings = allHaveRent ? maxTrueCost - minTrueCost : 0;
+
+  const maxCommuteCost = computed.length > 0
+    ? Math.max(...computed.map((c) => c.item.cost.monthly_commute_thb), 1)
     : 1;
-  const minOneWayMinutes = data && data.items.length > 0
-    ? Math.min(...data.items.map((i) => i.cost.one_way_minutes))
+  const minCommuteCost = computed.length > 0
+    ? Math.min(...computed.map((c) => c.item.cost.monthly_commute_thb))
+    : 0;
+  const maxCommuteSavings = computed.length > 0
+    ? Math.max(...computed.map((c) => c.item.cost.monthly_commute_thb)) - minCommuteCost
     : 0;
 
-  const hasCostDiff = Boolean(data && data.summary.max_monthly_savings_thb > 0);
+  const maxHours = computed.length > 0
+    ? Math.max(...computed.map((c) => c.item.cost.monthly_commute_hours), 1)
+    : 1;
+  const minOneWayMinutes = computed.length > 0
+    ? Math.min(...computed.map((c) => c.item.cost.one_way_minutes))
+    : 0;
+
+  const hasTrueCostDiff = allHaveRent && maxTrueSavings > 0;
+  const hasCommuteCostDiff = !allHaveRent && maxCommuteSavings > 0;
   const hasTimeDiff = Boolean(data && data.summary.max_monthly_hours_saved > 0);
 
   return (
@@ -40,18 +107,18 @@ export function CompareModal({
       onClick={onClose}
     >
       <div
-        className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
+        className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <div>
             <h2 className="text-lg font-bold text-slate-900">
-              เปรียบเทียบทำเลแบบเห็นภาพจริง (True Monthly Cost & Time)
+              เปรียบเทียบทำเลจากข้อมูลจริง (Commute &amp; True Monthly Cost)
             </h2>
             {data && (
               <p className="text-xs text-slate-500">
-                คำนวณจากวันเข้าออฟฟิศ {data.workdays} วัน/เดือน • ไป-กลับ รวมค่ารถไฟฟ้าและค่าวินมอเตอร์ไซค์
+                คำนวณจากวันเข้าออฟฟิศ {data.workdays} วัน/เดือน • ไป-กลับ รวมค่ารถไฟฟ้าจริงและค่าวินมอเตอร์ไซค์ • กดลิงก์เช็กราคาห้องจริงแล้วกรอกเทียบได้เลย
               </p>
             )}
           </div>
@@ -68,12 +135,12 @@ export function CompareModal({
         <div className="flex-1 overflow-y-auto p-6">
           {loading ? (
             <div className="py-16 text-center text-sm text-slate-500">
-              กำลังคำนวณเปรียบเทียบค่าครองชีพและเวลาเดินทาง...
+              กำลังคำนวณเปรียบเทียบค่าเดินทางและเวลาเดินทาง...
             </div>
           ) : error ? (
             <div className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{error}</div>
-          ) : data && data.items.length > 0 ? (
-            <div className="space-y-6">
+          ) : data && computed.length > 0 ? (
+            <div className="space-y-5">
               {/* Insight Banner */}
               <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-emerald-50 p-4">
                 <div className="flex items-start gap-3">
@@ -82,49 +149,63 @@ export function CompareModal({
                   </div>
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-wider text-indigo-700">
-                      สรุป Trade-off สำคัญ
+                      สรุป Trade-off จากข้อมูลจริง
                     </div>
                     <p className="mt-0.5 text-sm text-slate-800">
-                      {hasCostDiff && hasTimeDiff ? (
+                      {allHaveRent ? (
+                        hasTrueCostDiff && hasTimeDiff ? (
+                          <>
+                            ส่วนต่างค่าครองชีพรวมจริงสูงสุด{' '}
+                            <strong className="text-emerald-700">
+                              ฿{maxTrueSavings.toLocaleString()}/เดือน
+                            </strong>{' '}
+                            และส่วนต่างเวลาชีวิตบนถนนสูงสุด{' '}
+                            <strong className="text-indigo-700">
+                              {data.summary.max_monthly_hours_saved} ชั่วโมง/เดือน
+                            </strong>
+                          </>
+                        ) : !hasTrueCostDiff && hasTimeDiff ? (
+                          <>
+                            ทุกทำเลมีค่าครองชีพรวมจริงเท่ากันที่{' '}
+                            <strong className="text-slate-900">
+                              ฿{minTrueCost.toLocaleString()}/เดือน
+                            </strong>{' '}
+                            — ประหยัดเวลาชีวิตบนถนนได้สูงสุด{' '}
+                            <strong className="text-indigo-700">
+                              {data.summary.max_monthly_hours_saved} ชั่วโมง/เดือน
+                            </strong>
+                          </>
+                        ) : hasTrueCostDiff && !hasTimeDiff ? (
+                          <>
+                            ทุกทำเลใช้เวลาเดินทางเท่ากันที่{' '}
+                            <strong className="text-slate-900">
+                              {computed[0].item.cost.monthly_commute_hours} ชม./เดือน
+                            </strong>{' '}
+                            — ประหยัดค่าครองชีพรวมได้สูงสุด{' '}
+                            <strong className="text-emerald-700">
+                              ฿{maxTrueSavings.toLocaleString()}/เดือน
+                            </strong>
+                          </>
+                        ) : (
+                          <>
+                            ทุกทำเลมีค่าครองชีพรวมและเวลาเดินทางเท่ากัน (฿
+                            {minTrueCost.toLocaleString()}/เดือน •{' '}
+                            {computed[0].item.cost.monthly_commute_hours} ชม./เดือน)
+                          </>
+                        )
+                      ) : (
                         <>
-                          ส่วนต่างค่าครองชีพรวมสูงสุด{' '}
+                          ส่วนต่างค่าเดินทางจริงสูงสุด{' '}
                           <strong className="text-emerald-700">
-                            ฿{data.summary.max_monthly_savings_thb.toLocaleString()}/เดือน
+                            ฿{maxCommuteSavings.toLocaleString()}/เดือน
                           </strong>{' '}
                           และส่วนต่างเวลาชีวิตบนถนนสูงสุด{' '}
                           <strong className="text-indigo-700">
                             {data.summary.max_monthly_hours_saved} ชั่วโมง/เดือน
-                          </strong>
-                        </>
-                      ) : !hasCostDiff && hasTimeDiff ? (
-                        <>
-                          ทุกทำเลมีค่าครองชีพรวมเท่ากันที่{' '}
-                          <strong className="text-slate-900">
-                            ฿{minTrueCost.toLocaleString()}/เดือน
                           </strong>{' '}
-                          — ประหยัดเวลาชีวิตบนถนนได้สูงสุด{' '}
-                          <strong className="text-indigo-700">
-                            {data.summary.max_monthly_hours_saved} ชั่วโมง/เดือน
-                          </strong>
-                        </>
-                      ) : hasCostDiff && !hasTimeDiff ? (
-                        <>
-                          ทุกทำเลใช้เวลาเดินทางเท่ากันที่{' '}
-                          <strong className="text-slate-900">
-                            {data.items[0].cost.monthly_commute_hours} ชม./เดือน
-                          </strong>{' '}
-                          — ประหยัดค่าครองชีพรวมได้สูงสุด{' '}
-                          <strong className="text-emerald-700">
-                            ฿{data.summary.max_monthly_savings_thb.toLocaleString()}/เดือน
-                          </strong>
-                        </>
-                      ) : (
-                        <>
-                          ทุกทำเลที่เลือกมีค่าครองชีพรวมและเวลาเดินทางเท่ากันที่{' '}
-                          <strong className="text-slate-900">
-                            ฿{minTrueCost.toLocaleString()}/เดือน •{' '}
-                            {data.items[0].cost.monthly_commute_hours} ชม./เดือน
-                          </strong>
+                          <span className="text-xs text-slate-500">
+                            (กรอกค่าเช่าจริงด้านล่างให้ครบเพื่อคำนวณค่าครองชีพรวมจริง)
+                          </span>
                         </>
                       )}
                     </p>
@@ -135,22 +216,28 @@ export function CompareModal({
               {/* Side-by-Side Cards */}
               <div
                 className={`grid gap-4 ${
-                  data.items.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'
+                  computed.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'
                 }`}
               >
-                {data.items.map((item) => {
-                  const isCheapest =
-                    hasCostDiff && item.cost.true_monthly_cost_thb === minTrueCost;
+                {computed.map(({ item, rent, hasRent, trueMonthly, isCustomTyped }) => {
+                  const isCheapestTotal = hasTrueCostDiff && trueMonthly === minTrueCost;
+                  const isCheapestCommute =
+                    hasCommuteCostDiff &&
+                    item.cost.monthly_commute_thb === minCommuteCost;
                   const isFastest =
                     hasTimeDiff && item.cost.one_way_minutes === minOneWayMinutes;
-                  const highlightEmerald = isCheapest;
-                  const highlightIndigo = !hasCostDiff && isFastest;
-                  const rentPct = Math.round(
-                    (item.monthly_rent_thb / maxTrueCost) * 100
-                  );
-                  const commutePct = Math.round(
-                    (item.cost.monthly_commute_thb / maxTrueCost) * 100
-                  );
+                  const isDirect = item.route.station_ids.length <= 1;
+
+                  const highlightEmerald = isCheapestTotal || isCheapestCommute;
+                  const highlightIndigo =
+                    !highlightEmerald && !hasTrueCostDiff && !hasCommuteCostDiff && isFastest;
+
+                  const rentPct = allHaveRent
+                    ? Math.round((rent / maxTrueCost) * 100)
+                    : 0;
+                  const commutePct = allHaveRent
+                    ? Math.round((item.cost.monthly_commute_thb / maxTrueCost) * 100)
+                    : Math.round((item.cost.monthly_commute_thb / maxCommuteCost) * 100);
                   const hoursPct = Math.round(
                     (item.cost.monthly_commute_hours / maxHours) * 100
                   );
@@ -168,10 +255,16 @@ export function CompareModal({
                     >
                       {/* Winner Badges */}
                       <div className="mb-2 flex min-h-[24px] flex-wrap gap-1.5">
-                        {isCheapest && (
+                        {isCheapestTotal && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-bold text-white">
                             <Award className="h-3 w-3" />
                             รวมจริงถูกสุด
+                          </span>
+                        )}
+                        {isCheapestCommute && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-bold text-white">
+                            <Award className="h-3 w-3" />
+                            ค่าเดินทางถูกสุด
                           </span>
                         )}
                         {isFastest && (
@@ -184,66 +277,149 @@ export function CompareModal({
 
                       <h3 className="text-base font-bold text-slate-900">{item.title_th}</h3>
                       <p className="text-xs text-slate-500">
-                        {OPERATOR_LABEL[item.origin_station.operator] || item.origin_station.operator}{' '}
-                        {item.origin_station.name_th} • ~{item.room_size_sqm} ตร.ม.
+                        {isDirect
+                          ? `ใกล้จุดทำงาน (~${item.home_access.distance_m} ม.)`
+                          : `${OPERATOR_LABEL[item.origin_station.operator] || item.origin_station.operator} ${item.origin_station.name_th}`}
                       </p>
-                      <div className="mt-1.5 flex items-center gap-1.5">
-                        {item.price_status === 'verified' ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                            <ShieldCheck className="h-3 w-3" />
-                            ยืนยันโดยผู้ใช้ ({item.verified_report_count} รายงาน)
-                          </span>
-                        ) : (
-                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                            ราคาประเมิน (฿{item.estimated_rent_min_thb.toLocaleString()}–฿
-                            {item.estimated_rent_max_thb.toLocaleString()})
-                          </span>
+
+                      {/* 1-Click Links to Real Room Prices */}
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {item.latest_source_url && (
+                          <a
+                            href={item.latest_source_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            เว็บหอ
+                          </a>
+                        )}
+                        <a
+                          href={buildRealPriceSearchUrl(item)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-100"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          เช็กราคาจริง
+                        </a>
+                        <a
+                          href={buildGoogleMapsUrl(item)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-600 hover:bg-slate-50"
+                        >
+                          <MapPin className="h-3 w-3" />
+                          Maps
+                        </a>
+                      </div>
+
+                      {/* Interactive Real Rent Input */}
+                      <div className="mt-3">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <label className="font-semibold text-slate-700">
+                            ค่าเช่าจริง (฿/เดือน)
+                          </label>
+                          {item.price_status === 'verified' && !isCustomTyped && (
+                            <span className="inline-flex items-center gap-0.5 font-semibold text-emerald-700">
+                              <ShieldCheck className="h-3 w-3" />
+                              จากผู้เช่า ({item.verified_report_count})
+                            </span>
+                          )}
+                        </div>
+                        <input
+                          type="number"
+                          min={0}
+                          max={500000}
+                          step={500}
+                          value={customRents[item.id] ?? ''}
+                          onChange={(e) =>
+                            setCustomRents((prev) => ({
+                              ...prev,
+                              [item.id]: e.target.value,
+                            }))
+                          }
+                          placeholder="เช็กลิงก์แล้วกรอก เช่น 12500"
+                          className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-sm font-bold text-slate-900 placeholder:text-xs placeholder:font-normal placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                        {isCustomTyped && rent >= 1500 && (
+                          <button
+                            type="button"
+                            onClick={() => onSharePrice(item, rent)}
+                            className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 hover:underline"
+                          >
+                            <MessageSquarePlus className="h-3 w-3" />
+                            แชร์ราคา ฿{rent.toLocaleString()} ลงระบบให้คนอื่น
+                          </button>
                         )}
                       </div>
 
-                      {/* Big True Monthly Cost */}
-                      <div className="mt-4 rounded-xl bg-slate-900 px-4 py-3 text-white">
-                        <div className="text-[11px] text-slate-300">ค่าครองชีพรวมจริง / เดือน</div>
-                        <div className="text-2xl font-extrabold">
-                          ฿{item.cost.true_monthly_cost_thb.toLocaleString()}
-                        </div>
+                      {/* Big Metric Box: True Monthly Cost (if rent entered) OR Monthly Commute Cost */}
+                      <div className="mt-3 rounded-xl bg-slate-900 px-4 py-3 text-white">
+                        {hasRent ? (
+                          <>
+                            <div className="text-[11px] text-slate-300">
+                              ค่าครองชีพรวมจริง / เดือน
+                            </div>
+                            <div className="text-2xl font-extrabold">
+                              ฿{trueMonthly.toLocaleString()}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="text-[11px] text-slate-300">
+                              ค่าเดินทางจริง / เดือน
+                            </div>
+                            <div className="text-2xl font-extrabold">
+                              ฿{item.cost.monthly_commute_thb.toLocaleString()}
+                            </div>
+                          </>
+                        )}
                       </div>
 
-                      {/* Stacked Bar Chart: Rent vs Commute */}
-                      <div className="mt-4 space-y-1.5">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-slate-600">สัดส่วนค่าเช่า + ค่าเดินทาง</span>
-                          <span className="font-semibold text-slate-900">
-                            ฿{item.monthly_rent_thb.toLocaleString()} + ฿
-                            {item.cost.monthly_commute_thb.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex h-3.5 w-full overflow-hidden rounded-full bg-slate-100">
-                          <div
-                            style={{ width: `${rentPct}%` }}
-                            className="bg-indigo-500"
-                            title={`ค่าเช่า ฿${item.monthly_rent_thb.toLocaleString()}`}
-                          />
-                          <div
-                            style={{ width: `${commutePct}%` }}
-                            className="bg-amber-400"
-                            title={`ค่าเดินทาง ฿${item.cost.monthly_commute_thb.toLocaleString()}`}
-                          />
-                        </div>
-                        <div className="flex gap-3 text-[11px] text-slate-500">
-                          <span className="flex items-center gap-1">
-                            <span className="h-2 w-2 rounded-full bg-indigo-500" />
-                            ค่าเช่า
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="h-2 w-2 rounded-full bg-amber-400" />
-                            ค่าเดินทาง/ด.
-                          </span>
-                        </div>
+                      {/* Cost Bar */}
+                      <div className="mt-3.5 space-y-1.5">
+                        {allHaveRent ? (
+                          <>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-600">ค่าเช่าจริง + ค่าเดินทาง</span>
+                              <span className="font-semibold text-slate-900">
+                                ฿{rent.toLocaleString()} + ฿
+                                {item.cost.monthly_commute_thb.toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                style={{ width: `${rentPct}%` }}
+                                className="bg-indigo-500"
+                              />
+                              <div
+                                style={{ width: `${commutePct}%` }}
+                                className="bg-amber-400"
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-600">ค่าเดินทางจริง / เดือน</span>
+                              <span className="font-semibold text-amber-700">
+                                ฿{item.cost.monthly_commute_thb.toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                style={{ width: `${commutePct}%` }}
+                                className="h-full rounded-full bg-amber-400"
+                              />
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       {/* Monthly Commute Hours Bar */}
-                      <div className="mt-4 space-y-1.5">
+                      <div className="mt-3.5 space-y-1.5">
                         <div className="flex justify-between text-xs">
                           <span className="flex items-center gap-1 text-slate-600">
                             <Clock className="h-3.5 w-3.5" />
@@ -262,7 +438,7 @@ export function CompareModal({
                       </div>
 
                       {/* Detail rows */}
-                      <dl className="mt-4 space-y-1.5 border-t border-slate-200 pt-3 text-xs text-slate-600">
+                      <dl className="mt-3.5 space-y-1.5 border-t border-slate-200 pt-3 text-xs text-slate-600">
                         <div className="flex justify-between">
                           <dt>เวลาเดินทางขาเดียว</dt>
                           <dd className="font-semibold text-slate-900">
@@ -276,14 +452,14 @@ export function CompareModal({
                           </dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt>เข้าสถานี (ถนนจริง)</dt>
+                          <dt>{isDirect ? 'ระยะตรงถึงออฟฟิศ' : 'เข้าสถานี (ถนนจริง)'}</dt>
                           <dd className="font-semibold text-slate-900">
                             {item.home_access.mode === 'walk'
                               ? `เดิน ${item.home_access.distance_m} ม.`
                               : `วินฯ ${item.home_access.distance_m} ม. (+฿${item.home_access.one_way_cost_thb})`}
                           </dd>
                         </div>
-                        {item.office_access.one_way_cost_thb > 0 && (
+                        {!isDirect && item.office_access.one_way_cost_thb > 0 && (
                           <div className="flex justify-between">
                             <dt>ต่อถึงออฟฟิศ (ปลายทาง)</dt>
                             <dd className="font-semibold text-amber-700">
@@ -298,12 +474,16 @@ export function CompareModal({
                             เส้นทาง
                           </dt>
                           <dd className="font-semibold text-slate-900">
-                            {item.route.legs
-                              ?.map(
-                                (l) =>
-                                  `${OPERATOR_LABEL[l.operator] || l.operator} (฿${l.fare_thb})`
-                              )
-                              .join(' → ') || 'เดินถึง'}
+                            {item.route.legs && item.route.legs.length > 0
+                              ? item.route.legs
+                                  .map(
+                                    (l) =>
+                                      `${OPERATOR_LABEL[l.operator] || l.operator} (฿${l.fare_thb})`
+                                  )
+                                  .join(' → ')
+                              : item.home_access.mode === 'walk'
+                                ? 'เดินถึงโดยตรง'
+                                : 'วินฯ ถึงโดยตรง'}
                           </dd>
                         </div>
                       </dl>

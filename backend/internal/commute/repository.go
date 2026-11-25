@@ -41,6 +41,7 @@ type ListingRecord struct {
 	VerifiedRentMedianTHB int     `json:"verified_rent_median_thb"`
 	VerifiedReportCount   int     `json:"verified_report_count"`
 	LatestReportMonth     string  `json:"latest_report_month"`
+	LatestSourceURL       string  `json:"latest_source_url"`
 }
 
 // PriceReportRecord represents a single anonymized tenant-submitted rent report.
@@ -52,6 +53,7 @@ type PriceReportRecord struct {
 	RoomType       string    `json:"room_type"`
 	ReportedMonth  string    `json:"reported_month"`
 	Note           string    `json:"note,omitempty"`
+	SourceURL      string    `json:"source_url,omitempty"`
 	IsOutlier      bool      `json:"is_outlier"`
 	CreatedAt      time.Time `json:"created_at"`
 }
@@ -63,6 +65,7 @@ type VerifiedPriceStats struct {
 	MaxRentTHB        int    `json:"max_rent_thb"`
 	ReportCount       int    `json:"report_count"`
 	LatestReportMonth string `json:"latest_report_month"`
+	LatestSourceURL   string `json:"latest_source_url,omitempty"`
 }
 
 // ListingRentRef is used to verify listing existence and check outliers on report submission.
@@ -203,7 +206,8 @@ func (r *Repository) FindListingsNearStations(ctx context.Context, stationIDs []
 				listing_id,
 				ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY monthly_rent_thb))::int AS median_rent,
 				COUNT(*)::int AS report_count,
-				MAX(reported_month) AS latest_month
+				MAX(reported_month) AS latest_month,
+				(ARRAY_AGG(source_url ORDER BY created_at DESC) FILTER (WHERE source_url <> ''))[1] AS latest_url
 			FROM price_reports
 			WHERE NOT is_outlier
 			GROUP BY listing_id
@@ -220,13 +224,14 @@ func (r *Repository) FindListingsNearStations(ctx context.Context, stationIDs []
 			a.distance_source,
 			COALESCE(v.median_rent, 0) AS verified_median,
 			COALESCE(v.report_count, 0) AS verified_count,
-			COALESCE(v.latest_month, '') AS latest_month
+			COALESCE(v.latest_month, '') AS latest_month,
+			COALESCE(v.latest_url, '') AS latest_url
 		FROM listing_station_access a
 		JOIN listings l ON l.id = a.listing_id
 		LEFT JOIN verified v ON v.listing_id = l.id
 		WHERE a.station_id = ANY($1)
 		  AND a.walk_distance_m <= $2
-		  AND ($3 <= 0 OR COALESCE(NULLIF(v.median_rent, 0), l.monthly_rent_thb) <= $3)
+		  AND ($3 <= 0 OR v.median_rent IS NULL OR v.median_rent <= $3)
 	`, stationIDs, maxWalkMeters, maxBudget)
 	if err != nil {
 		return nil, fmt.Errorf("query listings via osrm access: %w", err)
@@ -255,12 +260,12 @@ func (r *Repository) FindListingsNearStations(ctx context.Context, stationIDs []
 			'estimated_detour' AS distance_source,
 			0 AS verified_median,
 			0 AS verified_count,
-			'' AS latest_month
+			'' AS latest_month,
+			'' AS latest_url
 		FROM listings l
 		JOIN stations s ON ST_DWithin(l.location, s.location, $1)
 		WHERE s.id = ANY($2)
-		  AND ($3 <= 0 OR l.monthly_rent_thb <= $3)
-	`, float64(maxWalkMeters), stationIDs, maxBudget)
+	`, float64(maxWalkMeters), stationIDs)
 	if err != nil {
 		return nil, fmt.Errorf("fallback st_dwithin listings query: %w", err)
 	}
@@ -280,7 +285,8 @@ func (r *Repository) FindListingsByIDsNearStations(ctx context.Context, ids []st
 				listing_id,
 				ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY monthly_rent_thb))::int AS median_rent,
 				COUNT(*)::int AS report_count,
-				MAX(reported_month) AS latest_month
+				MAX(reported_month) AS latest_month,
+				(ARRAY_AGG(source_url ORDER BY created_at DESC) FILTER (WHERE source_url <> ''))[1] AS latest_url
 			FROM price_reports
 			WHERE NOT is_outlier
 			  AND listing_id = ANY($1)
@@ -298,7 +304,8 @@ func (r *Repository) FindListingsByIDsNearStations(ctx context.Context, ids []st
 			a.distance_source,
 			COALESCE(v.median_rent, 0) AS verified_median,
 			COALESCE(v.report_count, 0) AS verified_count,
-			COALESCE(v.latest_month, '') AS latest_month
+			COALESCE(v.latest_month, '') AS latest_month,
+			COALESCE(v.latest_url, '') AS latest_url
 		FROM listings l
 		JOIN listing_station_access a ON a.listing_id = l.id
 		LEFT JOIN verified v ON v.listing_id = l.id
@@ -332,7 +339,8 @@ func (r *Repository) FindListingsByIDsNearStations(ctx context.Context, ids []st
 			'estimated_detour' AS distance_source,
 			0 AS verified_median,
 			0 AS verified_count,
-			'' AS latest_month
+			'' AS latest_month,
+			'' AS latest_url
 		FROM listings l
 		JOIN stations s ON ST_DWithin(l.location, s.location, $2) OR s.id = l.nearest_station_id
 		WHERE l.id = ANY($1)
@@ -356,14 +364,9 @@ func scanListingRecords(rows pgx.Rows) ([]ListingRecord, error) {
 			&rec.Lat, &rec.Lng,
 			&rec.StationID, &rec.WalkToStationM, &rec.DistanceSource,
 			&rec.VerifiedRentMedianTHB, &rec.VerifiedReportCount, &rec.LatestReportMonth,
+			&rec.LatestSourceURL,
 		); err != nil {
 			return nil, fmt.Errorf("scan listing record: %w", err)
-		}
-		if rec.EstimatedRentMinTHB <= 0 {
-			rec.EstimatedRentMinTHB = rec.MonthlyRentTHB
-		}
-		if rec.EstimatedRentMaxTHB <= 0 {
-			rec.EstimatedRentMaxTHB = rec.MonthlyRentTHB
 		}
 		out = append(out, rec)
 	}
@@ -414,7 +417,7 @@ func (r *Repository) HasRecentListingReportByIP(ctx context.Context, listingID, 
 	return exists, err
 }
 
-// InsertPriceReport stores a new tenant rent report and returns its created record.
+// InsertPriceReport stores a new tenant rent report (with optional source_url) and returns its created record.
 func (r *Repository) InsertPriceReport(
 	ctx context.Context,
 	listingID string,
@@ -423,6 +426,7 @@ func (r *Repository) InsertPriceReport(
 	roomType string,
 	reportedMonth string,
 	note string,
+	sourceURL string,
 	ipHash string,
 	isOutlier bool,
 ) (PriceReportRecord, error) {
@@ -430,14 +434,14 @@ func (r *Repository) InsertPriceReport(
 	err := r.pool.QueryRow(ctx, `
 		INSERT INTO price_reports (
 			listing_id, monthly_rent_thb, room_size_sqm, room_type,
-			reported_month, note, ip_hash, is_outlier
+			reported_month, note, source_url, ip_hash, is_outlier
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		RETURNING id, listing_id, monthly_rent_thb, room_size_sqm::double precision,
-		          room_type, reported_month, note, is_outlier, created_at
-	`, listingID, monthlyRentTHB, roomSizeSqm, roomType, reportedMonth, note, ipHash, isOutlier).Scan(
+		          room_type, reported_month, note, source_url, is_outlier, created_at
+	`, listingID, monthlyRentTHB, roomSizeSqm, roomType, reportedMonth, note, sourceURL, ipHash, isOutlier).Scan(
 		&rec.ID, &rec.ListingID, &rec.MonthlyRentTHB, &rec.RoomSizeSqm,
-		&rec.RoomType, &rec.ReportedMonth, &rec.Note, &rec.IsOutlier, &rec.CreatedAt,
+		&rec.RoomType, &rec.ReportedMonth, &rec.Note, &rec.SourceURL, &rec.IsOutlier, &rec.CreatedAt,
 	)
 	if err != nil {
 		return PriceReportRecord{}, fmt.Errorf("insert price report: %w", err)
@@ -454,11 +458,15 @@ func (r *Repository) GetVerifiedPriceStats(ctx context.Context, listingID string
 			COALESCE(MIN(monthly_rent_thb), 0),
 			COALESCE(MAX(monthly_rent_thb), 0),
 			COUNT(*)::int,
-			COALESCE(MAX(reported_month), '')
+			COALESCE(MAX(reported_month), ''),
+			COALESCE((ARRAY_AGG(source_url ORDER BY created_at DESC) FILTER (WHERE source_url <> ''))[1], '')
 		FROM price_reports
 		WHERE listing_id = $1
 		  AND NOT is_outlier
-	`, listingID).Scan(&st.MedianRentTHB, &st.MinRentTHB, &st.MaxRentTHB, &st.ReportCount, &st.LatestReportMonth)
+	`, listingID).Scan(
+		&st.MedianRentTHB, &st.MinRentTHB, &st.MaxRentTHB,
+		&st.ReportCount, &st.LatestReportMonth, &st.LatestSourceURL,
+	)
 	return st, err
 }
 
@@ -469,7 +477,7 @@ func (r *Repository) ListPriceReports(ctx context.Context, listingID string, lim
 	}
 	rows, err := r.pool.Query(ctx, `
 		SELECT id, listing_id, monthly_rent_thb, room_size_sqm::double precision,
-		       room_type, reported_month, note, is_outlier, created_at
+		       room_type, reported_month, note, source_url, is_outlier, created_at
 		FROM price_reports
 		WHERE listing_id = $1
 		  AND NOT is_outlier
@@ -486,7 +494,7 @@ func (r *Repository) ListPriceReports(ctx context.Context, listingID string, lim
 		var rec PriceReportRecord
 		if err := rows.Scan(
 			&rec.ID, &rec.ListingID, &rec.MonthlyRentTHB, &rec.RoomSizeSqm,
-			&rec.RoomType, &rec.ReportedMonth, &rec.Note, &rec.IsOutlier, &rec.CreatedAt,
+			&rec.RoomType, &rec.ReportedMonth, &rec.Note, &rec.SourceURL, &rec.IsOutlier, &rec.CreatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("scan price report: %w", err)
 		}

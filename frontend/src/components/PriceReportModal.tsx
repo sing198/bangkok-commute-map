@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { CheckCircle2, Info, ShieldCheck, X } from 'lucide-react';
+import { CheckCircle2, ExternalLink, Link2, MapPin, ShieldCheck, X } from 'lucide-react';
 import { fetchPriceReports, submitPriceReport } from '../api/client';
 import {
   OPERATOR_LABEL,
@@ -7,9 +7,11 @@ import {
   type ListingResult,
   type RoomType,
 } from '../types/commute';
+import { buildGoogleMapsUrl, buildRealPriceSearchUrl } from '../utils/externalLinks';
 
 interface PriceReportModalProps {
   listing: ListingResult | null;
+  initialRent?: number | null;
   onClose: () => void;
   onSubmitted: () => void;
 }
@@ -30,6 +32,7 @@ function currentYearMonth(): string {
 
 export function PriceReportModal({
   listing,
+  initialRent,
   onClose,
   onSubmitted,
 }: PriceReportModalProps) {
@@ -37,6 +40,7 @@ export function PriceReportModal({
   const [roomSize, setRoomSize] = useState('');
   const [roomType, setRoomType] = useState<RoomType>('1br');
   const [reportedMonth, setReportedMonth] = useState(currentYearMonth());
+  const [sourceUrl, setSourceUrl] = useState('');
   const [note, setNote] = useState('');
 
   const [existing, setExisting] = useState<ListPriceReportsResponse | null>(null);
@@ -47,10 +51,17 @@ export function PriceReportModal({
 
   useEffect(() => {
     if (!listing) return;
-    setRent(String(listing.monthly_rent_thb));
-    setRoomSize(String(listing.room_size_sqm));
+    if (initialRent && initialRent > 0) {
+      setRent(String(initialRent));
+    } else if (listing.price_status === 'verified' && listing.monthly_rent_thb > 0) {
+      setRent(String(listing.monthly_rent_thb));
+    } else {
+      setRent('');
+    }
+    setRoomSize(String(listing.room_size_sqm || 28));
     setRoomType(listing.property_type === 'apartment' ? 'dorm' : '1br');
     setReportedMonth(currentYearMonth());
+    setSourceUrl(listing.latest_source_url || '');
     setNote('');
     setError(null);
     setSuccessMsg(null);
@@ -71,7 +82,7 @@ export function PriceReportModal({
     return () => {
       cancelled = true;
     };
-  }, [listing]);
+  }, [listing, initialRent]);
 
   if (!listing) return null;
 
@@ -84,12 +95,18 @@ export function PriceReportModal({
 
     const parsedRent = parseInt(rent, 10);
     const parsedSize = parseFloat(roomSize);
-    if (Number.isNaN(parsedRent) || parsedRent < 1500 || parsedRent > 250000) {
-      setError('กรุณากรอกค่าเช่าจริงระหว่าง ฿1,500 – ฿250,000 ต่อเดือน');
+    if (Number.isNaN(parsedRent) || parsedRent < 1500 || parsedRent > 500000) {
+      setError('กรุณากรอกค่าเช่าจริงระหว่าง ฿1,500 – ฿500,000 ต่อเดือน');
       return;
     }
-    if (Number.isNaN(parsedSize) || parsedSize < 10 || parsedSize > 300) {
-      setError('กรุณากรอกขนาดห้องระหว่าง 10 – 300 ตร.ม.');
+    if (Number.isNaN(parsedSize) || parsedSize < 10 || parsedSize > 500) {
+      setError('กรุณากรอกขนาดห้องระหว่าง 10 – 500 ตร.ม.');
+      return;
+    }
+
+    const trimmedUrl = sourceUrl.trim();
+    if (trimmedUrl && !/^https?:\/\/.+/i.test(trimmedUrl)) {
+      setError('ลิงก์อ้างอิงต้องขึ้นต้นด้วย https:// หรือ http://');
       return;
     }
 
@@ -100,6 +117,7 @@ export function PriceReportModal({
         room_size_sqm: parsedSize,
         room_type: roomType,
         reported_month: reportedMonth,
+        source_url: trimmedUrl,
         note: note.trim(),
       });
       setSuccessMsg(res.message);
@@ -127,14 +145,13 @@ export function PriceReportModal({
           <div className="min-w-0 pr-3">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Crowdsourced Real Rent
+              ข้อมูลราคาจริงจากผู้เช่า / เว็บหอ
             </div>
             <h2 className="mt-1 truncate text-base font-bold text-slate-900">
-              รายงานราคาเช่าจริง: {listing.title_th}
+              {listing.title_th}
             </h2>
             <p className="text-xs text-slate-500">
-              {opLabel} {listing.origin_station.name_th} • เดินตามถนน{' '}
-              {listing.home_access.distance_m} ม.
+              {opLabel} {listing.origin_station.name_th} • ถนน {listing.home_access.distance_m} ม.
             </p>
           </div>
           <button
@@ -148,30 +165,40 @@ export function PriceReportModal({
 
         {/* Body */}
         <div className="flex-1 space-y-4 overflow-y-auto p-6">
-          {/* Reference vs Verified Banner */}
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-600">
-            <div className="flex items-center justify-between">
-              <span>ช่วงราคาประเมินตามโซน ({listing.district}):</span>
-              <strong className="text-slate-900">
-                ฿{listing.estimated_rent_min_thb.toLocaleString()} – ฿
-                {listing.estimated_rent_max_thb.toLocaleString()}/ด.
-              </strong>
+          {/* Quick Links to Check Real Price First */}
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-3.5">
+            <div className="text-xs font-semibold text-slate-700">
+              เช็กราคาห้องจริงก่อนบันทึกหรือเปรียบเทียบ:
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <a
+                href={buildRealPriceSearchUrl(listing)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-indigo-700"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                ค้นหาราคาจริงบน Google
+              </a>
+              <a
+                href={buildGoogleMapsUrl(listing)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                <MapPin className="h-3.5 w-3.5" />
+                ดูรูปตึก / รีวิวบน Maps
+              </a>
             </div>
             {existing && existing.stats.report_count > 0 && (
-              <div className="mt-1.5 flex items-center justify-between border-t border-slate-200 pt-1.5 text-emerald-700">
+              <div className="mt-2.5 flex items-center justify-between border-t border-indigo-100 pt-2 text-xs text-emerald-800">
                 <span className="font-semibold">
-                  ราคามัธยฐานที่ผู้ใช้ยืนยัน ({existing.stats.report_count} รายงาน):
+                  ราคามัธยฐานจากผู้เช่า ({existing.stats.report_count} รายงาน):
                 </span>
                 <strong className="text-sm">
                   ฿{existing.stats.median_rent_thb.toLocaleString()}/ด.
                 </strong>
               </div>
-            )}
-            {listing.price_source && (
-              <p className="mt-1.5 flex items-start gap-1 text-[11px] text-slate-400">
-                <Info className="mt-0.5 h-3 w-3 shrink-0" />
-                {listing.price_source}
-              </p>
             )}
           </div>
 
@@ -186,12 +213,12 @@ export function PriceReportModal({
                   type="number"
                   required
                   min={1500}
-                  max={250000}
+                  max={500000}
                   step={100}
                   value={rent}
                   onChange={(e) => setRent(e.target.value)}
                   className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-                  placeholder="เช่น 14500"
+                  placeholder="เช่น 14500 หรือ 80000"
                 />
               </div>
               <div>
@@ -202,7 +229,7 @@ export function PriceReportModal({
                   type="number"
                   required
                   min={10}
-                  max={300}
+                  max={500}
                   step={0.5}
                   value={roomSize}
                   onChange={(e) => setRoomSize(e.target.value)}
@@ -231,7 +258,7 @@ export function PriceReportModal({
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-700">
-                  เดือนที่เช่าอยู่ *
+                  เดือนที่เช่า/เช็กราคา *
                 </label>
                 <input
                   type="month"
@@ -245,6 +272,21 @@ export function PriceReportModal({
             </div>
 
             <div>
+              <label className="flex items-center gap-1 text-xs font-semibold text-slate-700">
+                <Link2 className="h-3.5 w-3.5 text-indigo-600" />
+                แนบลิงก์เว็บหอ / ประกาศเช่าจริง (ไม่บังคับ)
+              </label>
+              <input
+                type="url"
+                maxLength={500}
+                value={sourceUrl}
+                onChange={(e) => setSourceUrl(e.target.value)}
+                placeholder="https://... (เช่น เว็บไซต์หอพัก, Renthub, DDproperty)"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              />
+            </div>
+
+            <div>
               <label className="block text-xs font-semibold text-slate-700">
                 รายละเอียดเพิ่มเติม (ไม่บังคับ)
               </label>
@@ -253,7 +295,7 @@ export function PriceReportModal({
                 maxLength={200}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="เช่น สัญญา 1 ปี เฟอร์ครบ ไม่รวมค่าน้ำไฟ"
+                placeholder="เช่น สัญญา 1 ปี เฟอร์ครบ ค่าน้ำไฟตามมิเตอร์"
                 className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               />
             </div>
@@ -276,29 +318,29 @@ export function PriceReportModal({
               disabled={submitting}
               className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-indigo-700 disabled:opacity-60"
             >
-              {submitting ? 'กำลังบันทึก...' : 'ส่งข้อมูลราคาเช่าจริง'}
+              {submitting ? 'กำลังบันทึก...' : 'บันทึกราคาเช่าจริง'}
             </button>
 
             <p className="text-[11px] text-slate-400">
-              ระบบไม่เก็บข้อมูลส่วนตัว (จำกัด 1 รายงาน/ที่พัก/30 วัน และคัดกรองราคาผิดปกติอัตโนมัติ)
+              ไม่เก็บข้อมูลส่วนตัว • จำกัด 1 รายงาน/ที่พัก/30 วัน เพื่อป้องกันสแปม
             </p>
           </form>
 
           {/* Recent Verified Reports */}
           <div className="border-t border-slate-100 pt-3">
             <h3 className="text-xs font-bold text-slate-700">
-              รายงานจากผู้เช่าจริงล่าสุด
+              รายงานราคาจริงจากผู้ใช้งานล่าสุด
             </h3>
             {loadingExisting ? (
               <p className="mt-2 text-xs text-slate-400">กำลังโหลด...</p>
             ) : existing && existing.reports.length > 0 ? (
               <ul className="mt-2 space-y-1.5">
-                {existing.reports.slice(0, 5).map((r) => (
+                {existing.reports.slice(0, 6).map((r) => (
                   <li
                     key={r.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs"
+                    className="flex items-start justify-between gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs"
                   >
-                    <div>
+                    <div className="min-w-0">
                       <span className="font-bold text-emerald-700">
                         ฿{r.monthly_rent_thb.toLocaleString()}/ด.
                       </span>{' '}
@@ -306,7 +348,18 @@ export function PriceReportModal({
                         • {ROOM_TYPE_LABELS[r.room_type]} {r.room_size_sqm} ตร.ม.
                       </span>
                       {r.note && (
-                        <div className="text-[11px] text-slate-400">{r.note}</div>
+                        <div className="text-[11px] text-slate-500">{r.note}</div>
+                      )}
+                      {r.source_url && (
+                        <a
+                          href={r.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:underline"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          เปิดลิงก์อ้างอิงราคา
+                        </a>
                       )}
                     </div>
                     <span className="shrink-0 font-mono text-[11px] text-slate-400">
@@ -317,7 +370,7 @@ export function PriceReportModal({
               </ul>
             ) : (
               <p className="mt-1.5 text-xs text-slate-400">
-                ยังไม่มีผู้รายงานราคาจริงของตึกนี้ — เป็นคนแรกที่ช่วยแชร์ข้อมูลให้คนหาห้องได้เลยครับ
+                ยังไม่มีผู้รายงานราคาจริงของตึกนี้ — กดปุ่มด้านบนเพื่อเช็กราคาจริงแล้วบันทึกแบ่งปันได้เลยครับ
               </p>
             )}
           </div>

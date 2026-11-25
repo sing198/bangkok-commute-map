@@ -253,20 +253,24 @@ func (s *Server) handleCommuteSearch(c *gin.Context) {
 
 	maxMinutes, _ := strconv.Atoi(c.DefaultQuery("max_minutes", "45"))
 	maxBudget, _ := strconv.Atoi(c.DefaultQuery("max_budget", "0"))
+	maxCommuteBudget, _ := strconv.Atoi(c.DefaultQuery("max_commute_budget", "0"))
+	verifiedOnly := c.Query("verified_only") == "true" || c.Query("verified_only") == "1"
 	workdays, _ := strconv.Atoi(c.DefaultQuery("workdays", "22"))
 	walkMaxM, _ := strconv.Atoi(c.DefaultQuery("walk_max_m", "800"))
-	sortBy := c.DefaultQuery("sort", "true_cost")
+	sortBy := c.DefaultQuery("sort", "time")
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "450"))
 
 	resp, cacheHit, err := s.commuteSvc.Search(c.Request.Context(), commute.SearchParams{
-		Lat:        lat,
-		Lng:        lng,
-		MaxMinutes: maxMinutes,
-		MaxBudget:  maxBudget,
-		Workdays:   workdays,
-		WalkMaxM:   walkMaxM,
-		Sort:       sortBy,
-		Limit:      limit,
+		Lat:              lat,
+		Lng:              lng,
+		MaxMinutes:       maxMinutes,
+		MaxBudget:        maxBudget,
+		MaxCommuteBudget: maxCommuteBudget,
+		VerifiedOnly:     verifiedOnly,
+		Workdays:         workdays,
+		WalkMaxM:         walkMaxM,
+		Sort:             sortBy,
+		Limit:            limit,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

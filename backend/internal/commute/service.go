@@ -21,14 +21,16 @@ const (
 
 // SearchParams defines query filters for /api/commute/search.
 type SearchParams struct {
-	Lat        float64
-	Lng        float64
-	MaxMinutes int
-	MaxBudget  int
-	Workdays   int
-	WalkMaxM   int
-	Sort       string // "true_cost" (default) or "time"
-	Limit      int
+	Lat              float64
+	Lng              float64
+	MaxMinutes       int
+	MaxBudget        int    // Optional cap on verified monthly rent
+	MaxCommuteBudget int    // Optional cap on real monthly commute cost (rail + feeder)
+	VerifiedOnly     bool   // If true, return only listings with tenant-verified real rent
+	Workdays         int
+	WalkMaxM         int
+	Sort             string // "time" (default), "commute_cost", or "true_cost"
+	Limit            int
 }
 
 // ReachableStation is a station reachable within max_minutes with its zone color tier.
@@ -42,8 +44,8 @@ type ReachableStation struct {
 	OfficeAccess  transit.AccessLeg   `json:"office_access"`
 }
 
-// ListingResult is a listing enriched with real OSRM door-to-door commute time, route,
-// cited estimated rent range, crowdsourced verified rent, and True Monthly Cost.
+// ListingResult is a real Bangkok building enriched with factual OSRM street walking distance,
+// real BTS/MRT/ARL/SRT rail time & fare, and verified user-reported rent (never guessed).
 type ListingResult struct {
 	ID                    string                     `json:"id"`
 	OSMID                 string                     `json:"osm_id,omitempty"`
@@ -51,15 +53,13 @@ type ListingResult struct {
 	TitleEN               string                     `json:"title_en"`
 	PropertyType          string                     `json:"property_type"`
 	District              string                     `json:"district"`
-	MonthlyRentTHB        int                        `json:"monthly_rent_thb"`
-	EstimatedRentMinTHB   int                        `json:"estimated_rent_min_thb"`
-	EstimatedRentMaxTHB   int                        `json:"estimated_rent_max_thb"`
-	PriceStatus           string                     `json:"price_status"` // "verified" or "estimated"
-	PriceSource           string                     `json:"price_source,omitempty"`
+	MonthlyRentTHB        int                        `json:"monthly_rent_thb"` // >0 ONLY when price_status == "verified"
+	PriceStatus           string                     `json:"price_status"`     // "verified" or "unverified"
 	DataSource            string                     `json:"data_source,omitempty"`
 	VerifiedRentMedianTHB int                        `json:"verified_rent_median_thb,omitempty"`
 	VerifiedReportCount   int                        `json:"verified_report_count"`
 	LatestReportMonth     string                     `json:"latest_report_month,omitempty"`
+	LatestSourceURL       string                     `json:"latest_source_url,omitempty"`
 	RoomSizeSqm           float64                    `json:"room_size_sqm"`
 	Bedrooms              int                        `json:"bedrooms"`
 	Lat                   float64                    `json:"lat"`
@@ -91,12 +91,14 @@ type OfficePoint struct {
 }
 
 type SearchMeta struct {
-	MaxMinutes int    `json:"max_minutes"`
-	MaxBudget  int    `json:"max_budget"`
-	Workdays   int    `json:"workdays"`
-	WalkMaxM   int    `json:"walk_max_m"`
-	Sort       string `json:"sort"`
-	Limit      int    `json:"limit"`
+	MaxMinutes       int    `json:"max_minutes"`
+	MaxBudget        int    `json:"max_budget"`
+	MaxCommuteBudget int    `json:"max_commute_budget"`
+	VerifiedOnly     bool   `json:"verified_only"`
+	Workdays         int    `json:"workdays"`
+	WalkMaxM         int    `json:"walk_max_m"`
+	Sort             string `json:"sort"`
+	Limit            int    `json:"limit"`
 }
 
 // CompareRequest is the JSON payload for POST /api/commute/compare.
@@ -107,12 +109,14 @@ type CompareRequest struct {
 	ListingIDs []string    `json:"listing_ids" binding:"required,min=2,max=3"`
 }
 
-// CompareSummary highlights the best value and fastest commute trade-offs.
+// CompareSummary highlights the best commute cost and fastest commute trade-offs.
 type CompareSummary struct {
-	LowestTrueCostID     string  `json:"lowest_true_cost_id"`
-	FastestCommuteID     string  `json:"fastest_commute_id"`
-	MaxMonthlySavingsTHB int     `json:"max_monthly_savings_thb"`
-	MaxMonthlyHoursSaved float64 `json:"max_monthly_hours_saved"`
+	LowestTrueCostID            string  `json:"lowest_true_cost_id"`
+	LowestCommuteCostID         string  `json:"lowest_commute_cost_id"`
+	FastestCommuteID            string  `json:"fastest_commute_id"`
+	MaxMonthlySavingsTHB        int     `json:"max_monthly_savings_thb"`
+	MaxMonthlyCommuteSavingsTHB int     `json:"max_monthly_commute_savings_thb"`
+	MaxMonthlyHoursSaved        float64 `json:"max_monthly_hours_saved"`
 }
 
 // CompareResponse is returned by POST /api/commute/compare.
@@ -162,8 +166,10 @@ func NormalizeParams(p SearchParams) SearchParams {
 	if p.WalkMaxM > 2500 {
 		p.WalkMaxM = 2500
 	}
-	if p.Sort != "time" {
-		p.Sort = "true_cost"
+	switch p.Sort {
+	case "time", "commute_cost", "true_cost":
+	default:
+		p.Sort = "time"
 	}
 	if p.Limit <= 0 {
 		p.Limit = defaultSearchLimit
@@ -179,25 +185,60 @@ func NormalizeParams(p SearchParams) SearchParams {
 func QuantizedCacheKey(p SearchParams) string {
 	qLat := math.Round(p.Lat*1000) / 1000
 	qLng := math.Round(p.Lng*1000) / 1000
-	return fmt.Sprintf("commute:search:v3:%.3f:%.3f:%d:%d:%d:%d:%s:%d",
-		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.Workdays, p.WalkMaxM, p.Sort, p.Limit)
+	return fmt.Sprintf("commute:search:v4:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
+		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.MaxCommuteBudget, p.VerifiedOnly, p.Workdays, p.WalkMaxM, p.Sort, p.Limit)
 }
 
-func buildListingResult(rec ListingRecord, stOpt ReachableStation, destSt transit.Station, workdays, walkMaxM int) ListingResult {
+func haversineMeters(lat1, lng1, lat2, lng2 float64) float64 {
+	const earthRadiusM = 6371000.0
+	p1 := lat1 * math.Pi / 180.0
+	p2 := lat2 * math.Pi / 180.0
+	dp := (lat2 - lat1) * math.Pi / 180.0
+	dl := (lng2 - lng1) * math.Pi / 180.0
+	a := math.Sin(dp/2)*math.Sin(dp/2) + math.Cos(p1)*math.Cos(p2)*math.Sin(dl/2)*math.Sin(dl/2)
+	return 2 * earthRadiusM * math.Asin(math.Sqrt(a))
+}
+
+func buildListingResult(
+	rec ListingRecord,
+	stOpt ReachableStation,
+	destSt transit.Station,
+	office OfficePoint,
+	workdays, walkMaxM int,
+) ListingResult {
 	distSrc := rec.DistanceSource
 	if distSrc == "" {
 		distSrc = "osrm_foot"
 	}
-	homeAccess := transit.CalculateAccessWithSource(rec.WalkToStationM, walkMaxM, distSrc)
 
-	effectiveRent := rec.MonthlyRentTHB
-	priceStatus := "estimated"
+	homeAccess := transit.CalculateAccessWithSource(rec.WalkToStationM, walkMaxM, distSrc)
+	officeAccess := stOpt.OfficeAccess
+	route := stOpt.Route
+
+	// Fix same-station zero-rail V-detour: when home and office share the exact same station
+	// (no rail segment boarded), calculate a single direct door-to-door trip instead of two
+	// separate feeder legs to/from an unused station.
+	if len(route.StationIDs) <= 1 {
+		directStreetM := haversineMeters(rec.Lat, rec.Lng, office.Lat, office.Lng) * transit.BangkokDetourFactor
+		homeAccess = transit.CalculateAccessWithSource(directStreetM, walkMaxM, "estimated_detour")
+		officeAccess = transit.AccessLeg{
+			DistanceM:      0,
+			Mode:           "walk",
+			Minutes:        0,
+			OneWayCostTHB:  0,
+			DistanceSource: "estimated_detour",
+		}
+	}
+
+	// Never guess room rent: only populate MonthlyRentTHB when tenant-verified reports exist.
+	verifiedRent := 0
+	priceStatus := "unverified"
 	if rec.VerifiedReportCount > 0 && rec.VerifiedRentMedianTHB > 0 {
-		effectiveRent = rec.VerifiedRentMedianTHB
+		verifiedRent = rec.VerifiedRentMedianTHB
 		priceStatus = "verified"
 	}
 
-	cost := transit.CalculateMonthlyCost(effectiveRent, homeAccess, stOpt.OfficeAccess, stOpt.Route, workdays)
+	cost := transit.CalculateMonthlyCost(verifiedRent, homeAccess, officeAccess, route, workdays)
 
 	return ListingResult{
 		ID:                    rec.ID,
@@ -206,15 +247,13 @@ func buildListingResult(rec ListingRecord, stOpt ReachableStation, destSt transi
 		TitleEN:               rec.TitleEN,
 		PropertyType:          rec.PropertyType,
 		District:              rec.District,
-		MonthlyRentTHB:        effectiveRent,
-		EstimatedRentMinTHB:   rec.EstimatedRentMinTHB,
-		EstimatedRentMaxTHB:   rec.EstimatedRentMaxTHB,
+		MonthlyRentTHB:        verifiedRent,
 		PriceStatus:           priceStatus,
-		PriceSource:           rec.PriceSource,
 		DataSource:            rec.DataSource,
 		VerifiedRentMedianTHB: rec.VerifiedRentMedianTHB,
 		VerifiedReportCount:   rec.VerifiedReportCount,
 		LatestReportMonth:     rec.LatestReportMonth,
+		LatestSourceURL:       rec.LatestSourceURL,
 		RoomSizeSqm:           rec.RoomSizeSqm,
 		Bedrooms:              rec.Bedrooms,
 		Lat:                   rec.Lat,
@@ -222,14 +261,14 @@ func buildListingResult(rec ListingRecord, stOpt ReachableStation, destSt transi
 		OriginStation:         stOpt.Station,
 		DestStation:           destSt,
 		HomeAccess:            homeAccess,
-		OfficeAccess:          stOpt.OfficeAccess,
-		Route:                 stOpt.Route,
+		OfficeAccess:          officeAccess,
+		Route:                 route,
 		Cost:                  cost,
 		ZoneColor:             zoneColorForMinutes(cost.OneWayMinutes),
 	}
 }
 
-// Search finds reachable stations and matching listings sorted by True Monthly Cost or commute time.
+// Search finds reachable stations and matching real Bangkok buildings ranked by factual commute metrics.
 func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse, bool, error) {
 	p := NormalizeParams(raw)
 	cacheKey := QuantizedCacheKey(p)
@@ -264,7 +303,6 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 		return reachableStations[i].Station.ID < reachableStations[j].Station.ID
 	})
 
-	// Query listings using precomputed real OSRM street walking distances (up to 2,500m).
 	searchWalkM := p.WalkMaxM + 900
 	if searchWalkM < 1800 {
 		searchWalkM = 1800
@@ -277,7 +315,7 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 		return SearchResponse{}, false, err
 	}
 
-	// Deduplicate listings across multiple nearby stations by picking the best station per listing.
+	officePt := OfficePoint{Lat: p.Lat, Lng: p.Lng}
 	bestByListing := make(map[string]ListingResult, len(rawListings))
 	for _, rec := range rawListings {
 		stOpt, ok := bestStationOption[rec.StationID]
@@ -285,11 +323,17 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 			continue
 		}
 		destSt, _ := s.graph.Station(stOpt.Route.DestID)
-		candidate := buildListingResult(rec, stOpt, destSt, p.Workdays, p.WalkMaxM)
+		candidate := buildListingResult(rec, stOpt, destSt, officePt, p.Workdays, p.WalkMaxM)
 		if candidate.Cost.OneWayMinutes > p.MaxMinutes {
 			continue
 		}
-		if existing, exists := bestByListing[rec.ID]; !exists || isBetterOption(candidate, existing) {
+		if p.MaxCommuteBudget > 0 && candidate.Cost.MonthlyCommuteTHB > p.MaxCommuteBudget {
+			continue
+		}
+		if p.VerifiedOnly && candidate.PriceStatus != "verified" {
+			continue
+		}
+		if existing, exists := bestByListing[rec.ID]; !exists || isBetterCommuteOption(candidate, existing) {
 			bestByListing[rec.ID] = candidate
 		}
 	}
@@ -298,18 +342,7 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 	for _, item := range bestByListing {
 		listings = append(listings, item)
 	}
-	if p.Sort == "time" {
-		sort.Slice(listings, func(i, j int) bool {
-			if listings[i].Cost.OneWayMinutes != listings[j].Cost.OneWayMinutes {
-				return listings[i].Cost.OneWayMinutes < listings[j].Cost.OneWayMinutes
-			}
-			return isBetterOption(listings[i], listings[j])
-		})
-	} else {
-		sort.Slice(listings, func(i, j int) bool {
-			return isBetterOption(listings[i], listings[j])
-		})
-	}
+	sortListings(listings, p.Sort)
 
 	totalCount := len(listings)
 	if len(listings) > p.Limit {
@@ -317,14 +350,16 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 	}
 
 	resp := SearchResponse{
-		Office: OfficePoint{Lat: p.Lat, Lng: p.Lng},
+		Office: officePt,
 		Params: SearchMeta{
-			MaxMinutes: p.MaxMinutes,
-			MaxBudget:  p.MaxBudget,
-			Workdays:   p.Workdays,
-			WalkMaxM:   p.WalkMaxM,
-			Sort:       p.Sort,
-			Limit:      p.Limit,
+			MaxMinutes:       p.MaxMinutes,
+			MaxBudget:        p.MaxBudget,
+			MaxCommuteBudget: p.MaxCommuteBudget,
+			VerifiedOnly:     p.VerifiedOnly,
+			Workdays:         p.Workdays,
+			WalkMaxM:         p.WalkMaxM,
+			Sort:             p.Sort,
+			Limit:            p.Limit,
 		},
 		DetourFactor:          transit.BangkokDetourFactor,
 		TotalListingsCount:    totalCount,
@@ -384,8 +419,8 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 			continue
 		}
 		destSt, _ := s.graph.Station(stOpt.Route.DestID)
-		candidate := buildListingResult(rec, stOpt, destSt, workdays, walkMaxM)
-		if existing, exists := bestByListing[rec.ID]; !exists || isBetterOption(candidate, existing) {
+		candidate := buildListingResult(rec, stOpt, destSt, req.Office, workdays, walkMaxM)
+		if existing, exists := bestByListing[rec.ID]; !exists || isBetterCommuteOption(candidate, existing) {
 			bestByListing[rec.ID] = candidate
 		}
 	}
@@ -413,7 +448,6 @@ func (s *Service) computeBestStationOptions(nearest []NearestStation, maxMinutes
 	best := make(map[string]ReachableStation)
 
 	for _, ns := range nearest {
-		// Calibrated real-street office walk estimate using Bangkok's empirical 1.40x detour factor
 		officeAccess := transit.CalculateOfficeAccess(ns.DistanceM, walkMaxM)
 		maxRail := -1
 		if maxMinutes >= 0 {
@@ -462,9 +496,6 @@ func (s *Service) computeBestStationOptions(nearest []NearestStation, maxMinutes
 	return best
 }
 
-// isBetterStationOption compares two destination-station choices from the same origin station.
-// When a walkable office exit is within 3 minutes of a paid motorcycle-taxi (win) exit,
-// it prefers walking to avoid adding an unnecessary THB 15–25/trip feeder surcharge.
 func isBetterStationOption(cand, prev ReachableStation) bool {
 	candWalk := cand.OfficeAccess.Mode == "walk"
 	prevWalk := prev.OfficeAccess.Mode == "walk"
@@ -501,14 +532,61 @@ func zoneColorForMinutes(mins int) string {
 	}
 }
 
-func isBetterOption(a, b ListingResult) bool {
-	if a.Cost.TrueMonthlyCostTHB != b.Cost.TrueMonthlyCostTHB {
-		return a.Cost.TrueMonthlyCostTHB < b.Cost.TrueMonthlyCostTHB
+// isBetterCommuteOption picks the best transit route for a single building across multiple nearby stations.
+func isBetterCommuteOption(a, b ListingResult) bool {
+	if a.Cost.MonthlyCommuteTHB != b.Cost.MonthlyCommuteTHB {
+		// Prefer faster route if cost difference is tiny, else prefer lower monthly commute cost
+		if a.Cost.OneWayMinutes+3 < b.Cost.OneWayMinutes {
+			return true
+		}
+		if b.Cost.OneWayMinutes+3 < a.Cost.OneWayMinutes {
+			return false
+		}
+		return a.Cost.MonthlyCommuteTHB < b.Cost.MonthlyCommuteTHB
 	}
 	if a.Cost.OneWayMinutes != b.Cost.OneWayMinutes {
 		return a.Cost.OneWayMinutes < b.Cost.OneWayMinutes
 	}
 	return a.ID < b.ID
+}
+
+func sortListings(listings []ListingResult, sortBy string) {
+	sort.Slice(listings, func(i, j int) bool {
+		a, b := listings[i], listings[j]
+		switch sortBy {
+		case "commute_cost":
+			if a.Cost.MonthlyCommuteTHB != b.Cost.MonthlyCommuteTHB {
+				return a.Cost.MonthlyCommuteTHB < b.Cost.MonthlyCommuteTHB
+			}
+			if a.Cost.OneWayMinutes != b.Cost.OneWayMinutes {
+				return a.Cost.OneWayMinutes < b.Cost.OneWayMinutes
+			}
+			return a.ID < b.ID
+		case "true_cost":
+			// Verified real-rent listings appear first sorted by true monthly cost;
+			// unverified listings follow sorted by factual monthly commute cost.
+			aVer := a.PriceStatus == "verified"
+			bVer := b.PriceStatus == "verified"
+			if aVer != bVer {
+				return aVer
+			}
+			if a.Cost.TrueMonthlyCostTHB != b.Cost.TrueMonthlyCostTHB {
+				return a.Cost.TrueMonthlyCostTHB < b.Cost.TrueMonthlyCostTHB
+			}
+			if a.Cost.OneWayMinutes != b.Cost.OneWayMinutes {
+				return a.Cost.OneWayMinutes < b.Cost.OneWayMinutes
+			}
+			return a.ID < b.ID
+		default: // "time"
+			if a.Cost.OneWayMinutes != b.Cost.OneWayMinutes {
+				return a.Cost.OneWayMinutes < b.Cost.OneWayMinutes
+			}
+			if a.Cost.MonthlyCommuteTHB != b.Cost.MonthlyCommuteTHB {
+				return a.Cost.MonthlyCommuteTHB < b.Cost.MonthlyCommuteTHB
+			}
+			return a.ID < b.ID
+		}
+	})
 }
 
 func buildCompareSummary(items []ListingResult) CompareSummary {
@@ -517,6 +595,8 @@ func buildCompareSummary(items []ListingResult) CompareSummary {
 	}
 	lowestCost := items[0]
 	highestCost := items[0]
+	lowestCommute := items[0]
+	highestCommute := items[0]
 	fastest := items[0]
 	slowest := items[0]
 
@@ -528,8 +608,15 @@ func buildCompareSummary(items []ListingResult) CompareSummary {
 		if it.Cost.TrueMonthlyCostTHB > highestCost.Cost.TrueMonthlyCostTHB {
 			highestCost = it
 		}
+		if it.Cost.MonthlyCommuteTHB < lowestCommute.Cost.MonthlyCommuteTHB ||
+			(it.Cost.MonthlyCommuteTHB == lowestCommute.Cost.MonthlyCommuteTHB && it.Cost.OneWayMinutes < lowestCommute.Cost.OneWayMinutes) {
+			lowestCommute = it
+		}
+		if it.Cost.MonthlyCommuteTHB > highestCommute.Cost.MonthlyCommuteTHB {
+			highestCommute = it
+		}
 		if it.Cost.OneWayMinutes < fastest.Cost.OneWayMinutes ||
-			(it.Cost.OneWayMinutes == fastest.Cost.OneWayMinutes && it.Cost.TrueMonthlyCostTHB < fastest.Cost.TrueMonthlyCostTHB) {
+			(it.Cost.OneWayMinutes == fastest.Cost.OneWayMinutes && it.Cost.MonthlyCommuteTHB < fastest.Cost.MonthlyCommuteTHB) {
 			fastest = it
 		}
 		if it.Cost.OneWayMinutes > slowest.Cost.OneWayMinutes {
@@ -540,9 +627,11 @@ func buildCompareSummary(items []ListingResult) CompareSummary {
 	hoursSaved := math.Round((slowest.Cost.MonthlyCommuteHours-fastest.Cost.MonthlyCommuteHours)*10) / 10
 
 	return CompareSummary{
-		LowestTrueCostID:     lowestCost.ID,
-		FastestCommuteID:     fastest.ID,
-		MaxMonthlySavingsTHB: highestCost.Cost.TrueMonthlyCostTHB - lowestCost.Cost.TrueMonthlyCostTHB,
-		MaxMonthlyHoursSaved: hoursSaved,
+		LowestTrueCostID:            lowestCost.ID,
+		LowestCommuteCostID:         lowestCommute.ID,
+		FastestCommuteID:            fastest.ID,
+		MaxMonthlySavingsTHB:        highestCost.Cost.TrueMonthlyCostTHB - lowestCost.Cost.TrueMonthlyCostTHB,
+		MaxMonthlyCommuteSavingsTHB: highestCommute.Cost.MonthlyCommuteTHB - lowestCommute.Cost.MonthlyCommuteTHB,
+		MaxMonthlyHoursSaved:        hoursSaved,
 	}
 }

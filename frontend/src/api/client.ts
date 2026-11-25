@@ -5,6 +5,7 @@ import type {
   OfficePreset,
   SearchFilters,
   SearchResponse,
+  SortMode,
   SubmitPriceReportRequest,
   SubmitPriceReportResponse,
   TelemetryInfo,
@@ -24,13 +25,14 @@ export async function fetchPresets(): Promise<OfficePreset[]> {
 export async function searchCommute(
   office: OfficePoint,
   filters: SearchFilters,
-  sort: 'true_cost' | 'time' = 'true_cost'
+  sort: SortMode = 'time'
 ): Promise<{ data: SearchResponse; telemetry: TelemetryInfo }> {
   const qs = new URLSearchParams({
     lat: office.lat.toFixed(5),
     lng: office.lng.toFixed(5),
     max_minutes: String(filters.maxMinutes),
-    max_budget: String(filters.maxBudget),
+    max_commute_budget: String(filters.maxCommuteBudget),
+    verified_only: filters.verifiedOnly ? 'true' : 'false',
     workdays: String(filters.workdays),
     walk_max_m: String(filters.walkMaxM),
     sort,

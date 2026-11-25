@@ -58,7 +58,7 @@ export function FilterSidebar({
                 Bangkok Commute Map
               </h1>
               <p className="text-xs text-slate-500">
-                ค่าเช่าจริง = ค่าห้อง + ค่าเดินทาง BTS/MRT/ARL
+                เวลาเดินทางจริง + ค่ารถไฟฟ้าทุกสาย + ลิงก์เช็กราคาจริง
               </p>
             </div>
           </div>
@@ -168,35 +168,49 @@ export function FilterSidebar({
           </div>
         </section>
 
-        {/* Max Monthly Rent Budget */}
+        {/* Max Monthly Commute Cost Budget */}
         <section>
           <div className="mb-1.5 flex items-center justify-between text-sm">
             <label className="flex items-center gap-1.5 font-medium text-slate-700">
               <Wallet className="h-4 w-4 text-emerald-600" />
-              งบค่าเช่าสูงสุด
+              งบค่าเดินทางสูงสุด
             </label>
             <span className="font-semibold text-emerald-700">
-              {filters.maxBudget === 0
+              {filters.maxCommuteBudget === 0
                 ? 'ไม่จำกัด'
-                : `฿${filters.maxBudget.toLocaleString()}/เดือน`}
+                : `฿${filters.maxCommuteBudget.toLocaleString()}/เดือน`}
             </span>
           </div>
           <input
             type="range"
             min={0}
-            max={35000}
-            step={1000}
-            value={filters.maxBudget}
+            max={4000}
+            step={250}
+            value={filters.maxCommuteBudget}
             onChange={(e) =>
-              onChangeFilters({ ...filters, maxBudget: Number(e.target.value) })
+              onChangeFilters({
+                ...filters,
+                maxCommuteBudget: Number(e.target.value),
+              })
             }
             className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-emerald-600"
           />
           <div className="mt-1 flex justify-between text-[11px] text-slate-400">
             <span>ไม่จำกัด</span>
-            <span>฿18,000</span>
-            <span>฿35,000</span>
+            <span>฿2,000</span>
+            <span>฿4,000</span>
           </div>
+          <label className="mt-2.5 flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs text-slate-700 hover:bg-slate-100">
+            <input
+              type="checkbox"
+              checked={filters.verifiedOnly}
+              onChange={(e) =>
+                onChangeFilters({ ...filters, verifiedOnly: e.target.checked })
+              }
+              className="h-3.5 w-3.5 rounded accent-emerald-600"
+            />
+            <span>เฉพาะที่พักที่มีราคาจริงจากผู้เช่าแล้ว</span>
+          </label>
         </section>
 
         {/* Workdays per month */}

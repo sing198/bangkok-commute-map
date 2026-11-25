@@ -27,6 +27,8 @@ export const OPERATOR_PILL_STYLE: Record<OperatorCode, string> = {
   SRT_RED: 'bg-red-100 text-red-800',
 };
 
+export type SortMode = 'time' | 'commute_cost' | 'true_cost';
+
 export interface OfficePreset {
   id: string;
   name_th: string;
@@ -112,15 +114,13 @@ export interface ListingResult {
   title_en: string;
   property_type: 'condo' | 'apartment';
   district: string;
-  monthly_rent_thb: number;
-  estimated_rent_min_thb: number;
-  estimated_rent_max_thb: number;
-  price_status: 'verified' | 'estimated';
-  price_source?: string;
+  monthly_rent_thb: number; // >0 ONLY when price_status === 'verified'
+  price_status: 'verified' | 'unverified';
   data_source?: string;
   verified_rent_median_thb?: number;
   verified_report_count: number;
   latest_report_month?: string;
+  latest_source_url?: string;
   room_size_sqm: number;
   bedrooms: number;
   lat: number;
@@ -141,7 +141,8 @@ export interface OfficePoint {
 
 export interface SearchFilters {
   maxMinutes: number;
-  maxBudget: number;
+  maxCommuteBudget: number; // 0 = unlimited; factual monthly rail+feeder budget in THB
+  verifiedOnly: boolean;
   workdays: number;
   walkMaxM: number;
 }
@@ -151,9 +152,11 @@ export interface SearchResponse {
   params: {
     max_minutes: number;
     max_budget: number;
+    max_commute_budget: number;
+    verified_only: boolean;
     workdays: number;
     walk_max_m: number;
-    sort: 'true_cost' | 'time';
+    sort: SortMode;
     limit: number;
   };
   detour_factor: number;
@@ -166,8 +169,10 @@ export interface SearchResponse {
 
 export interface CompareSummary {
   lowest_true_cost_id: string;
+  lowest_commute_cost_id: string;
   fastest_commute_id: string;
   max_monthly_savings_thb: number;
+  max_monthly_commute_savings_thb: number;
   max_monthly_hours_saved: number;
 }
 
@@ -195,6 +200,7 @@ export interface PriceReportRecord {
   room_type: RoomType;
   reported_month: string;
   note?: string;
+  source_url?: string;
   is_outlier: boolean;
   created_at: string;
 }
@@ -205,11 +211,12 @@ export interface VerifiedPriceStats {
   max_rent_thb: number;
   report_count: number;
   latest_report_month: string;
+  latest_source_url?: string;
 }
 
 export interface ListPriceReportsResponse {
   listing_id: string;
-  price_status: 'verified' | 'estimated';
+  price_status: 'verified' | 'unverified';
   stats: VerifiedPriceStats;
   reports: PriceReportRecord[];
 }
@@ -220,11 +227,12 @@ export interface SubmitPriceReportRequest {
   room_type: RoomType;
   reported_month: string;
   note?: string;
+  source_url?: string;
 }
 
 export interface SubmitPriceReportResponse {
   report: PriceReportRecord;
   stats: VerifiedPriceStats;
-  price_status: 'verified' | 'estimated';
+  price_status: 'verified' | 'unverified';
   message: string;
 }

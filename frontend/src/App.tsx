@@ -4,7 +4,7 @@ import type { PlaceResult } from './api/places';
 import { CommuteMap } from './components/CommuteMap';
 import { CompareModal } from './components/CompareModal';
 import { FilterSidebar } from './components/FilterSidebar';
-import { ListingDrawer, type SortMode } from './components/ListingDrawer';
+import { ListingDrawer } from './components/ListingDrawer';
 import { PriceReportModal } from './components/PriceReportModal';
 import type {
   CompareResponse,
@@ -13,6 +13,7 @@ import type {
   OfficePreset,
   SearchFilters,
   SearchResponse,
+  SortMode,
   TelemetryInfo,
 } from './types/commute';
 
@@ -20,7 +21,8 @@ const DEFAULT_OFFICE: OfficePoint = { lat: 13.7367, lng: 100.5603 }; // Asok
 
 const DEFAULT_FILTERS: SearchFilters = {
   maxMinutes: 35,
-  maxBudget: 22000,
+  maxCommuteBudget: 0,
+  verifiedOnly: false,
   workdays: 22,
   walkMaxM: 800,
 };
@@ -37,7 +39,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [sortMode, setSortMode] = useState<SortMode>('true_cost');
+  const [sortMode, setSortMode] = useState<SortMode>('time');
   const [refreshTick, setRefreshTick] = useState(0);
   const [selectedListingId, setSelectedListingId] = useState<string | null>(null);
 
@@ -48,8 +50,8 @@ export default function App() {
   const [compareData, setCompareData] = useState<CompareResponse | null>(null);
 
   const [reportListing, setReportListing] = useState<ListingResult | null>(null);
+  const [reportInitialRent, setReportInitialRent] = useState<number | null>(null);
 
-  // Load office presets on mount
   useEffect(() => {
     fetchPresets()
       .then((list) => setPresets(list))
@@ -58,7 +60,6 @@ export default function App() {
       });
   }, []);
 
-  // Run commute search whenever office, filters, sortMode, or crowdsourced price updates change
   useEffect(() => {
     const timer = window.setTimeout(() => {
       let cancelled = false;
@@ -140,6 +141,19 @@ export default function App() {
     }
   }, [compareIds, office, filters.workdays, filters.walkMaxM]);
 
+  const handleOpenReportFromDrawer = useCallback((listing: ListingResult) => {
+    setReportInitialRent(null);
+    setReportListing(listing);
+  }, []);
+
+  const handleSharePriceFromCompare = useCallback(
+    (listing: ListingResult, rentTHB: number) => {
+      setReportInitialRent(rentTHB);
+      setReportListing(listing);
+    },
+    []
+  );
+
   const handlePriceReported = useCallback(() => {
     setRefreshTick((t) => t + 1);
   }, []);
@@ -192,22 +206,24 @@ export default function App() {
         onToggleCompare={handleToggleCompare}
         onClearCompare={() => setCompareIds([])}
         onOpenCompare={handleOpenCompare}
-        onOpenReportPrice={setReportListing}
+        onOpenReportPrice={handleOpenReportFromDrawer}
         loading={loading}
       />
 
-      {/* Compare 2-3 Locations Modal */}
+      {/* Compare 2-3 Locations Modal with Interactive Real-Rent Inputs */}
       <CompareModal
         open={compareOpen}
         loading={compareLoading}
         error={compareError}
         data={compareData}
         onClose={() => setCompareOpen(false)}
+        onSharePrice={handleSharePriceFromCompare}
       />
 
-      {/* Crowdsourced Real Rent Report Modal */}
+      {/* Crowdsourced Real Rent + Official Link Report Modal */}
       <PriceReportModal
         listing={reportListing}
+        initialRent={reportInitialRent}
         onClose={() => setReportListing(null)}
         onSubmitted={handlePriceReported}
       />

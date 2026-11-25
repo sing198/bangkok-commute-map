@@ -16,14 +16,21 @@ func TestPriceReportValidationAndOutliers(t *testing.T) {
 	now := time.Date(2026, 11, 25, 0, 0, 0, 0, time.UTC)
 
 	valid := SubmitPriceReportRequest{
-		MonthlyRentTHB: 14500,
-		RoomSizeSqm:    30,
-		RoomType:       "1br",
+		MonthlyRentTHB: 85000, // Luxury serviced residence (e.g. Rajanakarn Apartment)
+		RoomSizeSqm:    180,
+		RoomType:       "2br",
 		ReportedMonth:  "2026-11",
-		Note:           "ชั้น 12 เฟอร์ครบ",
+		Note:           "เช่าจากเว็บ RJ Residence",
+		SourceURL:      "https://www.rjresidence.com/project/rajanakarn",
 	}
 	if err := ValidatePriceReportInput(valid, now); err != nil {
-		t.Fatalf("expected valid report, got %v", err)
+		t.Fatalf("expected valid luxury report with https URL, got %v", err)
+	}
+
+	badURL := valid
+	badURL.SourceURL = "javascript:alert(1)"
+	if err := ValidatePriceReportInput(badURL, now); err == nil {
+		t.Errorf("expected error for non-http(s) source_url")
 	}
 
 	future := valid
@@ -38,17 +45,54 @@ func TestPriceReportValidationAndOutliers(t *testing.T) {
 		t.Errorf("expected error for rent below 1500")
 	}
 
-	if IsRentOutlier(14500, 12000, 16500, 14000) {
-		t.Errorf("expected normal rent not to be flagged as outlier")
+	// Never flag outlier when fewer than 3 existing reports exist (allows real ฿85,000 luxury apartments!)
+	if IsRentOutlierAgainstMedian(85000, VerifiedPriceStats{ReportCount: 0, MedianRentTHB: 0}) {
+		t.Errorf("expected first report never flagged as outlier")
 	}
-	if !IsRentOutlier(2000, 14000, 18000, 16000) {
-		t.Errorf("expected extreme low troll rent (2000 vs 16000) to be flagged as outlier")
+	// Flag extreme outlier once >= 3 verified reports establish a consensus median
+	consensus := VerifiedPriceStats{ReportCount: 4, MedianRentTHB: 15000}
+	if IsRentOutlierAgainstMedian(16500, consensus) {
+		t.Errorf("expected normal rent near consensus median not flagged")
 	}
-	if !IsRentOutlier(95000, 14000, 18000, 16000) {
-		t.Errorf("expected extreme high rent (95000 vs 16000) to be flagged as outlier")
+	if !IsRentOutlierAgainstMedian(2000, consensus) {
+		t.Errorf("expected extreme low troll rent vs consensus median to be flagged")
+	}
+	if !IsRentOutlierAgainstMedian(95000, consensus) {
+		t.Errorf("expected extreme high rent vs consensus median to be flagged")
 	}
 	if HashClientIP("1.2.3.4") != HashClientIP("1.2.3.4") || HashClientIP("1.2.3.4") == "1.2.3.4" {
 		t.Errorf("expected deterministic non-raw IP hash")
+	}
+}
+
+func TestBuildListingResult_SameStationAvoidsDoubleWinDetour(t *testing.T) {
+	// Same-station zero-rail scenario: home & office both nearest BTS Saphan Khwai, 900m apart.
+	st := transit.Station{ID: "BTS_N7", NameTH: "สะพานควาย", Operator: "BTS", Lat: 13.7938, Lng: 100.5497}
+	rec := ListingRecord{
+		ID:             "LST_TEST",
+		TitleTH:        "รัจนาการ",
+		Lat:            13.7905,
+		Lng:            100.5430,
+		StationID:      st.ID,
+		WalkToStationM: 1368,
+		DistanceSource: "osrm_foot",
+	}
+	stOpt := ReachableStation{
+		Station:      st,
+		Route:        transit.RouteResult{OriginID: st.ID, DestID: st.ID, StationIDs: []string{st.ID}},
+		OfficeAccess: transit.AccessLeg{DistanceM: 1638, Mode: "win", Minutes: 6, OneWayCostTHB: 25},
+	}
+	office := OfficePoint{Lat: 13.7880, Lng: 100.5510} // ~900m straight line -> ~1,260m direct detour -> 1 win (฿20), NOT ฿20+฿25!
+
+	res := buildListingResult(rec, stOpt, st, office, 22, 800)
+	if res.PriceStatus != "unverified" || res.MonthlyRentTHB != 0 {
+		t.Fatalf("expected unverified 0 rent (no guessing), got status=%s rent=%d", res.PriceStatus, res.MonthlyRentTHB)
+	}
+	if res.OfficeAccess.OneWayCostTHB != 0 {
+		t.Fatalf("expected zero second-leg office feeder on same-station direct trip, got %+v", res.OfficeAccess)
+	}
+	if res.Cost.OneWayFeederTHB > 25 {
+		t.Fatalf("expected single direct feeder <= 25 THB instead of double-win 45 THB, got %d", res.Cost.OneWayFeederTHB)
 	}
 }
 
@@ -95,11 +139,12 @@ func TestBuildCompareSummary_TieBreaking(t *testing.T) {
 		t.Fatalf("expected MaxMonthlyHoursSaved=3.6, got %.1f", s.MaxMonthlyHoursSaved)
 	}
 
-	// Equal-time tie scenario: fastest should tie-break to cheaper option.
+	// Equal-time tie scenario: fastest should tie-break to lower commute cost.
 	tiedTime := []ListingResult{
 		{
 			ID: "EXPENSIVE_16M",
 			Cost: transit.CommuteCostSummary{
+				MonthlyCommuteTHB:   1760,
 				TrueMonthlyCostTHB:  17968,
 				OneWayMinutes:       16,
 				MonthlyCommuteHours: 11.7,
@@ -108,6 +153,7 @@ func TestBuildCompareSummary_TieBreaking(t *testing.T) {
 		{
 			ID: "CHEAPER_16M",
 			Cost: transit.CommuteCostSummary{
+				MonthlyCommuteTHB:   968,
 				TrueMonthlyCostTHB:  14040,
 				OneWayMinutes:       16,
 				MonthlyCommuteHours: 11.7,

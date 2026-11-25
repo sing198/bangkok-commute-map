@@ -163,13 +163,15 @@ export function CommuteMap({
       const isVerified = item.price_status === 'verified';
       const color = ZONE_HEX[item.zone_color] || '#475569';
       const opLabel = OPERATOR_LABEL[item.origin_station.operator] || item.origin_station.operator;
-      const walkLabel =
-        item.home_access.distance_source === 'osrm_foot'
+      const isDirect = item.route.station_ids.length <= 1;
+      const walkLabel = isDirect
+        ? `ตรงถึงออฟฟิศ ~${item.home_access.distance_m} ม.`
+        : item.home_access.distance_source === 'osrm_foot'
           ? `เดินตามถนน ${item.home_access.distance_m} ม.`
           : `~${item.home_access.distance_m} ม.`;
-      const priceTag = isVerified
-        ? `<span style="color:#047857;font-weight:700">ยืนยันโดยผู้ใช้ (${item.verified_report_count})</span> ฿${item.monthly_rent_thb.toLocaleString()}`
-        : `ราคาประเมิน ฿${item.estimated_rent_min_thb.toLocaleString()}–฿${item.estimated_rent_max_thb.toLocaleString()}`;
+      const priceLine = isVerified
+        ? `<div>รวมจริง <strong>฿${item.cost.true_monthly_cost_thb.toLocaleString()}/ด.</strong> <span style="color:#047857;font-weight:700">(เช่าจริง ฿${item.monthly_rent_thb.toLocaleString()})</span></div>`
+        : `<div>ค่าเดินทางจริง <strong>฿${item.cost.monthly_commute_thb.toLocaleString()}/ด.</strong> <span style="color:#64748b">(กดการ์ดเพื่อเช็กราคาห้องจริง ↗)</span></div>`;
 
       const marker = L.circleMarker([item.lat, item.lng], {
         renderer,
@@ -189,9 +191,8 @@ export function CommuteMap({
       marker.bindTooltip(
         `<div style="font-size:12px;line-height:1.4">
           <div style="font-weight:700">${item.title_th}</div>
-          <div>รวมจริง <strong>฿${item.cost.true_monthly_cost_thb.toLocaleString()}/ด.</strong></div>
-          <div style="font-size:11px;color:#475569">${priceTag}</div>
-          <div style="font-size:11px;color:#334155">${item.cost.one_way_minutes} นาที/เที่ยว • ${opLabel} ${item.origin_station.name_th} (${walkLabel})</div>
+          ${priceLine}
+          <div style="font-size:11px;color:#334155">${item.cost.one_way_minutes} นาที/เที่ยว • ${isDirect ? walkLabel : `${opLabel} ${item.origin_station.name_th} (${walkLabel})`}</div>
         </div>`,
         { direction: 'top', offset: [0, -6] }
       );
@@ -227,6 +228,18 @@ export function CommuteMap({
       selected.dest_station.lat,
       selected.dest_station.lng,
     ]);
+
+    // Direct door-to-door line when no rail ride is needed (same nearest station)
+    if (selected.route.station_ids.length <= 1) {
+      L.polyline(
+        [
+          [selected.lat, selected.lng],
+          [office.lat, office.lng],
+        ],
+        { color: '#4f46e5', weight: 3.5, dashArray: '6, 6', opacity: 0.9 }
+      ).addTo(layer);
+      return;
+    }
 
     L.polyline(
       [
