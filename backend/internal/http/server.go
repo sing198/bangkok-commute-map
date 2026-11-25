@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -110,6 +111,8 @@ func NewRouter(pool *pgxpool.Pool, cacheClient *cache.Client, commuteSvc *commut
 		api.GET("/presets", s.handlePresets)
 		api.GET("/commute/search", s.handleCommuteSearch)
 		api.POST("/commute/compare", s.handleCommuteCompare)
+		api.GET("/listings/:id/price-reports", s.handleListPriceReports)
+		api.POST("/listings/:id/price-reports", s.handleSubmitPriceReport)
 	}
 
 	return r
@@ -238,13 +241,13 @@ func (s *Server) handleCommuteSearch(c *gin.Context) {
 	}
 
 	lat, err := strconv.ParseFloat(c.Query("lat"), 64)
-	if err != nil || lat < 13.40 || lat > 14.15 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "valid Bangkok lat query parameter is required (13.40–14.15)"})
+	if err != nil || lat < 13.45 || lat > 14.12 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "valid Greater Bangkok lat query parameter is required (13.45–14.12)"})
 		return
 	}
 	lng, err := strconv.ParseFloat(c.Query("lng"), 64)
-	if err != nil || lng < 100.25 || lng > 100.95 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "valid Bangkok lng query parameter is required (100.25–100.95)"})
+	if err != nil || lng < 100.25 || lng > 100.98 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "valid Greater Bangkok lng query parameter is required (100.25–100.98)"})
 		return
 	}
 
@@ -252,6 +255,8 @@ func (s *Server) handleCommuteSearch(c *gin.Context) {
 	maxBudget, _ := strconv.Atoi(c.DefaultQuery("max_budget", "0"))
 	workdays, _ := strconv.Atoi(c.DefaultQuery("workdays", "22"))
 	walkMaxM, _ := strconv.Atoi(c.DefaultQuery("walk_max_m", "800"))
+	sortBy := c.DefaultQuery("sort", "true_cost")
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "450"))
 
 	resp, cacheHit, err := s.commuteSvc.Search(c.Request.Context(), commute.SearchParams{
 		Lat:        lat,
@@ -260,6 +265,8 @@ func (s *Server) handleCommuteSearch(c *gin.Context) {
 		MaxBudget:  maxBudget,
 		Workdays:   workdays,
 		WalkMaxM:   walkMaxM,
+		Sort:       sortBy,
+		Limit:      limit,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -286,7 +293,7 @@ func (s *Server) handleCommuteCompare(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if req.Office.Lat < 13.40 || req.Office.Lat > 14.15 || req.Office.Lng < 100.25 || req.Office.Lng > 100.95 {
+	if req.Office.Lat < 13.45 || req.Office.Lat > 14.12 || req.Office.Lng < 100.25 || req.Office.Lng > 100.98 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "office coordinates must be within Greater Bangkok"})
 		return
 	}
@@ -298,4 +305,60 @@ func (s *Server) handleCommuteCompare(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, resp)
+}
+
+func (s *Server) handleListPriceReports(c *gin.Context) {
+	if s.commuteSvc == nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "commute service not initialized"})
+		return
+	}
+	listingID := strings.TrimSpace(c.Param("id"))
+	if listingID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "listing id is required"})
+		return
+	}
+	resp, err := s.commuteSvc.ListPriceReports(c.Request.Context(), listingID)
+	if err != nil {
+		if errors.Is(err, commute.ErrListingNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "ไม่พบที่พักนี้ในระบบ"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func (s *Server) handleSubmitPriceReport(c *gin.Context) {
+	if s.commuteSvc == nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "commute service not initialized"})
+		return
+	}
+	listingID := strings.TrimSpace(c.Param("id"))
+	if listingID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "listing id is required"})
+		return
+	}
+	var req commute.SubmitPriceReportRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "รูปแบบข้อมูลไม่ถูกต้อง: " + err.Error()})
+		return
+	}
+
+	clientIP := c.ClientIP()
+	resp, err := s.commuteSvc.SubmitPriceReport(c.Request.Context(), listingID, req, clientIP)
+	if err != nil {
+		switch {
+		case errors.Is(err, commute.ErrInvalidReport):
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		case errors.Is(err, commute.ErrListingNotFound):
+			c.JSON(http.StatusNotFound, gin.H{"error": "ไม่พบที่พักนี้ในระบบ"})
+		case errors.Is(err, commute.ErrRateLimited):
+			c.JSON(http.StatusTooManyRequests, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusCreated, resp)
 }

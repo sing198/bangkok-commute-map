@@ -84,13 +84,13 @@ func TestShortestPath_BTSExtensionAndCap(t *testing.T) {
 		t.Errorf("expected 50 THB (35 core + 15 ext), got %d (legs: %+v)", res.FareTHB, res.Legs)
 	}
 
-	// BTS Samrong (E15, ext) -> BTS Kasetsart (N13, ext): capped at 62 THB
-	longRes, err := g.ShortestPath("BTS_E15", "BTS_N13")
+	// BTS Kheha (E23, ext) -> BTS Ari (N5, core): stays on BTS Sukhumvit and caps at 62 THB
+	longRes, err := g.ShortestPath("BTS_E23", "BTS_N5")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if longRes.FareTHB != BTSMaxFareTHB {
-		t.Errorf("expected capped fare %d THB, got %d", BTSMaxFareTHB, longRes.FareTHB)
+		t.Errorf("expected capped fare %d THB, got %d (legs: %+v)", BTSMaxFareTHB, longRes.FareTHB, longRes.Legs)
 	}
 
 	// BTS Extension-only ride: Bearing (E14) -> Bang Chak (E10): flat 15 THB
@@ -180,8 +180,9 @@ func TestShortestPath_CrossSystemARLAndMRT(t *testing.T) {
 func TestShortestPath_MRTSameOperatorBlueToPurple(t *testing.T) {
 	g := loadRealTestGraph(t)
 
-	// MRT Bang Son (PP15) -> MRT Chatuchak Park (BL13) via Tao Poon (BL11):
-	// Single MRT operator ticket (3 hops = 22 THB), 1 transfer at Tao Poon.
+	// MRT Bang Son (PP15) -> MRT Chatuchak Park (BL13) via Tao Poon (BL10):
+	// PP15 -> BL10 (Tao Poon, shared Blue/Purple hub) -> BL11 (Bang Sue) -> BL12 (Kamphaeng Phet) -> BL13
+	// Single MRT operator ticket (4 hops = 25 THB), 1 same-operator transfer at Tao Poon.
 	res, err := g.ShortestPath("MRT_PP15", "MRT_BL13")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -189,11 +190,66 @@ func TestShortestPath_MRTSameOperatorBlueToPurple(t *testing.T) {
 	if len(res.Legs) != 1 || res.Legs[0].Operator != "MRT" {
 		t.Errorf("expected single MRT fare leg across Tao Poon, got %+v", res.Legs)
 	}
-	if res.FareTHB != 22 {
-		t.Errorf("expected 22 THB for 3 MRT hops, got %d", res.FareTHB)
+	if res.FareTHB != 25 {
+		t.Errorf("expected 25 THB for 4 MRT hops, got %d (path: %v)", res.FareTHB, res.StationIDs)
 	}
 	if res.TransferCount != 1 {
 		t.Errorf("expected 1 transfer at Tao Poon, got %d", res.TransferCount)
+	}
+}
+
+func TestShortestPath_NewBangkokLines(t *testing.T) {
+	g := loadRealTestGraph(t)
+
+	// 1. MRT Yellow Line (Lat Phrao 71 YL04 -> Lat Phrao YL01 -> MRT BL15 -> Phra Ram 9 BL20)
+	yl, err := g.ShortestPath("MRT_YL04", "MRT_BL20")
+	if err != nil {
+		t.Fatalf("yellow line route failed: %v", err)
+	}
+	if len(yl.Legs) != 2 || yl.Legs[0].Operator != "MRT_YL" || yl.Legs[1].Operator != "MRT" {
+		t.Errorf("expected MRT_YL + MRT legs, got %+v", yl.Legs)
+	}
+
+	// 1b. MRT Yellow Line (Bang Kapi YL08 -> Hua Mak ARL shortcut -> Phra Ram 9 BL20)
+	ylArl, err := g.ShortestPath("MRT_YL08", "MRT_BL20")
+	if err != nil {
+		t.Fatalf("yellow+arl route failed: %v", err)
+	}
+	if len(ylArl.Legs) < 2 || ylArl.Legs[0].Operator != "MRT_YL" {
+		t.Errorf("expected MRT_YL start leg, got %+v", ylArl.Legs)
+	}
+
+	// 2. MRT Pink Line + IMPACT Link branch (MT02 -> PK10 -> PK16 Wat Phra Sri Mahathat -> BTS N17 -> BTS N5 Ari)
+	pk, err := g.ShortestPath("MRT_MT02", "BTS_N5")
+	if err != nil {
+		t.Fatalf("pink line branch route failed: %v", err)
+	}
+	if pk.TransferCount < 2 || pk.FareTHB < 40 {
+		t.Errorf("expected multi-transfer Pink+BTS route, got %+v", pk)
+	}
+
+	// 3. BTS Gold Line (G2 Charoen Nakhon -> G1 -> BTS S7 -> S2 Sala Daeng)
+	gold, err := g.ShortestPath("BTS_G2", "BTS_S2")
+	if err != nil {
+		t.Fatalf("gold line route failed: %v", err)
+	}
+	if len(gold.Legs) != 2 || gold.Legs[0].Operator != "BTS_GOLD" || gold.Legs[0].FareTHB != 16 {
+		t.Errorf("expected BTS_GOLD 16 THB + BTS legs, got %+v", gold.Legs)
+	}
+
+	// 4. SRT Dark Red Line (Don Mueang RN08 -> Krung Thep Aphiwat RN01 -> MRT BL11 Bang Sue -> MRT BL13 Chatuchak)
+	red, err := g.ShortestPath("SRT_RN08", "MRT_BL13")
+	if err != nil {
+		t.Fatalf("red line route failed: %v", err)
+	}
+	if len(red.Legs) != 2 || red.Legs[0].Operator != "SRT_RED" {
+		t.Errorf("expected SRT_RED + MRT legs, got %+v", red.Legs)
+	}
+
+	// 5. Calibrated Bangkok office detour factor (1.40x)
+	off := CalculateOfficeAccess(500, 800)
+	if off.DistanceM != 700 || off.Mode != "walk" || off.DistanceSource != "estimated_detour" {
+		t.Errorf("unexpected office access with 1.40x detour: %+v", off)
 	}
 }
 

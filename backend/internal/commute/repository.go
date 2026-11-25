@@ -3,7 +3,9 @@ package commute
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/tk/bangkok-commute-map/backend/internal/transit"
@@ -15,23 +17,63 @@ type NearestStation struct {
 	DistanceM float64         `json:"distance_m"`
 }
 
-// ListingRecord represents a condo/apartment row fetched from PostGIS.
+// ListingRecord represents a condo/apartment row paired with a station access distance
+// and live aggregated crowdsourced rent statistics.
 type ListingRecord struct {
-	ID               string  `json:"id"`
-	TitleTH          string  `json:"title_th"`
-	TitleEN          string  `json:"title_en"`
-	PropertyType     string  `json:"property_type"`
-	District         string  `json:"district"`
-	MonthlyRentTHB   int     `json:"monthly_rent_thb"`
-	RoomSizeSqm      float64 `json:"room_size_sqm"`
-	Bedrooms         int     `json:"bedrooms"`
-	Lat              float64 `json:"lat"`
-	Lng              float64 `json:"lng"`
-	StationID        string  `json:"station_id"`
-	WalkToStationM   float64 `json:"walk_to_station_m"`
+	ID                    string  `json:"id"`
+	OSMID                 string  `json:"osm_id"`
+	TitleTH               string  `json:"title_th"`
+	TitleEN               string  `json:"title_en"`
+	PropertyType          string  `json:"property_type"`
+	District              string  `json:"district"`
+	MonthlyRentTHB        int     `json:"monthly_rent_thb"`
+	EstimatedRentMinTHB   int     `json:"estimated_rent_min_thb"`
+	EstimatedRentMaxTHB   int     `json:"estimated_rent_max_thb"`
+	PriceSource           string  `json:"price_source"`
+	DataSource            string  `json:"data_source"`
+	RoomSizeSqm           float64 `json:"room_size_sqm"`
+	Bedrooms              int     `json:"bedrooms"`
+	Lat                   float64 `json:"lat"`
+	Lng                   float64 `json:"lng"`
+	StationID             string  `json:"station_id"`
+	WalkToStationM        float64 `json:"walk_to_station_m"`
+	DistanceSource        string  `json:"distance_source"`
+	VerifiedRentMedianTHB int     `json:"verified_rent_median_thb"`
+	VerifiedReportCount   int     `json:"verified_report_count"`
+	LatestReportMonth     string  `json:"latest_report_month"`
 }
 
-// Repository encapsulates all PostgreSQL / PostGIS queries for commute search.
+// PriceReportRecord represents a single anonymized tenant-submitted rent report.
+type PriceReportRecord struct {
+	ID             int64     `json:"id"`
+	ListingID      string    `json:"listing_id"`
+	MonthlyRentTHB int       `json:"monthly_rent_thb"`
+	RoomSizeSqm    float64   `json:"room_size_sqm"`
+	RoomType       string    `json:"room_type"`
+	ReportedMonth  string    `json:"reported_month"`
+	Note           string    `json:"note,omitempty"`
+	IsOutlier      bool      `json:"is_outlier"`
+	CreatedAt      time.Time `json:"created_at"`
+}
+
+// VerifiedPriceStats holds aggregate statistics for non-outlier user reports on a listing.
+type VerifiedPriceStats struct {
+	MedianRentTHB     int    `json:"median_rent_thb"`
+	MinRentTHB        int    `json:"min_rent_thb"`
+	MaxRentTHB        int    `json:"max_rent_thb"`
+	ReportCount       int    `json:"report_count"`
+	LatestReportMonth string `json:"latest_report_month"`
+}
+
+// ListingRentRef is used to verify listing existence and check outliers on report submission.
+type ListingRentRef struct {
+	ID                  string
+	MonthlyRentTHB      int
+	EstimatedRentMinTHB int
+	EstimatedRentMaxTHB int
+}
+
+// Repository encapsulates all PostgreSQL / PostGIS queries for commute search and price reports.
 type Repository struct {
 	pool *pgxpool.Pool
 }
@@ -147,113 +189,306 @@ func (r *Repository) FindNearestStations(ctx context.Context, lat, lng float64, 
 	return out, rows.Err()
 }
 
-// FindListingsNearStations uses PostGIS ST_DWithin to find all listings within radiusMeters
-// of any reachable station whose monthly rent is <= maxBudget (when maxBudget > 0).
-func (r *Repository) FindListingsNearStations(ctx context.Context, stationIDs []string, radiusMeters int, maxBudget int) ([]ListingRecord, error) {
+// FindListingsNearStations retrieves listings reachable from any of stationIDs using
+// precomputed real OSRM street walking distances (listing_station_access) plus live
+// crowdsourced median prices from price_reports.
+func (r *Repository) FindListingsNearStations(ctx context.Context, stationIDs []string, maxWalkMeters int, maxBudget int) ([]ListingRecord, error) {
 	if len(stationIDs) == 0 {
 		return nil, nil
 	}
 
 	rows, err := r.pool.Query(ctx, `
-		SELECT l.id, l.title_th, l.title_en, l.property_type, l.district,
-		       l.monthly_rent_thb, l.room_size_sqm::double precision, l.bedrooms,
-		       ST_Y(l.location::geometry) AS lat,
-		       ST_X(l.location::geometry) AS lng,
-		       s.id AS station_id,
-		       ST_Distance(l.location, s.location) AS walk_m
+		WITH verified AS (
+			SELECT
+				listing_id,
+				ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY monthly_rent_thb))::int AS median_rent,
+				COUNT(*)::int AS report_count,
+				MAX(reported_month) AS latest_month
+			FROM price_reports
+			WHERE NOT is_outlier
+			GROUP BY listing_id
+		)
+		SELECT
+			l.id, l.osm_id, l.title_th, l.title_en, l.property_type, l.district,
+			l.monthly_rent_thb, l.estimated_rent_min_thb, l.estimated_rent_max_thb,
+			l.price_source, l.data_source,
+			l.room_size_sqm::double precision, l.bedrooms,
+			ST_Y(l.location::geometry) AS lat,
+			ST_X(l.location::geometry) AS lng,
+			a.station_id,
+			a.walk_distance_m::double precision AS walk_m,
+			a.distance_source,
+			COALESCE(v.median_rent, 0) AS verified_median,
+			COALESCE(v.report_count, 0) AS verified_count,
+			COALESCE(v.latest_month, '') AS latest_month
+		FROM listing_station_access a
+		JOIN listings l ON l.id = a.listing_id
+		LEFT JOIN verified v ON v.listing_id = l.id
+		WHERE a.station_id = ANY($1)
+		  AND a.walk_distance_m <= $2
+		  AND ($3 <= 0 OR COALESCE(NULLIF(v.median_rent, 0), l.monthly_rent_thb) <= $3)
+	`, stationIDs, maxWalkMeters, maxBudget)
+	if err != nil {
+		return nil, fmt.Errorf("query listings via osrm access: %w", err)
+	}
+	defer rows.Close()
+
+	out, err := scanListingRecords(rows)
+	if err != nil {
+		return nil, err
+	}
+	if len(out) > 0 {
+		return out, nil
+	}
+
+	// Graceful fallback if listing_station_access is empty (e.g. fresh minimal test DB)
+	fbRows, err := r.pool.Query(ctx, `
+		SELECT
+			l.id, l.osm_id, l.title_th, l.title_en, l.property_type, l.district,
+			l.monthly_rent_thb, l.estimated_rent_min_thb, l.estimated_rent_max_thb,
+			l.price_source, l.data_source,
+			l.room_size_sqm::double precision, l.bedrooms,
+			ST_Y(l.location::geometry) AS lat,
+			ST_X(l.location::geometry) AS lng,
+			s.id AS station_id,
+			ST_Distance(l.location, s.location) * 1.40 AS walk_m,
+			'estimated_detour' AS distance_source,
+			0 AS verified_median,
+			0 AS verified_count,
+			'' AS latest_month
 		FROM listings l
 		JOIN stations s ON ST_DWithin(l.location, s.location, $1)
 		WHERE s.id = ANY($2)
 		  AND ($3 <= 0 OR l.monthly_rent_thb <= $3)
-	`, float64(radiusMeters), stationIDs, maxBudget)
+	`, float64(maxWalkMeters), stationIDs, maxBudget)
 	if err != nil {
-		return nil, fmt.Errorf("st_dwithin listings query: %w", err)
+		return nil, fmt.Errorf("fallback st_dwithin listings query: %w", err)
+	}
+	defer fbRows.Close()
+	return scanListingRecords(fbRows)
+}
+
+// FindListingsByIDsNearStations fetches specific listings paired with all precomputed OSRM
+// station links (plus nearest_station_id fallback) and live crowdsourced rent statistics.
+func (r *Repository) FindListingsByIDsNearStations(ctx context.Context, ids []string, maxWalkMeters int) ([]ListingRecord, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	rows, err := r.pool.Query(ctx, `
+		WITH verified AS (
+			SELECT
+				listing_id,
+				ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY monthly_rent_thb))::int AS median_rent,
+				COUNT(*)::int AS report_count,
+				MAX(reported_month) AS latest_month
+			FROM price_reports
+			WHERE NOT is_outlier
+			  AND listing_id = ANY($1)
+			GROUP BY listing_id
+		)
+		SELECT
+			l.id, l.osm_id, l.title_th, l.title_en, l.property_type, l.district,
+			l.monthly_rent_thb, l.estimated_rent_min_thb, l.estimated_rent_max_thb,
+			l.price_source, l.data_source,
+			l.room_size_sqm::double precision, l.bedrooms,
+			ST_Y(l.location::geometry) AS lat,
+			ST_X(l.location::geometry) AS lng,
+			a.station_id,
+			a.walk_distance_m::double precision AS walk_m,
+			a.distance_source,
+			COALESCE(v.median_rent, 0) AS verified_median,
+			COALESCE(v.report_count, 0) AS verified_count,
+			COALESCE(v.latest_month, '') AS latest_month
+		FROM listings l
+		JOIN listing_station_access a ON a.listing_id = l.id
+		LEFT JOIN verified v ON v.listing_id = l.id
+		WHERE l.id = ANY($1)
+		  AND (a.walk_distance_m <= $2 OR a.station_id = l.nearest_station_id)
+	`, ids, maxWalkMeters)
+	if err != nil {
+		return nil, fmt.Errorf("query listings by ids via osrm access: %w", err)
 	}
 	defer rows.Close()
 
+	out, err := scanListingRecords(rows)
+	if err != nil {
+		return nil, err
+	}
+	if len(out) > 0 {
+		return out, nil
+	}
+
+	// Fallback if listing_station_access not populated
+	fbRows, err := r.pool.Query(ctx, `
+		SELECT
+			l.id, l.osm_id, l.title_th, l.title_en, l.property_type, l.district,
+			l.monthly_rent_thb, l.estimated_rent_min_thb, l.estimated_rent_max_thb,
+			l.price_source, l.data_source,
+			l.room_size_sqm::double precision, l.bedrooms,
+			ST_Y(l.location::geometry) AS lat,
+			ST_X(l.location::geometry) AS lng,
+			s.id AS station_id,
+			ST_Distance(l.location, s.location) * 1.40 AS walk_m,
+			'estimated_detour' AS distance_source,
+			0 AS verified_median,
+			0 AS verified_count,
+			'' AS latest_month
+		FROM listings l
+		JOIN stations s ON ST_DWithin(l.location, s.location, $2) OR s.id = l.nearest_station_id
+		WHERE l.id = ANY($1)
+	`, ids, float64(maxWalkMeters))
+	if err != nil {
+		return nil, fmt.Errorf("fallback query listings by ids: %w", err)
+	}
+	defer fbRows.Close()
+	return scanListingRecords(fbRows)
+}
+
+func scanListingRecords(rows pgx.Rows) ([]ListingRecord, error) {
 	var out []ListingRecord
 	for rows.Next() {
 		var rec ListingRecord
 		if err := rows.Scan(
-			&rec.ID, &rec.TitleTH, &rec.TitleEN, &rec.PropertyType, &rec.District,
-			&rec.MonthlyRentTHB, &rec.RoomSizeSqm, &rec.Bedrooms,
-			&rec.Lat, &rec.Lng, &rec.StationID, &rec.WalkToStationM,
+			&rec.ID, &rec.OSMID, &rec.TitleTH, &rec.TitleEN, &rec.PropertyType, &rec.District,
+			&rec.MonthlyRentTHB, &rec.EstimatedRentMinTHB, &rec.EstimatedRentMaxTHB,
+			&rec.PriceSource, &rec.DataSource,
+			&rec.RoomSizeSqm, &rec.Bedrooms,
+			&rec.Lat, &rec.Lng,
+			&rec.StationID, &rec.WalkToStationM, &rec.DistanceSource,
+			&rec.VerifiedRentMedianTHB, &rec.VerifiedReportCount, &rec.LatestReportMonth,
 		); err != nil {
-			return nil, fmt.Errorf("scan listing: %w", err)
+			return nil, fmt.Errorf("scan listing record: %w", err)
+		}
+		if rec.EstimatedRentMinTHB <= 0 {
+			rec.EstimatedRentMinTHB = rec.MonthlyRentTHB
+		}
+		if rec.EstimatedRentMaxTHB <= 0 {
+			rec.EstimatedRentMaxTHB = rec.MonthlyRentTHB
 		}
 		out = append(out, rec)
 	}
 	return out, rows.Err()
 }
 
-// FindListingsByIDsNearStations fetches specific listings paired with all stations within radiusMeters
-// (plus each listing's precomputed nearest_station_id as fallback), matching Search() station evaluation.
-func (r *Repository) FindListingsByIDsNearStations(ctx context.Context, ids []string, radiusMeters int) ([]ListingRecord, error) {
-	if len(ids) == 0 {
-		return nil, nil
+// GetListingRentRef fetches a listing's reference rent range for report validation.
+func (r *Repository) GetListingRentRef(ctx context.Context, listingID string) (ListingRentRef, bool, error) {
+	var ref ListingRentRef
+	err := r.pool.QueryRow(ctx, `
+		SELECT id, monthly_rent_thb, estimated_rent_min_thb, estimated_rent_max_thb
+		FROM listings
+		WHERE id = $1
+	`, listingID).Scan(&ref.ID, &ref.MonthlyRentTHB, &ref.EstimatedRentMinTHB, &ref.EstimatedRentMaxTHB)
+	if err == pgx.ErrNoRows {
+		return ListingRentRef{}, false, nil
 	}
-	rows, err := r.pool.Query(ctx, `
-		SELECT l.id, l.title_th, l.title_en, l.property_type, l.district,
-		       l.monthly_rent_thb, l.room_size_sqm::double precision, l.bedrooms,
-		       ST_Y(l.location::geometry) AS lat,
-		       ST_X(l.location::geometry) AS lng,
-		       s.id AS station_id,
-		       ST_Distance(l.location, s.location) AS walk_m
-		FROM listings l
-		JOIN stations s
-		  ON ST_DWithin(l.location, s.location, $2)
-		  OR s.id = l.nearest_station_id
-		WHERE l.id = ANY($1)
-	`, ids, float64(radiusMeters))
 	if err != nil {
-		return nil, fmt.Errorf("query listings by ids with nearby stations: %w", err)
+		return ListingRentRef{}, false, fmt.Errorf("get listing rent ref: %w", err)
 	}
-	defer rows.Close()
-
-	var out []ListingRecord
-	for rows.Next() {
-		var rec ListingRecord
-		if err := rows.Scan(
-			&rec.ID, &rec.TitleTH, &rec.TitleEN, &rec.PropertyType, &rec.District,
-			&rec.MonthlyRentTHB, &rec.RoomSizeSqm, &rec.Bedrooms,
-			&rec.Lat, &rec.Lng, &rec.StationID, &rec.WalkToStationM,
-		); err != nil {
-			return nil, fmt.Errorf("scan listing by id: %w", err)
-		}
-		out = append(out, rec)
-	}
-	return out, rows.Err()
+	return ref, true, nil
 }
 
-// FindListingsByIDs fetches specific listings along with their precomputed nearest station.
-func (r *Repository) FindListingsByIDs(ctx context.Context, ids []string) ([]ListingRecord, error) {
-	if len(ids) == 0 {
-		return nil, nil
+// CountRecentReportsByIP returns how many price reports an IP hash submitted in the last hour.
+func (r *Repository) CountRecentReportsByIP(ctx context.Context, ipHash string) (int, error) {
+	var n int
+	err := r.pool.QueryRow(ctx, `
+		SELECT COUNT(*)::int
+		FROM price_reports
+		WHERE ip_hash = $1
+		  AND created_at >= NOW() - INTERVAL '1 hour'
+	`, ipHash).Scan(&n)
+	return n, err
+}
+
+// HasRecentListingReportByIP checks if this IP hash already reported for this listing in the last 30 days.
+func (r *Repository) HasRecentListingReportByIP(ctx context.Context, listingID, ipHash string) (bool, error) {
+	var exists bool
+	err := r.pool.QueryRow(ctx, `
+		SELECT EXISTS (
+			SELECT 1
+			FROM price_reports
+			WHERE listing_id = $1
+			  AND ip_hash = $2
+			  AND created_at >= NOW() - INTERVAL '30 days'
+		)
+	`, listingID, ipHash).Scan(&exists)
+	return exists, err
+}
+
+// InsertPriceReport stores a new tenant rent report and returns its created record.
+func (r *Repository) InsertPriceReport(
+	ctx context.Context,
+	listingID string,
+	monthlyRentTHB int,
+	roomSizeSqm float64,
+	roomType string,
+	reportedMonth string,
+	note string,
+	ipHash string,
+	isOutlier bool,
+) (PriceReportRecord, error) {
+	var rec PriceReportRecord
+	err := r.pool.QueryRow(ctx, `
+		INSERT INTO price_reports (
+			listing_id, monthly_rent_thb, room_size_sqm, room_type,
+			reported_month, note, ip_hash, is_outlier
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id, listing_id, monthly_rent_thb, room_size_sqm::double precision,
+		          room_type, reported_month, note, is_outlier, created_at
+	`, listingID, monthlyRentTHB, roomSizeSqm, roomType, reportedMonth, note, ipHash, isOutlier).Scan(
+		&rec.ID, &rec.ListingID, &rec.MonthlyRentTHB, &rec.RoomSizeSqm,
+		&rec.RoomType, &rec.ReportedMonth, &rec.Note, &rec.IsOutlier, &rec.CreatedAt,
+	)
+	if err != nil {
+		return PriceReportRecord{}, fmt.Errorf("insert price report: %w", err)
+	}
+	return rec, nil
+}
+
+// GetVerifiedPriceStats computes aggregate median/min/max over non-outlier reports for a listing.
+func (r *Repository) GetVerifiedPriceStats(ctx context.Context, listingID string) (VerifiedPriceStats, error) {
+	var st VerifiedPriceStats
+	err := r.pool.QueryRow(ctx, `
+		SELECT
+			COALESCE(ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY monthly_rent_thb))::int, 0),
+			COALESCE(MIN(monthly_rent_thb), 0),
+			COALESCE(MAX(monthly_rent_thb), 0),
+			COUNT(*)::int,
+			COALESCE(MAX(reported_month), '')
+		FROM price_reports
+		WHERE listing_id = $1
+		  AND NOT is_outlier
+	`, listingID).Scan(&st.MedianRentTHB, &st.MinRentTHB, &st.MaxRentTHB, &st.ReportCount, &st.LatestReportMonth)
+	return st, err
+}
+
+// ListPriceReports returns the most recent non-outlier tenant rent reports for a listing.
+func (r *Repository) ListPriceReports(ctx context.Context, listingID string, limit int) ([]PriceReportRecord, error) {
+	if limit <= 0 || limit > 50 {
+		limit = 15
 	}
 	rows, err := r.pool.Query(ctx, `
-		SELECT l.id, l.title_th, l.title_en, l.property_type, l.district,
-		       l.monthly_rent_thb, l.room_size_sqm::double precision, l.bedrooms,
-		       ST_Y(l.location::geometry) AS lat,
-		       ST_X(l.location::geometry) AS lng,
-		       COALESCE(l.nearest_station_id, '') AS station_id,
-		       COALESCE(l.walk_to_station_m, 0)::double precision AS walk_m
-		FROM listings l
-		WHERE l.id = ANY($1)
-	`, ids)
+		SELECT id, listing_id, monthly_rent_thb, room_size_sqm::double precision,
+		       room_type, reported_month, note, is_outlier, created_at
+		FROM price_reports
+		WHERE listing_id = $1
+		  AND NOT is_outlier
+		ORDER BY reported_month DESC, created_at DESC
+		LIMIT $2
+	`, listingID, limit)
 	if err != nil {
-		return nil, fmt.Errorf("query listings by ids: %w", err)
+		return nil, fmt.Errorf("list price reports: %w", err)
 	}
 	defer rows.Close()
 
-	var out []ListingRecord
+	var out []PriceReportRecord
 	for rows.Next() {
-		var rec ListingRecord
+		var rec PriceReportRecord
 		if err := rows.Scan(
-			&rec.ID, &rec.TitleTH, &rec.TitleEN, &rec.PropertyType, &rec.District,
-			&rec.MonthlyRentTHB, &rec.RoomSizeSqm, &rec.Bedrooms,
-			&rec.Lat, &rec.Lng, &rec.StationID, &rec.WalkToStationM,
+			&rec.ID, &rec.ListingID, &rec.MonthlyRentTHB, &rec.RoomSizeSqm,
+			&rec.RoomType, &rec.ReportedMonth, &rec.Note, &rec.IsOutlier, &rec.CreatedAt,
 		); err != nil {
-			return nil, fmt.Errorf("scan listing by id: %w", err)
+			return nil, fmt.Errorf("scan price report: %w", err)
 		}
 		out = append(out, rec)
 	}

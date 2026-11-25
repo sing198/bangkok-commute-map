@@ -1,5 +1,5 @@
-import { Award, Clock, Sparkles, TrainFront, X, Zap } from 'lucide-react';
-import type { CompareResponse } from '../types/commute';
+import { Award, Clock, ShieldCheck, Sparkles, TrainFront, X, Zap } from 'lucide-react';
+import { OPERATOR_LABEL, type CompareResponse } from '../types/commute';
 
 interface CompareModalProps {
   open: boolean;
@@ -184,9 +184,22 @@ export function CompareModal({
 
                       <h3 className="text-base font-bold text-slate-900">{item.title_th}</h3>
                       <p className="text-xs text-slate-500">
-                        {item.origin_station.operator} {item.origin_station.name_th} •{' '}
-                        {item.room_size_sqm} ตร.ม.
+                        {OPERATOR_LABEL[item.origin_station.operator] || item.origin_station.operator}{' '}
+                        {item.origin_station.name_th} • ~{item.room_size_sqm} ตร.ม.
                       </p>
+                      <div className="mt-1.5 flex items-center gap-1.5">
+                        {item.price_status === 'verified' ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                            <ShieldCheck className="h-3 w-3" />
+                            ยืนยันโดยผู้ใช้ ({item.verified_report_count} รายงาน)
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                            ราคาประเมิน (฿{item.estimated_rent_min_thb.toLocaleString()}–฿
+                            {item.estimated_rent_max_thb.toLocaleString()})
+                          </span>
+                        )}
+                      </div>
 
                       {/* Big True Monthly Cost */}
                       <div className="mt-4 rounded-xl bg-slate-900 px-4 py-3 text-white">
@@ -263,7 +276,7 @@ export function CompareModal({
                           </dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt>เข้าสถานี (ต้นทาง)</dt>
+                          <dt>เข้าสถานี (ถนนจริง)</dt>
                           <dd className="font-semibold text-slate-900">
                             {item.home_access.mode === 'walk'
                               ? `เดิน ${item.home_access.distance_m} ม.`
@@ -274,7 +287,7 @@ export function CompareModal({
                           <div className="flex justify-between">
                             <dt>ต่อถึงออฟฟิศ (ปลายทาง)</dt>
                             <dd className="font-semibold text-amber-700">
-                              วินฯ {item.office_access.distance_m} ม. (+฿
+                              วินฯ ~{item.office_access.distance_m} ม. (+฿
                               {item.office_access.one_way_cost_thb})
                             </dd>
                           </div>
@@ -286,7 +299,10 @@ export function CompareModal({
                           </dt>
                           <dd className="font-semibold text-slate-900">
                             {item.route.legs
-                              ?.map((l) => `${l.operator} (฿${l.fare_thb})`)
+                              ?.map(
+                                (l) =>
+                                  `${OPERATOR_LABEL[l.operator] || l.operator} (฿${l.fare_thb})`
+                              )
                               .join(' → ') || 'เดินถึง'}
                           </dd>
                         </div>

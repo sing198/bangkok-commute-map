@@ -52,10 +52,11 @@ type RouteResult struct {
 
 // AccessLeg models the first-mile or last-mile trip between a location and a station.
 type AccessLeg struct {
-	DistanceM     int    `json:"distance_m"`
-	Mode          string `json:"mode"` // "walk" or "win" (motorcycle taxi)
-	Minutes       int    `json:"minutes"`
-	OneWayCostTHB int    `json:"one_way_cost_thb"`
+	DistanceM      int    `json:"distance_m"`
+	Mode           string `json:"mode"` // "walk" or "win" (motorcycle taxi)
+	Minutes        int    `json:"minutes"`
+	OneWayCostTHB  int    `json:"one_way_cost_thb"`
+	DistanceSource string `json:"distance_source,omitempty"` // "osrm_foot" | "estimated_detour" | "straight_line"
 }
 
 // CommuteCostSummary holds monthly cost and time totals for a listing.

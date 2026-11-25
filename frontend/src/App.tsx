@@ -5,6 +5,7 @@ import { CommuteMap } from './components/CommuteMap';
 import { CompareModal } from './components/CompareModal';
 import { FilterSidebar } from './components/FilterSidebar';
 import { ListingDrawer, type SortMode } from './components/ListingDrawer';
+import { PriceReportModal } from './components/PriceReportModal';
 import type {
   CompareResponse,
   ListingResult,
@@ -37,6 +38,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
 
   const [sortMode, setSortMode] = useState<SortMode>('true_cost');
+  const [refreshTick, setRefreshTick] = useState(0);
   const [selectedListingId, setSelectedListingId] = useState<string | null>(null);
 
   const [compareIds, setCompareIds] = useState<string[]>([]);
@@ -44,6 +46,8 @@ export default function App() {
   const [compareLoading, setCompareLoading] = useState(false);
   const [compareError, setCompareError] = useState<string | null>(null);
   const [compareData, setCompareData] = useState<CompareResponse | null>(null);
+
+  const [reportListing, setReportListing] = useState<ListingResult | null>(null);
 
   // Load office presets on mount
   useEffect(() => {
@@ -54,14 +58,14 @@ export default function App() {
       });
   }, []);
 
-  // Run commute search whenever office or filters change (debounced slightly for smooth sliders)
+  // Run commute search whenever office, filters, sortMode, or crowdsourced price updates change
   useEffect(() => {
     const timer = window.setTimeout(() => {
       let cancelled = false;
       setLoading(true);
       setError(null);
 
-      searchCommute(office, filters)
+      searchCommute(office, filters, sortMode)
         .then(({ data, telemetry: meta }) => {
           if (cancelled) return;
           setSearchData(data);
@@ -84,7 +88,7 @@ export default function App() {
     }, 180);
 
     return () => window.clearTimeout(timer);
-  }, [office, filters]);
+  }, [office, filters, sortMode, refreshTick]);
 
   const handleSelectPreset = useCallback((preset: OfficePreset) => {
     setActivePresetId(preset.id);
@@ -136,6 +140,10 @@ export default function App() {
     }
   }, [compareIds, office, filters.workdays, filters.walkMaxM]);
 
+  const handlePriceReported = useCallback(() => {
+    setRefreshTick((t) => t + 1);
+  }, []);
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-slate-50 lg:flex-row">
       {/* Left Sidebar: Presets & Filters */}
@@ -149,7 +157,7 @@ export default function App() {
         onChangeFilters={setFilters}
         nearestStations={searchData?.nearest_office_stations ?? []}
         reachableCount={searchData?.reachable_stations.length ?? 0}
-        listingCount={searchData?.listings.length ?? 0}
+        listingCount={searchData?.total_listings_count ?? searchData?.listings.length ?? 0}
         telemetry={telemetry}
         loading={loading}
       />
@@ -158,7 +166,7 @@ export default function App() {
       <main className="relative h-[45vh] min-h-[300px] flex-1 lg:h-full">
         {error && (
           <div className="absolute left-4 right-4 top-4 z-[500] rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-medium text-rose-800 shadow-md">
-            เชื่อมต่อ Backend ไม่สำเร็จ: {error} (ตรวจสอบว่ารัน <code className="font-mono">API_PORT=8081 make api</code> อยู่)
+            เชื่อมต่อ Backend ไม่สำเร็จ: {error}
           </div>
         )}
         <CommuteMap
@@ -175,6 +183,7 @@ export default function App() {
       {/* Right Drawer: Listings & Compare Trigger */}
       <ListingDrawer
         listings={searchData?.listings ?? []}
+        totalListingsCount={searchData?.total_listings_count ?? 0}
         sortMode={sortMode}
         onChangeSortMode={setSortMode}
         selectedListingId={selectedListingId}
@@ -183,6 +192,7 @@ export default function App() {
         onToggleCompare={handleToggleCompare}
         onClearCompare={() => setCompareIds([])}
         onOpenCompare={handleOpenCompare}
+        onOpenReportPrice={setReportListing}
         loading={loading}
       />
 
@@ -193,6 +203,13 @@ export default function App() {
         error={compareError}
         data={compareData}
         onClose={() => setCompareOpen(false)}
+      />
+
+      {/* Crowdsourced Real Rent Report Modal */}
+      <PriceReportModal
+        listing={reportListing}
+        onClose={() => setReportListing(null)}
+        onSubmitted={handlePriceReported}
       />
     </div>
   );

@@ -35,22 +35,26 @@ flowchart LR
 
 ## Core Engineering Highlights
 
-### 1. PostGIS Spatial Queries (`GEOGRAPHY(Point, 4326)` + `GIST`)
-- **KNN Index-Assisted Nearest Stations** (`ORDER BY location <-> ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography LIMIT 3`) สำหรับหาสถานีรถไฟฟ้าใกล้ออฟฟิศ 3 แห่งแรก
-- **Geographic Radius Filtering** (`ST_DWithin(l.location, s.location, $1)`) หารายการที่พักรอบกลุ่มสถานีที่เดินทางถึงทันเวลาเป็นเมตรจริงบนพื้นโลก
+### 1. PostGIS Spatial Queries (`GEOGRAPHY(Point, 4326)` + `GIST`) & Real OSRM Walking Distances
+- **KNN Index-Assisted Nearest Stations** (`ORDER BY location <-> ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography LIMIT 4`) สำหรับหาสถานีรถไฟฟ้าใกล้ออฟฟิศ 4 แห่งแรก พร้อมคูณค่า detour ถนนจริงของ กทม. (`1.40×` วัดจากค่ามัธยฐาน OSRM 3,795 เส้นทาง)
+- **Precomputed Real Street Walking (`listing_station_access`)** คำนวณระยะเดินตามถนนและซอยจริงด้วย **OSRM (`foot.lua`)** จากข้อมูล OpenStreetMap ประเทศไทย ครบ **4,302 คู่เส้นทางเดิน** รอบ **1,222 คอนโดและอพาร์ตเมนต์จริง**
 
-### 2. Transit Graph & Thai Fare Engine (`backend/internal/transit`)
-- **79 สถานี / 166 directed edges** ครอบคลุม BTS สุขุมวิท & สีลม (ระบุส่วนต่อขยาย), MRT น้ำเงิน & ม่วง และ ARL พร้อมจุดเปลี่ยนสายหลักทั้งหมด
-- **Transfer Penalty**: เปลี่ยนสายในระบบเดียวกัน (สยาม / เตาปูน) `+3 นาที` ตั๋วใบเดียว • เปลี่ยนข้ามระบบ (อโศก↔สุขุมวิท, ศาลาแดง↔สีลม, พญาไท, เพชรบุรี↔มักกะสัน ฯลฯ) `+6–7 นาที` และคิดค่าโดยสารแยกใบตามจริง
+### 2. Full Bangkok Transit Graph & Official 2026 Fare Engine (`backend/internal/transit`)
+- **192 สถานี / 404 directed edges / 65 อัตราค่าโดยสาร** ครอบคลุมรถไฟฟ้าทุกสายที่เปิดให้บริการใน กทม.และปริมณฑล: **BTS สุขุมวิท & สีลม (รวมส่วนต่อขยายคูคต–เคหะฯ)**, **BTS สายสีทอง**, **MRT น้ำเงิน (ครบลูปท่าพระ–หลักสอง) & ม่วง**, **MRT สายสีเหลือง**, **MRT สายสีชมพู (+ อิมแพ็ค เมืองทองธานี)**, **ARL** และ **SRT สายสีแดงเข้ม/อ่อน**
+- **Transfer Penalty**: เปลี่ยนสายในระบบเดียวกัน (สยาม / เตาปูน / เมืองทองธานี / กรุงเทพอภิวัฒน์) `+3 นาที` ตั๋วใบเดียว • เปลี่ยนข้ามระบบ `+4–7 นาที` และคิดค่าโดยสารแยกค่ายตามจริง
 - **BTS Extension Rules**: ส่วนต่อขยาย `+15 บาท` (สูงสุด `62 บาท`) และนั่งเฉพาะส่วนต่อขยาย `15 บาท`
 - **Access / Feeder Mode**: เดิน `80 ม./นาที` ภายในระยะที่ตั้งไว้ และสลับเป็นวินมอเตอร์ไซค์ (`300 ม./นาที` + `15–25 บาท/เที่ยว`) อัตโนมัติเมื่อเกินระยะ
 
-### 3. True Monthly Cost Formula
+### 3. Honest Market-Range Rent Estimates + Crowdsourced Tenant Reports
+- **ราคาประเมินแบบช่วง (`ราคาประเมิน`)**: คำนวณจากสถิติค่าเช่าต่อ ตร.ม. ตามโซนรถไฟฟ้า (Core CBD / Extended CBD / Mid-Ring / Suburban อ้างอิง DDproperty / Hipflat / FazWaz 2026) × ขนาดห้องและระยะเดินถนนจริง
+- **ยืนยันโดยผู้เช่าจริง (`ยืนยันโดยผู้ใช้ (n รายงาน)`)**: เปิดให้ผู้ใช้ส่งราคาเช่าจริงผ่าน `POST /api/listings/:id/price-reports` พร้อมระบบกันสแปม (IP-hash rate limiting), outlier flagging (`<0.35×` หรือ `>3.5×`), และคำนวณค่ามัธยฐาน (median) อัปเดตลง True Monthly Cost ทันที
+
+### 4. True Monthly Cost Formula
 $$\text{TrueMonthlyCost} = \text{MonthlyRent} + (\text{OneWayFare} + \text{OneWayFeeder}) \times 2 \times \text{Workdays}$$
 $$\text{MonthlyCommuteHours} = \frac{\text{OneWayMinutes} \times 2 \times \text{Workdays}}{60}$$
 
-### 4. Redis Caching + Observability
-- **Coordinate Quantization**: ปัดพิกัดหมุดออฟฟิศเป็นทศนิยม 3 ตำแหน่ง (~100 ม.) เพื่อให้จุดใกล้กันแชร์แคชได้ (TTL 15 นาที)
+### 5. Upstash Redis Caching + Observability
+- **Coordinate Quantization**: ปัดพิกัดหมุดออฟฟิศเป็นทศนิยม 3 ตำแหน่ง (~100 ม.) เพื่อให้จุดใกล้กันแชร์แคชได้ (TTL 15 นาที) พร้อมปักหมุด Vercel `sin1` (สิงคโปร์) คู่กับ Supabase & Upstash
 - **Visible Proof**: แนบ HTTP headers `X-Cache: HIT|MISS` และ `X-Query-Time-Ms` แสดงผลสดใน UI
 - **Graceful Degradation**: หาก Redis ไม่พร้อมใช้งาน API ยังทำงานต่อผ่าน PostGIS ได้โดยไม่ล่ม
 
@@ -62,8 +66,10 @@ $$\text{MonthlyCommuteHours} = \frac{\text{OneWayMinutes} \times 2 \times \text{
 | :--- | :--- | :--- |
 | `GET` | `/api/health` | เช็กสถานะ API, PostGIS version และ Redis |
 | `GET` | `/api/presets` | รายชื่อออฟฟิศยอดฮิต 6 ย่าน (อโศก, สยาม, สีลม, พระราม 9, อารีย์, วัน แบงค็อก) |
-| `GET` | `/api/commute/search` | ค้นหาสถานีที่ถึงทันเวลาพร้อมสีโซน และที่พักเรียงตาม `true_monthly_cost_thb` (`X-Cache` + `X-Query-Time-Ms`) |
+| `GET` | `/api/commute/search` | ค้นหาสถานีที่ถึงทันเวลาพร้อมสีโซน และที่พักเรียงตาม `true_cost` หรือ `time` (`X-Cache` + `X-Query-Time-Ms`) |
 | `POST` | `/api/commute/compare` | เปรียบเทียบ 2–3 ที่พักข้างกัน พร้อมสรุปส่วนต่างค่าใช้จ่ายและชั่วโมงเดินทางต่อเดือน |
+| `GET` | `/api/listings/:id/price-reports` | ดูรายงานราคาเช่าจริงจากผู้ใช้และค่ามัธยฐานของที่พักนั้น |
+| `POST` | `/api/listings/:id/price-reports` | ส่งรายงานราคาเช่าจริง (rate limit ต่อ IP-hash + outlier detection + ล้างแคชอัตโนมัติ) |
 
 ---
 

@@ -1,10 +1,11 @@
 import { Building2, Clock, Footprints, Gauge, MapPin, Wallet, Zap } from 'lucide-react';
 import type { PlaceResult } from '../api/places';
-import type {
-  NearestStation,
-  OfficePreset,
-  SearchFilters,
-  TelemetryInfo,
+import {
+  OPERATOR_LABEL,
+  type NearestStation,
+  type OfficePreset,
+  type SearchFilters,
+  type TelemetryInfo,
 } from '../types/commute';
 import { OfficeSearchBox } from './OfficeSearchBox';
 
@@ -132,8 +133,10 @@ export function FilterSidebar({
           {nearestStations.length > 0 && (
             <div className="mt-2.5 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
               <span className="font-medium text-slate-700">สถานีใกล้ออฟฟิศสุด: </span>
-              {nearestStations[0].station.operator} {nearestStations[0].station.name_th} (
-              {Math.round(nearestStations[0].distance_m)} ม.)
+              {OPERATOR_LABEL[nearestStations[0].station.operator] ||
+                nearestStations[0].station.operator}{' '}
+              {nearestStations[0].station.name_th} (~
+              {Math.round(nearestStations[0].distance_m * 1.4)} ม. ตามถนน)
             </div>
           )}
         </section>

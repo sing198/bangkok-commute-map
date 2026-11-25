@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import type {
-  ListingResult,
-  OfficePoint,
-  ReachableStation,
-  ZoneColor,
+import {
+  OPERATOR_LABEL,
+  type ListingResult,
+  type OfficePoint,
+  type ReachableStation,
+  type ZoneColor,
 } from '../types/commute';
 
 interface CommuteMapProps {
@@ -35,6 +36,7 @@ export function CommuteMap({
 }: CommuteMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
+  const canvasRendererRef = useRef<L.Canvas | null>(null);
   const officeMarkerRef = useRef<L.Marker | null>(null);
   const zonesLayerRef = useRef<L.LayerGroup | null>(null);
   const listingsLayerRef = useRef<L.LayerGroup | null>(null);
@@ -43,14 +45,18 @@ export function CommuteMap({
 
   onMoveOfficeRef.current = onMoveOffice;
 
-  // Initialize Leaflet map once
+  // Initialize Leaflet map once with high-performance Canvas renderer for 1,000+ markers
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+
+    const canvasRenderer = L.canvas({ padding: 0.5 });
+    canvasRendererRef.current = canvasRenderer;
 
     const map = L.map(containerRef.current, {
       center: [office.lat, office.lng],
       zoom: 12,
       zoomControl: false,
+      preferCanvas: true,
     });
 
     L.control.zoom({ position: 'topright' }).addTo(map);
@@ -92,6 +98,7 @@ export function CommuteMap({
     return () => {
       map.remove();
       mapRef.current = null;
+      canvasRendererRef.current = null;
     };
   }, []);
 
@@ -105,23 +112,26 @@ export function CommuteMap({
   // Render color-coded reachable station zones
   useEffect(() => {
     const layer = zonesLayerRef.current;
-    if (!layer) return;
+    const renderer = canvasRendererRef.current;
+    if (!layer || !renderer) return;
     layer.clearLayers();
 
     for (const rs of reachableStations) {
       const color = ZONE_HEX[rs.zone_color] || '#64748b';
+      const opLabel = OPERATOR_LABEL[rs.station.operator] || rs.station.operator;
       const circle = L.circle([rs.station.lat, rs.station.lng], {
-        radius: 580,
+        renderer,
+        radius: 550,
         color,
-        weight: 1.5,
-        opacity: 0.55,
+        weight: 1.25,
+        opacity: 0.5,
         fillColor: color,
-        fillOpacity: 0.16,
+        fillOpacity: 0.14,
       });
 
       circle.bindTooltip(
         `<div style="font-size:12px;line-height:1.4">
-          <strong>${rs.station.operator} ${rs.station.name_th}</strong> (${rs.station.name_en})<br/>
+          <strong>${opLabel} ${rs.station.name_th}</strong> (${rs.station.name_en})<br/>
           ถึงออฟฟิศ ~<strong>${rs.commute_minutes} นาที</strong> • ค่าโดยสาร ฿${rs.one_way_fare_thb}
           ${rs.transfers > 0 ? `• เปลี่ยนสาย ${rs.transfers} ครั้ง` : '• ต่อเดียว'}
         </div>`,
@@ -129,9 +139,9 @@ export function CommuteMap({
       );
       circle.addTo(layer);
 
-      // Small station center dot
       L.circleMarker([rs.station.lat, rs.station.lng], {
-        radius: 4,
+        renderer,
+        radius: 3.5,
         color: '#ffffff',
         weight: 1.5,
         fillColor: color,
@@ -140,30 +150,48 @@ export function CommuteMap({
     }
   }, [reachableStations]);
 
-  // Render listing pins
+  // Render listing pins via Canvas for smooth 60fps interaction across hundreds of buildings
   useEffect(() => {
     const layer = listingsLayerRef.current;
-    if (!layer) return;
+    const renderer = canvasRendererRef.current;
+    if (!layer || !renderer) return;
     layer.clearLayers();
 
     for (const item of listings) {
       const isSelected = item.id === selectedListingId;
       const isCompared = compareIds.includes(item.id);
+      const isVerified = item.price_status === 'verified';
       const color = ZONE_HEX[item.zone_color] || '#475569';
+      const opLabel = OPERATOR_LABEL[item.origin_station.operator] || item.origin_station.operator;
+      const walkLabel =
+        item.home_access.distance_source === 'osrm_foot'
+          ? `เดินตามถนน ${item.home_access.distance_m} ม.`
+          : `~${item.home_access.distance_m} ม.`;
+      const priceTag = isVerified
+        ? `<span style="color:#047857;font-weight:700">ยืนยันโดยผู้ใช้ (${item.verified_report_count})</span> ฿${item.monthly_rent_thb.toLocaleString()}`
+        : `ราคาประเมิน ฿${item.estimated_rent_min_thb.toLocaleString()}–฿${item.estimated_rent_max_thb.toLocaleString()}`;
 
       const marker = L.circleMarker([item.lat, item.lng], {
-        radius: isSelected ? 9 : isCompared ? 8 : 6,
-        color: isSelected ? '#1e1b4b' : isCompared ? '#4f46e5' : '#ffffff',
-        weight: isSelected || isCompared ? 3 : 2,
+        renderer,
+        radius: isSelected ? 9 : isCompared ? 8 : isVerified ? 6.5 : 5,
+        color: isSelected
+          ? '#1e1b4b'
+          : isCompared
+            ? '#4f46e5'
+            : isVerified
+              ? '#059669'
+              : '#ffffff',
+        weight: isSelected || isCompared ? 3 : 1.75,
         fillColor: color,
-        fillOpacity: 0.95,
+        fillOpacity: isSelected || isCompared ? 1 : 0.88,
       });
 
       marker.bindTooltip(
-        `<div style="font-size:12px">
-          <div style="font-weight:600">${item.title_th}</div>
-          <div>รวมจริง <strong>฿${item.cost.true_monthly_cost_thb.toLocaleString()}/ด.</strong> (เช่า ฿${item.monthly_rent_thb.toLocaleString()})</div>
-          <div>${item.cost.one_way_minutes} นาที/เที่ยว • ${item.origin_station.operator} ${item.origin_station.name_th}</div>
+        `<div style="font-size:12px;line-height:1.4">
+          <div style="font-weight:700">${item.title_th}</div>
+          <div>รวมจริง <strong>฿${item.cost.true_monthly_cost_thb.toLocaleString()}/ด.</strong></div>
+          <div style="font-size:11px;color:#475569">${priceTag}</div>
+          <div style="font-size:11px;color:#334155">${item.cost.one_way_minutes} นาที/เที่ยว • ${opLabel} ${item.origin_station.name_th} (${walkLabel})</div>
         </div>`,
         { direction: 'top', offset: [0, -6] }
       );
@@ -200,7 +228,6 @@ export function CommuteMap({
       selected.dest_station.lng,
     ]);
 
-    // Dashed home -> origin station line
     L.polyline(
       [
         [selected.lat, selected.lng],
@@ -209,7 +236,6 @@ export function CommuteMap({
       { color: '#4f46e5', weight: 3, dashArray: '5, 6', opacity: 0.85 }
     ).addTo(layer);
 
-    // Solid rail route polyline
     const railPoints: [number, number][] = [];
     for (const sid of selected.route.station_ids) {
       const coord = stationCoordsById.get(sid);
@@ -223,7 +249,6 @@ export function CommuteMap({
       }).addTo(layer);
     }
 
-    // Dashed dest station -> office line
     L.polyline(
       [
         [selected.dest_station.lat, selected.dest_station.lng],
@@ -237,7 +262,7 @@ export function CommuteMap({
     <div className="relative h-full w-full">
       <div ref={containerRef} className="h-full w-full" />
       <div className="pointer-events-none absolute bottom-4 left-4 z-[400] hidden rounded-xl border border-slate-200/80 bg-white/95 px-3.5 py-2 text-xs text-slate-600 shadow-md backdrop-blur sm:block">
-        คลิกจุดใดก็ได้บนแผนที่ หรือลากหมุด <strong className="text-indigo-700">“งาน”</strong> เพื่อเปลี่ยนที่ตั้งออฟฟิศ
+        คลิกจุดใดก็ได้บนแผนที่ หรือลากหมุด <strong className="text-indigo-700">“งาน”</strong> • ครอบคลุม BTS / MRT ทุกสาย / ARL / SRT แดง (192 สถานี)
       </div>
     </div>
   );

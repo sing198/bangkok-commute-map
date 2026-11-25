@@ -13,7 +13,10 @@ import (
 )
 
 const (
-	searchCacheTTL = 15 * time.Minute
+	searchCacheTTL      = 15 * time.Minute
+	defaultSearchLimit  = 450
+	maxSearchLimit      = 1000
+	maxAccessQueryDistM = 2500
 )
 
 // SearchParams defines query filters for /api/commute/search.
@@ -24,6 +27,8 @@ type SearchParams struct {
 	MaxBudget  int
 	Workdays   int
 	WalkMaxM   int
+	Sort       string // "true_cost" (default) or "time"
+	Limit      int
 }
 
 // ReachableStation is a station reachable within max_minutes with its zone color tier.
@@ -37,34 +42,47 @@ type ReachableStation struct {
 	OfficeAccess  transit.AccessLeg   `json:"office_access"`
 }
 
-// ListingResult is a listing enriched with door-to-door commute time, route, and True Monthly Cost.
+// ListingResult is a listing enriched with real OSRM door-to-door commute time, route,
+// cited estimated rent range, crowdsourced verified rent, and True Monthly Cost.
 type ListingResult struct {
-	ID             string                     `json:"id"`
-	TitleTH        string                     `json:"title_th"`
-	TitleEN        string                     `json:"title_en"`
-	PropertyType   string                     `json:"property_type"`
-	District       string                     `json:"district"`
-	MonthlyRentTHB int                        `json:"monthly_rent_thb"`
-	RoomSizeSqm    float64                    `json:"room_size_sqm"`
-	Bedrooms       int                        `json:"bedrooms"`
-	Lat            float64                    `json:"lat"`
-	Lng            float64                    `json:"lng"`
-	OriginStation  transit.Station            `json:"origin_station"`
-	DestStation    transit.Station            `json:"dest_station"`
-	HomeAccess     transit.AccessLeg          `json:"home_access"`
-	OfficeAccess   transit.AccessLeg          `json:"office_access"`
-	Route          transit.RouteResult        `json:"route"`
-	Cost           transit.CommuteCostSummary `json:"cost"`
-	ZoneColor      string                     `json:"zone_color"`
+	ID                    string                     `json:"id"`
+	OSMID                 string                     `json:"osm_id,omitempty"`
+	TitleTH               string                     `json:"title_th"`
+	TitleEN               string                     `json:"title_en"`
+	PropertyType          string                     `json:"property_type"`
+	District              string                     `json:"district"`
+	MonthlyRentTHB        int                        `json:"monthly_rent_thb"`
+	EstimatedRentMinTHB   int                        `json:"estimated_rent_min_thb"`
+	EstimatedRentMaxTHB   int                        `json:"estimated_rent_max_thb"`
+	PriceStatus           string                     `json:"price_status"` // "verified" or "estimated"
+	PriceSource           string                     `json:"price_source,omitempty"`
+	DataSource            string                     `json:"data_source,omitempty"`
+	VerifiedRentMedianTHB int                        `json:"verified_rent_median_thb,omitempty"`
+	VerifiedReportCount   int                        `json:"verified_report_count"`
+	LatestReportMonth     string                     `json:"latest_report_month,omitempty"`
+	RoomSizeSqm           float64                    `json:"room_size_sqm"`
+	Bedrooms              int                        `json:"bedrooms"`
+	Lat                   float64                    `json:"lat"`
+	Lng                   float64                    `json:"lng"`
+	OriginStation         transit.Station            `json:"origin_station"`
+	DestStation           transit.Station            `json:"dest_station"`
+	HomeAccess            transit.AccessLeg          `json:"home_access"`
+	OfficeAccess          transit.AccessLeg          `json:"office_access"`
+	Route                 transit.RouteResult        `json:"route"`
+	Cost                  transit.CommuteCostSummary `json:"cost"`
+	ZoneColor             string                     `json:"zone_color"`
 }
 
 // SearchResponse is returned by GET /api/commute/search.
 type SearchResponse struct {
-	Office            OfficePoint        `json:"office"`
-	Params            SearchMeta         `json:"params"`
-	NearestStations   []NearestStation   `json:"nearest_office_stations"`
-	ReachableStations []ReachableStation `json:"reachable_stations"`
-	Listings          []ListingResult    `json:"listings"`
+	Office                OfficePoint        `json:"office"`
+	Params                SearchMeta         `json:"params"`
+	DetourFactor          float64            `json:"detour_factor"`
+	TotalListingsCount    int                `json:"total_listings_count"`
+	ReturnedListingsCount int                `json:"returned_listings_count"`
+	NearestStations       []NearestStation   `json:"nearest_office_stations"`
+	ReachableStations     []ReachableStation `json:"reachable_stations"`
+	Listings              []ListingResult    `json:"listings"`
 }
 
 type OfficePoint struct {
@@ -73,10 +91,12 @@ type OfficePoint struct {
 }
 
 type SearchMeta struct {
-	MaxMinutes int `json:"max_minutes"`
-	MaxBudget  int `json:"max_budget"`
-	Workdays   int `json:"workdays"`
-	WalkMaxM   int `json:"walk_max_m"`
+	MaxMinutes int    `json:"max_minutes"`
+	MaxBudget  int    `json:"max_budget"`
+	Workdays   int    `json:"workdays"`
+	WalkMaxM   int    `json:"walk_max_m"`
+	Sort       string `json:"sort"`
+	Limit      int    `json:"limit"`
 }
 
 // CompareRequest is the JSON payload for POST /api/commute/compare.
@@ -89,10 +109,10 @@ type CompareRequest struct {
 
 // CompareSummary highlights the best value and fastest commute trade-offs.
 type CompareSummary struct {
-	LowestTrueCostID      string  `json:"lowest_true_cost_id"`
-	FastestCommuteID      string  `json:"fastest_commute_id"`
-	MaxMonthlySavingsTHB  int     `json:"max_monthly_savings_thb"`
-	MaxMonthlyHoursSaved  float64 `json:"max_monthly_hours_saved"`
+	LowestTrueCostID     string  `json:"lowest_true_cost_id"`
+	FastestCommuteID     string  `json:"fastest_commute_id"`
+	MaxMonthlySavingsTHB int     `json:"max_monthly_savings_thb"`
+	MaxMonthlyHoursSaved float64 `json:"max_monthly_hours_saved"`
 }
 
 // CompareResponse is returned by POST /api/commute/compare.
@@ -105,7 +125,8 @@ type CompareResponse struct {
 	Summary         CompareSummary   `json:"summary"`
 }
 
-// Service orchestrates PostGIS spatial queries, in-memory Dijkstra routing, and Redis caching.
+// Service orchestrates PostGIS spatial queries, OSRM precomputed walking access,
+// in-memory Dijkstra routing, crowdsourced price reports, and Redis caching.
 type Service struct {
 	repo  *Repository
 	graph *transit.Graph
@@ -141,6 +162,15 @@ func NormalizeParams(p SearchParams) SearchParams {
 	if p.WalkMaxM > 2500 {
 		p.WalkMaxM = 2500
 	}
+	if p.Sort != "time" {
+		p.Sort = "true_cost"
+	}
+	if p.Limit <= 0 {
+		p.Limit = defaultSearchLimit
+	}
+	if p.Limit > maxSearchLimit {
+		p.Limit = maxSearchLimit
+	}
 	return p
 }
 
@@ -149,11 +179,57 @@ func NormalizeParams(p SearchParams) SearchParams {
 func QuantizedCacheKey(p SearchParams) string {
 	qLat := math.Round(p.Lat*1000) / 1000
 	qLng := math.Round(p.Lng*1000) / 1000
-	return fmt.Sprintf("commute:search:v2:%.3f:%.3f:%d:%d:%d:%d",
-		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.Workdays, p.WalkMaxM)
+	return fmt.Sprintf("commute:search:v3:%.3f:%.3f:%d:%d:%d:%d:%s:%d",
+		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.Workdays, p.WalkMaxM, p.Sort, p.Limit)
 }
 
-// Search finds reachable stations and matching listings sorted by True Monthly Cost.
+func buildListingResult(rec ListingRecord, stOpt ReachableStation, destSt transit.Station, workdays, walkMaxM int) ListingResult {
+	distSrc := rec.DistanceSource
+	if distSrc == "" {
+		distSrc = "osrm_foot"
+	}
+	homeAccess := transit.CalculateAccessWithSource(rec.WalkToStationM, walkMaxM, distSrc)
+
+	effectiveRent := rec.MonthlyRentTHB
+	priceStatus := "estimated"
+	if rec.VerifiedReportCount > 0 && rec.VerifiedRentMedianTHB > 0 {
+		effectiveRent = rec.VerifiedRentMedianTHB
+		priceStatus = "verified"
+	}
+
+	cost := transit.CalculateMonthlyCost(effectiveRent, homeAccess, stOpt.OfficeAccess, stOpt.Route, workdays)
+
+	return ListingResult{
+		ID:                    rec.ID,
+		OSMID:                 rec.OSMID,
+		TitleTH:               rec.TitleTH,
+		TitleEN:               rec.TitleEN,
+		PropertyType:          rec.PropertyType,
+		District:              rec.District,
+		MonthlyRentTHB:        effectiveRent,
+		EstimatedRentMinTHB:   rec.EstimatedRentMinTHB,
+		EstimatedRentMaxTHB:   rec.EstimatedRentMaxTHB,
+		PriceStatus:           priceStatus,
+		PriceSource:           rec.PriceSource,
+		DataSource:            rec.DataSource,
+		VerifiedRentMedianTHB: rec.VerifiedRentMedianTHB,
+		VerifiedReportCount:   rec.VerifiedReportCount,
+		LatestReportMonth:     rec.LatestReportMonth,
+		RoomSizeSqm:           rec.RoomSizeSqm,
+		Bedrooms:              rec.Bedrooms,
+		Lat:                   rec.Lat,
+		Lng:                   rec.Lng,
+		OriginStation:         stOpt.Station,
+		DestStation:           destSt,
+		HomeAccess:            homeAccess,
+		OfficeAccess:          stOpt.OfficeAccess,
+		Route:                 stOpt.Route,
+		Cost:                  cost,
+		ZoneColor:             zoneColorForMinutes(cost.OneWayMinutes),
+	}
+}
+
+// Search finds reachable stations and matching listings sorted by True Monthly Cost or commute time.
 func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse, bool, error) {
 	p := NormalizeParams(raw)
 	cacheKey := QuantizedCacheKey(p)
@@ -165,7 +241,7 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 		}
 	}
 
-	nearest, err := s.repo.FindNearestStations(ctx, p.Lat, p.Lng, 3)
+	nearest, err := s.repo.FindNearestStations(ctx, p.Lat, p.Lng, 4)
 	if err != nil {
 		return SearchResponse{}, false, err
 	}
@@ -173,8 +249,6 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 		return SearchResponse{}, false, fmt.Errorf("no transit stations found in database")
 	}
 
-	// For every station in Bangkok, compute the fastest route to the office
-	// via any of the 3 nearest office stations.
 	bestStationOption := s.computeBestStationOptions(nearest, p.MaxMinutes, p.WalkMaxM)
 
 	reachableStations := make([]ReachableStation, 0, len(bestStationOption))
@@ -190,50 +264,31 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 		return reachableStations[i].Station.ID < reachableStations[j].Station.ID
 	})
 
-	// Query listings within walking/win radius of reachable stations via PostGIS ST_DWithin.
-	searchRadiusM := p.WalkMaxM
-	if searchRadiusM < 1000 {
-		searchRadiusM = 1000
+	// Query listings using precomputed real OSRM street walking distances (up to 2,500m).
+	searchWalkM := p.WalkMaxM + 900
+	if searchWalkM < 1800 {
+		searchWalkM = 1800
 	}
-	rawListings, err := s.repo.FindListingsNearStations(ctx, reachableIDs, searchRadiusM, p.MaxBudget)
+	if searchWalkM > maxAccessQueryDistM {
+		searchWalkM = maxAccessQueryDistM
+	}
+	rawListings, err := s.repo.FindListingsNearStations(ctx, reachableIDs, searchWalkM, p.MaxBudget)
 	if err != nil {
 		return SearchResponse{}, false, err
 	}
 
-	// Deduplicate listings across multiple nearby stations by picking the option
-	// with the lowest True Monthly Cost (tie-break: lowest one-way commute time).
+	// Deduplicate listings across multiple nearby stations by picking the best station per listing.
 	bestByListing := make(map[string]ListingResult, len(rawListings))
 	for _, rec := range rawListings {
 		stOpt, ok := bestStationOption[rec.StationID]
 		if !ok {
 			continue
 		}
-		homeAccess := transit.CalculateAccess(rec.WalkToStationM, p.WalkMaxM)
-		cost := transit.CalculateMonthlyCost(rec.MonthlyRentTHB, homeAccess, stOpt.OfficeAccess, stOpt.Route, p.Workdays)
-		if cost.OneWayMinutes > p.MaxMinutes {
+		destSt, _ := s.graph.Station(stOpt.Route.DestID)
+		candidate := buildListingResult(rec, stOpt, destSt, p.Workdays, p.WalkMaxM)
+		if candidate.Cost.OneWayMinutes > p.MaxMinutes {
 			continue
 		}
-		destSt, _ := s.graph.Station(stOpt.Route.DestID)
-		candidate := ListingResult{
-			ID:             rec.ID,
-			TitleTH:        rec.TitleTH,
-			TitleEN:        rec.TitleEN,
-			PropertyType:   rec.PropertyType,
-			District:       rec.District,
-			MonthlyRentTHB: rec.MonthlyRentTHB,
-			RoomSizeSqm:    rec.RoomSizeSqm,
-			Bedrooms:       rec.Bedrooms,
-			Lat:            rec.Lat,
-			Lng:            rec.Lng,
-			OriginStation:  stOpt.Station,
-			DestStation:    destSt,
-			HomeAccess:     homeAccess,
-			OfficeAccess:   stOpt.OfficeAccess,
-			Route:          stOpt.Route,
-			Cost:           cost,
-			ZoneColor:      zoneColorForMinutes(cost.OneWayMinutes),
-		}
-
 		if existing, exists := bestByListing[rec.ID]; !exists || isBetterOption(candidate, existing) {
 			bestByListing[rec.ID] = candidate
 		}
@@ -243,16 +298,40 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 	for _, item := range bestByListing {
 		listings = append(listings, item)
 	}
-	sort.Slice(listings, func(i, j int) bool {
-		return isBetterOption(listings[i], listings[j])
-	})
+	if p.Sort == "time" {
+		sort.Slice(listings, func(i, j int) bool {
+			if listings[i].Cost.OneWayMinutes != listings[j].Cost.OneWayMinutes {
+				return listings[i].Cost.OneWayMinutes < listings[j].Cost.OneWayMinutes
+			}
+			return isBetterOption(listings[i], listings[j])
+		})
+	} else {
+		sort.Slice(listings, func(i, j int) bool {
+			return isBetterOption(listings[i], listings[j])
+		})
+	}
+
+	totalCount := len(listings)
+	if len(listings) > p.Limit {
+		listings = listings[:p.Limit]
+	}
 
 	resp := SearchResponse{
-		Office:            OfficePoint{Lat: p.Lat, Lng: p.Lng},
-		Params:            SearchMeta{MaxMinutes: p.MaxMinutes, MaxBudget: p.MaxBudget, Workdays: p.Workdays, WalkMaxM: p.WalkMaxM},
-		NearestStations:   nearest,
-		ReachableStations: reachableStations,
-		Listings:          listings,
+		Office: OfficePoint{Lat: p.Lat, Lng: p.Lng},
+		Params: SearchMeta{
+			MaxMinutes: p.MaxMinutes,
+			MaxBudget:  p.MaxBudget,
+			Workdays:   p.Workdays,
+			WalkMaxM:   p.WalkMaxM,
+			Sort:       p.Sort,
+			Limit:      p.Limit,
+		},
+		DetourFactor:          transit.BangkokDetourFactor,
+		TotalListingsCount:    totalCount,
+		ReturnedListingsCount: len(listings),
+		NearestStations:       nearest,
+		ReachableStations:     reachableStations,
+		Listings:              listings,
 	}
 
 	if encoded, err := json.Marshal(resp); err == nil {
@@ -273,7 +352,7 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 		walkMaxM = 800
 	}
 
-	nearest, err := s.repo.FindNearestStations(ctx, req.Office.Lat, req.Office.Lng, 3)
+	nearest, err := s.repo.FindNearestStations(ctx, req.Office.Lat, req.Office.Lng, 4)
 	if err != nil {
 		return CompareResponse{}, err
 	}
@@ -281,11 +360,14 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 		return CompareResponse{}, fmt.Errorf("no transit stations found in database")
 	}
 
-	searchRadiusM := walkMaxM
-	if searchRadiusM < 1000 {
-		searchRadiusM = 1000
+	searchWalkM := walkMaxM + 900
+	if searchWalkM < 1800 {
+		searchWalkM = 1800
 	}
-	records, err := s.repo.FindListingsByIDsNearStations(ctx, req.ListingIDs, searchRadiusM)
+	if searchWalkM > maxAccessQueryDistM {
+		searchWalkM = maxAccessQueryDistM
+	}
+	records, err := s.repo.FindListingsByIDsNearStations(ctx, req.ListingIDs, searchWalkM)
 	if err != nil {
 		return CompareResponse{}, err
 	}
@@ -293,39 +375,16 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 		return CompareResponse{}, fmt.Errorf("no matching listings found")
 	}
 
-	// Precompute unrestricted best routes to the office from every station.
 	bestStationOption := s.computeBestStationOptions(nearest, -1, walkMaxM)
 
-	// Pick the optimal nearby station per listing using the exact same criterion as Search().
 	bestByListing := make(map[string]ListingResult, len(req.ListingIDs))
 	for _, rec := range records {
 		stOpt, ok := bestStationOption[rec.StationID]
 		if !ok {
 			continue
 		}
-		homeAccess := transit.CalculateAccess(rec.WalkToStationM, walkMaxM)
-		cost := transit.CalculateMonthlyCost(rec.MonthlyRentTHB, homeAccess, stOpt.OfficeAccess, stOpt.Route, workdays)
 		destSt, _ := s.graph.Station(stOpt.Route.DestID)
-
-		candidate := ListingResult{
-			ID:             rec.ID,
-			TitleTH:        rec.TitleTH,
-			TitleEN:        rec.TitleEN,
-			PropertyType:   rec.PropertyType,
-			District:       rec.District,
-			MonthlyRentTHB: rec.MonthlyRentTHB,
-			RoomSizeSqm:    rec.RoomSizeSqm,
-			Bedrooms:       rec.Bedrooms,
-			Lat:            rec.Lat,
-			Lng:            rec.Lng,
-			OriginStation:  stOpt.Station,
-			DestStation:    destSt,
-			HomeAccess:     homeAccess,
-			OfficeAccess:   stOpt.OfficeAccess,
-			Route:          stOpt.Route,
-			Cost:           cost,
-			ZoneColor:      zoneColorForMinutes(cost.OneWayMinutes),
-		}
+		candidate := buildListingResult(rec, stOpt, destSt, workdays, walkMaxM)
 		if existing, exists := bestByListing[rec.ID]; !exists || isBetterOption(candidate, existing) {
 			bestByListing[rec.ID] = candidate
 		}
@@ -354,7 +413,8 @@ func (s *Service) computeBestStationOptions(nearest []NearestStation, maxMinutes
 	best := make(map[string]ReachableStation)
 
 	for _, ns := range nearest {
-		officeAccess := transit.CalculateAccess(ns.DistanceM, walkMaxM)
+		// Calibrated real-street office walk estimate using Bangkok's empirical 1.40x detour factor
+		officeAccess := transit.CalculateOfficeAccess(ns.DistanceM, walkMaxM)
 		maxRail := -1
 		if maxMinutes >= 0 {
 			maxRail = maxMinutes - officeAccess.Minutes
@@ -373,7 +433,6 @@ func (s *Service) computeBestStationOptions(nearest []NearestStation, maxMinutes
 			if len(route.StationIDs) > 1 {
 				waitMins = transit.DefaultWaitMinutes
 			}
-			// Station-to-office time (excludes home-to-station walk, which is per-listing).
 			stationCommuteMins := waitMins + route.TotalRailMinutes + officeAccess.Minutes
 			if maxMinutes >= 0 && stationCommuteMins > maxMinutes {
 				continue

@@ -22,6 +22,9 @@ const (
 	WalkSpeedMetersPerMin = 80.0
 	// WinSpeedMetersPerMin is the motorcycle taxi feeder speed (300 m/min).
 	WinSpeedMetersPerMin = 300.0
+	// BangkokDetourFactor is the empirical median ratio of OSRM real street walking distance
+	// to straight-line distance measured across 3,800+ Bangkok building-to-station routes.
+	BangkokDetourFactor = 1.40
 )
 
 // Graph is an in-memory Bangkok rail network supporting Dijkstra routing and Thai fare rules.
@@ -226,15 +229,19 @@ func (g *Graph) runDijkstra(startID string, maxMinutes int) (map[stateKey]int, m
 }
 
 // inferEdgeLine determines which transit line a rail edge belongs to.
-// At shared hub BTS_CEN (Siam), the neighbor's line code identifies Sukhumvit vs Silom.
+// At shared multi-line hubs (Siam BTS_CEN, Tao Poon MRT_BL10, Muang Thong Thani MRT_PK10,
+// Krung Thep Aphiwat SRT_RN01), the neighbor's line code identifies which line the rider is on.
 func inferEdgeLine(from, to Station, edge Edge) string {
 	if edge.IsTransfer {
 		return ""
 	}
-	if from.ID == "BTS_CEN" {
+	isSharedHub := func(id string) bool {
+		return id == "BTS_CEN" || id == "MRT_BL10" || id == "MRT_PK10" || id == "SRT_RN01"
+	}
+	if isSharedHub(from.ID) {
 		return to.LineCode
 	}
-	if to.ID == "BTS_CEN" {
+	if isSharedHub(to.ID) {
 		return from.LineCode
 	}
 	return to.LineCode
@@ -418,12 +425,27 @@ func (g *Graph) lookupFare(operator string, hops int) int {
 // CalculateAccess computes walking or motorcycle taxi (win) time and cost
 // based on distance in meters and the user's max comfortable walking distance.
 func CalculateAccess(distanceM float64, walkMaxM int) AccessLeg {
+	return CalculateAccessWithSource(distanceM, walkMaxM, "osrm_foot")
+}
+
+// CalculateOfficeAccess estimates real street walking distance from an arbitrary office pin
+// by scaling straight-line PostGIS distance by Bangkok's empirical street detour factor (1.40x).
+func CalculateOfficeAccess(straightLineM float64, walkMaxM int) AccessLeg {
+	if straightLineM <= 0 {
+		return AccessLeg{DistanceM: 0, Mode: "walk", Minutes: 0, OneWayCostTHB: 0, DistanceSource: "estimated_detour"}
+	}
+	estimatedStreetM := straightLineM * BangkokDetourFactor
+	return CalculateAccessWithSource(estimatedStreetM, walkMaxM, "estimated_detour")
+}
+
+// CalculateAccessWithSource computes walking or motorcycle taxi (win) time and cost with provenance label.
+func CalculateAccessWithSource(distanceM float64, walkMaxM int, source string) AccessLeg {
 	if walkMaxM <= 0 {
 		walkMaxM = 800
 	}
 	distInt := int(math.Round(distanceM))
 	if distInt <= 0 {
-		return AccessLeg{DistanceM: 0, Mode: "walk", Minutes: 0, OneWayCostTHB: 0}
+		return AccessLeg{DistanceM: 0, Mode: "walk", Minutes: 0, OneWayCostTHB: 0, DistanceSource: source}
 	}
 
 	if distInt <= walkMaxM {
@@ -432,10 +454,11 @@ func CalculateAccess(distanceM float64, walkMaxM int) AccessLeg {
 			mins = 1
 		}
 		return AccessLeg{
-			DistanceM:     distInt,
-			Mode:          "walk",
-			Minutes:       mins,
-			OneWayCostTHB: 0,
+			DistanceM:      distInt,
+			Mode:           "walk",
+			Minutes:        mins,
+			OneWayCostTHB:  0,
+			DistanceSource: source,
 		}
 	}
 
@@ -452,10 +475,11 @@ func CalculateAccess(distanceM float64, walkMaxM int) AccessLeg {
 	}
 
 	return AccessLeg{
-		DistanceM:     distInt,
-		Mode:          "win",
-		Minutes:       mins,
-		OneWayCostTHB: cost,
+		DistanceM:      distInt,
+		Mode:           "win",
+		Minutes:        mins,
+		OneWayCostTHB:  cost,
+		DistanceSource: source,
 	}
 }
 

@@ -1,34 +1,457 @@
 [
-  { "operator": "BTS", "hops": 0, "fare_thb": 17, "effective_date": "2026-01-01" },
-  { "operator": "BTS", "hops": 1, "fare_thb": 17, "effective_date": "2026-01-01" },
-  { "operator": "BTS", "hops": 2, "fare_thb": 25, "effective_date": "2026-01-01" },
-  { "operator": "BTS", "hops": 3, "fare_thb": 28, "effective_date": "2026-01-01" },
-  { "operator": "BTS", "hops": 4, "fare_thb": 32, "effective_date": "2026-01-01" },
-  { "operator": "BTS", "hops": 5, "fare_thb": 35, "effective_date": "2026-01-01" },
-  { "operator": "BTS", "hops": 6, "fare_thb": 40, "effective_date": "2026-01-01" },
-  { "operator": "BTS", "hops": 7, "fare_thb": 43, "effective_date": "2026-01-01" },
-  { "operator": "BTS", "hops": 8, "fare_thb": 47, "effective_date": "2026-01-01" },
-
-  { "operator": "MRT", "hops": 0,  "fare_thb": 17, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 1,  "fare_thb": 17, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 2,  "fare_thb": 20, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 3,  "fare_thb": 22, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 4,  "fare_thb": 25, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 5,  "fare_thb": 27, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 6,  "fare_thb": 30, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 7,  "fare_thb": 32, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 8,  "fare_thb": 35, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 9,  "fare_thb": 37, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 10, "fare_thb": 40, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 11, "fare_thb": 42, "effective_date": "2026-01-01" },
-  { "operator": "MRT", "hops": 12, "fare_thb": 45, "effective_date": "2026-01-01" },
-
-  { "operator": "ARL", "hops": 0, "fare_thb": 15, "effective_date": "2026-01-01" },
-  { "operator": "ARL", "hops": 1, "fare_thb": 15, "effective_date": "2026-01-01" },
-  { "operator": "ARL", "hops": 2, "fare_thb": 20, "effective_date": "2026-01-01" },
-  { "operator": "ARL", "hops": 3, "fare_thb": 25, "effective_date": "2026-01-01" },
-  { "operator": "ARL", "hops": 4, "fare_thb": 30, "effective_date": "2026-01-01" },
-  { "operator": "ARL", "hops": 5, "fare_thb": 35, "effective_date": "2026-01-01" },
-  { "operator": "ARL", "hops": 6, "fare_thb": 40, "effective_date": "2026-01-01" },
-  { "operator": "ARL", "hops": 7, "fare_thb": 45, "effective_date": "2026-01-01" }
+  {
+    "operator": "BTS",
+    "hops": 0,
+    "fare_thb": 17,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS",
+    "hops": 1,
+    "fare_thb": 17,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS",
+    "hops": 2,
+    "fare_thb": 25,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS",
+    "hops": 3,
+    "fare_thb": 28,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS",
+    "hops": 4,
+    "fare_thb": 32,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS",
+    "hops": 5,
+    "fare_thb": 35,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS",
+    "hops": 6,
+    "fare_thb": 40,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS",
+    "hops": 7,
+    "fare_thb": 43,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS",
+    "hops": 8,
+    "fare_thb": 47,
+    "effective_date": "2026-01-01",
+    "source": "BTSC official Green Line fare table (17-47 THB core; +15 THB extension, cap 62 THB)"
+  },
+  {
+    "operator": "BTS_GOLD",
+    "hops": 0,
+    "fare_thb": 16,
+    "effective_date": "2026-01-01",
+    "source": "BTSC / Krungthep Thanakom official Gold Line flat fare (16 THB)"
+  },
+  {
+    "operator": "BTS_GOLD",
+    "hops": 1,
+    "fare_thb": 16,
+    "effective_date": "2026-01-01",
+    "source": "BTSC / Krungthep Thanakom official Gold Line flat fare (16 THB)"
+  },
+  {
+    "operator": "BTS_GOLD",
+    "hops": 2,
+    "fare_thb": 16,
+    "effective_date": "2026-01-01",
+    "source": "BTSC / Krungthep Thanakom official Gold Line flat fare (16 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 0,
+    "fare_thb": 17,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 1,
+    "fare_thb": 17,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 2,
+    "fare_thb": 20,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 3,
+    "fare_thb": 22,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 4,
+    "fare_thb": 25,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 5,
+    "fare_thb": 27,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 6,
+    "fare_thb": 30,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 7,
+    "fare_thb": 32,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 8,
+    "fare_thb": 35,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 9,
+    "fare_thb": 37,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 10,
+    "fare_thb": 40,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 11,
+    "fare_thb": 42,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT",
+    "hops": 12,
+    "fare_thb": 45,
+    "effective_date": "2026-01-01",
+    "source": "MRTA / BEM official MRT Blue & Purple Line fare table (17-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 0,
+    "fare_thb": 15,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 1,
+    "fare_thb": 15,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 2,
+    "fare_thb": 18,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 3,
+    "fare_thb": 22,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 4,
+    "fare_thb": 25,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 5,
+    "fare_thb": 28,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 6,
+    "fare_thb": 32,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 7,
+    "fare_thb": 36,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 8,
+    "fare_thb": 39,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 9,
+    "fare_thb": 42,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_YL",
+    "hops": 10,
+    "fare_thb": 45,
+    "effective_date": "2026-01-01",
+    "source": "EBM / MRTA official MRT Yellow Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 0,
+    "fare_thb": 15,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 1,
+    "fare_thb": 15,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 2,
+    "fare_thb": 18,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 3,
+    "fare_thb": 21,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 4,
+    "fare_thb": 24,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 5,
+    "fare_thb": 27,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 6,
+    "fare_thb": 31,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 7,
+    "fare_thb": 34,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 8,
+    "fare_thb": 38,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 9,
+    "fare_thb": 41,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "MRT_PK",
+    "hops": 10,
+    "fare_thb": 45,
+    "effective_date": "2026-01-01",
+    "source": "NBM / MRTA official MRT Pink Line monorail fare table (15-45 THB)"
+  },
+  {
+    "operator": "ARL",
+    "hops": 0,
+    "fare_thb": 15,
+    "effective_date": "2026-01-01",
+    "source": "Asia Era One (ARL) official fare table (15-45 THB)"
+  },
+  {
+    "operator": "ARL",
+    "hops": 1,
+    "fare_thb": 15,
+    "effective_date": "2026-01-01",
+    "source": "Asia Era One (ARL) official fare table (15-45 THB)"
+  },
+  {
+    "operator": "ARL",
+    "hops": 2,
+    "fare_thb": 20,
+    "effective_date": "2026-01-01",
+    "source": "Asia Era One (ARL) official fare table (15-45 THB)"
+  },
+  {
+    "operator": "ARL",
+    "hops": 3,
+    "fare_thb": 25,
+    "effective_date": "2026-01-01",
+    "source": "Asia Era One (ARL) official fare table (15-45 THB)"
+  },
+  {
+    "operator": "ARL",
+    "hops": 4,
+    "fare_thb": 30,
+    "effective_date": "2026-01-01",
+    "source": "Asia Era One (ARL) official fare table (15-45 THB)"
+  },
+  {
+    "operator": "ARL",
+    "hops": 5,
+    "fare_thb": 35,
+    "effective_date": "2026-01-01",
+    "source": "Asia Era One (ARL) official fare table (15-45 THB)"
+  },
+  {
+    "operator": "ARL",
+    "hops": 6,
+    "fare_thb": 40,
+    "effective_date": "2026-01-01",
+    "source": "Asia Era One (ARL) official fare table (15-45 THB)"
+  },
+  {
+    "operator": "ARL",
+    "hops": 7,
+    "fare_thb": 45,
+    "effective_date": "2026-01-01",
+    "source": "Asia Era One (ARL) official fare table (15-45 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 0,
+    "fare_thb": 12,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 1,
+    "fare_thb": 12,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 2,
+    "fare_thb": 16,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 3,
+    "fare_thb": 20,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 4,
+    "fare_thb": 24,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 5,
+    "fare_thb": 29,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 6,
+    "fare_thb": 33,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 7,
+    "fare_thb": 37,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 8,
+    "fare_thb": 40,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  },
+  {
+    "operator": "SRT_RED",
+    "hops": 9,
+    "fare_thb": 42,
+    "effective_date": "2026-01-01",
+    "source": "SRTET official SRT Dark/Light Red Line fare table (12-42 THB)"
+  }
 ]

@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/tk/bangkok-commute-map/backend/data"
 	"github.com/tk/bangkok-commute-map/backend/internal/cache"
 	"github.com/tk/bangkok-commute-map/backend/internal/commute"
 	"github.com/tk/bangkok-commute-map/backend/internal/config"
@@ -31,6 +32,14 @@ func main() {
 		log.Fatalf("run migrations: %v", err)
 	}
 
+	seeded, err := db.EnsureSeeded(ctx, pool, data.FS)
+	if err != nil {
+		log.Fatalf("ensure dataset seeded: %v", err)
+	}
+	if seeded {
+		log.Println("bootstrapped full Bangkok rail network + OSM buildings + OSRM walking distances")
+	}
+
 	cacheClient := cache.NewFromOptions(cache.Options{
 		URL:       cfg.RedisURL,
 		RestURL:   cfg.RedisRestURL,
@@ -44,6 +53,9 @@ func main() {
 		log.Printf("warning: redis unavailable (mode=%s, err=%v); continuing with graceful fallback", cacheClient.Mode(), err)
 	} else {
 		log.Printf("connected to redis (mode=%s)", cacheClient.Mode())
+		if seeded {
+			_, _ = cacheClient.DeleteByPrefix(ctx, "commute:")
+		}
 	}
 
 	repo := commute.NewRepository(pool)

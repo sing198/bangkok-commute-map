@@ -4,12 +4,53 @@ import (
 	"context"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/tk/bangkok-commute-map/backend/internal/cache"
 	"github.com/tk/bangkok-commute-map/backend/internal/config"
 	"github.com/tk/bangkok-commute-map/backend/internal/db"
 	"github.com/tk/bangkok-commute-map/backend/internal/transit"
 )
+
+func TestPriceReportValidationAndOutliers(t *testing.T) {
+	now := time.Date(2026, 11, 25, 0, 0, 0, 0, time.UTC)
+
+	valid := SubmitPriceReportRequest{
+		MonthlyRentTHB: 14500,
+		RoomSizeSqm:    30,
+		RoomType:       "1br",
+		ReportedMonth:  "2026-11",
+		Note:           "ชั้น 12 เฟอร์ครบ",
+	}
+	if err := ValidatePriceReportInput(valid, now); err != nil {
+		t.Fatalf("expected valid report, got %v", err)
+	}
+
+	future := valid
+	future.ReportedMonth = "2027-01"
+	if err := ValidatePriceReportInput(future, now); err == nil {
+		t.Errorf("expected error for future reported_month")
+	}
+
+	tooCheap := valid
+	tooCheap.MonthlyRentTHB = 500
+	if err := ValidatePriceReportInput(tooCheap, now); err == nil {
+		t.Errorf("expected error for rent below 1500")
+	}
+
+	if IsRentOutlier(14500, 12000, 16500, 14000) {
+		t.Errorf("expected normal rent not to be flagged as outlier")
+	}
+	if !IsRentOutlier(2000, 14000, 18000, 16000) {
+		t.Errorf("expected extreme low troll rent (2000 vs 16000) to be flagged as outlier")
+	}
+	if !IsRentOutlier(95000, 14000, 18000, 16000) {
+		t.Errorf("expected extreme high rent (95000 vs 16000) to be flagged as outlier")
+	}
+	if HashClientIP("1.2.3.4") != HashClientIP("1.2.3.4") || HashClientIP("1.2.3.4") == "1.2.3.4" {
+		t.Errorf("expected deterministic non-raw IP hash")
+	}
+}
 
 func TestBuildCompareSummary_TieBreaking(t *testing.T) {
 	// Exact tie scenario: all 3 listings cost 6,760 THB/mo, with 22m, 17m, 21m commute.

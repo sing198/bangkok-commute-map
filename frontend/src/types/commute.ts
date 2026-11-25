@@ -1,3 +1,32 @@
+export type OperatorCode =
+  | 'BTS'
+  | 'BTS_GOLD'
+  | 'MRT'
+  | 'MRT_YL'
+  | 'MRT_PK'
+  | 'ARL'
+  | 'SRT_RED';
+
+export const OPERATOR_LABEL: Record<OperatorCode, string> = {
+  BTS: 'BTS',
+  BTS_GOLD: 'BTS สีทอง',
+  MRT: 'MRT',
+  MRT_YL: 'MRT เหลือง',
+  MRT_PK: 'MRT ชมพู',
+  ARL: 'ARL',
+  SRT_RED: 'SRT แดง',
+};
+
+export const OPERATOR_PILL_STYLE: Record<OperatorCode, string> = {
+  BTS: 'bg-lime-100 text-lime-800',
+  BTS_GOLD: 'bg-amber-100 text-amber-900',
+  MRT: 'bg-sky-100 text-sky-800',
+  MRT_YL: 'bg-yellow-100 text-yellow-900',
+  MRT_PK: 'bg-pink-100 text-pink-800',
+  ARL: 'bg-rose-100 text-rose-800',
+  SRT_RED: 'bg-red-100 text-red-800',
+};
+
 export interface OfficePreset {
   id: string;
   name_th: string;
@@ -13,7 +42,7 @@ export interface Station {
   name_th: string;
   name_en: string;
   line_code: string;
-  operator: 'BTS' | 'MRT' | 'ARL';
+  operator: OperatorCode;
   is_extension: boolean;
   lat: number;
   lng: number;
@@ -25,7 +54,7 @@ export interface NearestStation {
 }
 
 export interface FareLeg {
-  operator: 'BTS' | 'MRT' | 'ARL';
+  operator: OperatorCode;
   from_station_id: string;
   to_station_id: string;
   hops: number;
@@ -50,6 +79,7 @@ export interface AccessLeg {
   mode: 'walk' | 'win';
   minutes: number;
   one_way_cost_thb: number;
+  distance_source?: 'osrm_foot' | 'estimated_detour' | 'straight_line';
 }
 
 export interface CommuteCostSummary {
@@ -77,11 +107,20 @@ export interface ReachableStation {
 
 export interface ListingResult {
   id: string;
+  osm_id?: string;
   title_th: string;
   title_en: string;
   property_type: 'condo' | 'apartment';
   district: string;
   monthly_rent_thb: number;
+  estimated_rent_min_thb: number;
+  estimated_rent_max_thb: number;
+  price_status: 'verified' | 'estimated';
+  price_source?: string;
+  data_source?: string;
+  verified_rent_median_thb?: number;
+  verified_report_count: number;
+  latest_report_month?: string;
   room_size_sqm: number;
   bedrooms: number;
   lat: number;
@@ -114,7 +153,12 @@ export interface SearchResponse {
     max_budget: number;
     workdays: number;
     walk_max_m: number;
+    sort: 'true_cost' | 'time';
+    limit: number;
   };
+  detour_factor: number;
+  total_listings_count: number;
+  returned_listings_count: number;
   nearest_office_stations: NearestStation[];
   reachable_stations: ReachableStation[];
   listings: ListingResult[];
@@ -139,4 +183,48 @@ export interface CompareResponse {
 export interface TelemetryInfo {
   cacheStatus: 'HIT' | 'MISS' | 'UNKNOWN';
   queryTimeMs: string;
+}
+
+export type RoomType = 'studio' | '1br' | '2br' | 'dorm';
+
+export interface PriceReportRecord {
+  id: number;
+  listing_id: string;
+  monthly_rent_thb: number;
+  room_size_sqm: number;
+  room_type: RoomType;
+  reported_month: string;
+  note?: string;
+  is_outlier: boolean;
+  created_at: string;
+}
+
+export interface VerifiedPriceStats {
+  median_rent_thb: number;
+  min_rent_thb: number;
+  max_rent_thb: number;
+  report_count: number;
+  latest_report_month: string;
+}
+
+export interface ListPriceReportsResponse {
+  listing_id: string;
+  price_status: 'verified' | 'estimated';
+  stats: VerifiedPriceStats;
+  reports: PriceReportRecord[];
+}
+
+export interface SubmitPriceReportRequest {
+  monthly_rent_thb: number;
+  room_size_sqm: number;
+  room_type: RoomType;
+  reported_month: string;
+  note?: string;
+}
+
+export interface SubmitPriceReportResponse {
+  report: PriceReportRecord;
+  stats: VerifiedPriceStats;
+  price_status: 'verified' | 'estimated';
+  message: string;
 }

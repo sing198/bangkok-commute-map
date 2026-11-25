@@ -1,9 +1,12 @@
 import type {
   CompareResponse,
+  ListPriceReportsResponse,
   OfficePoint,
   OfficePreset,
   SearchFilters,
   SearchResponse,
+  SubmitPriceReportRequest,
+  SubmitPriceReportResponse,
   TelemetryInfo,
 } from '../types/commute';
 
@@ -20,7 +23,8 @@ export async function fetchPresets(): Promise<OfficePreset[]> {
 
 export async function searchCommute(
   office: OfficePoint,
-  filters: SearchFilters
+  filters: SearchFilters,
+  sort: 'true_cost' | 'time' = 'true_cost'
 ): Promise<{ data: SearchResponse; telemetry: TelemetryInfo }> {
   const qs = new URLSearchParams({
     lat: office.lat.toFixed(5),
@@ -29,6 +33,8 @@ export async function searchCommute(
     max_budget: String(filters.maxBudget),
     workdays: String(filters.workdays),
     walk_max_m: String(filters.walkMaxM),
+    sort,
+    limit: '500',
   });
 
   const res = await fetch(`${API_BASE}/api/commute/search?${qs.toString()}`);
@@ -70,4 +76,36 @@ export async function compareListings(
     throw new Error(body.error || `Compare failed (${res.status})`);
   }
   return (await res.json()) as CompareResponse;
+}
+
+export async function fetchPriceReports(
+  listingId: string
+): Promise<ListPriceReportsResponse> {
+  const res = await fetch(
+    `${API_BASE}/api/listings/${encodeURIComponent(listingId)}/price-reports`
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Failed to load price reports (${res.status})`);
+  }
+  return (await res.json()) as ListPriceReportsResponse;
+}
+
+export async function submitPriceReport(
+  listingId: string,
+  payload: SubmitPriceReportRequest
+): Promise<SubmitPriceReportResponse> {
+  const res = await fetch(
+    `${API_BASE}/api/listings/${encodeURIComponent(listingId)}/price-reports`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `ไม่สามารถส่งรายงานราคาได้ (${res.status})`);
+  }
+  return (await res.json()) as SubmitPriceReportResponse;
 }

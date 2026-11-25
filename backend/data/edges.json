@@ -1,90 +1,1214 @@
 [
-  { "from": "BTS_N13", "to": "BTS_N12", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N12", "to": "BTS_N11", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N11", "to": "BTS_N10", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N10", "to": "BTS_N9",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N9",  "to": "BTS_N8",  "travel_minutes": 3, "is_transfer": false },
-  { "from": "BTS_N8",  "to": "BTS_N7",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N7",  "to": "BTS_N5",  "travel_minutes": 3, "is_transfer": false },
-  { "from": "BTS_N5",  "to": "BTS_N4",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N4",  "to": "BTS_N3",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N3",  "to": "BTS_N2",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N2",  "to": "BTS_N1",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_N1",  "to": "BTS_CEN", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_CEN", "to": "BTS_E1",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E1",  "to": "BTS_E2",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E2",  "to": "BTS_E3",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E3",  "to": "BTS_E4",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E4",  "to": "BTS_E5",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E5",  "to": "BTS_E6",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E6",  "to": "BTS_E7",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E7",  "to": "BTS_E8",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E8",  "to": "BTS_E9",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E9",  "to": "BTS_E10", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E10", "to": "BTS_E11", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E11", "to": "BTS_E12", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E12", "to": "BTS_E13", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E13", "to": "BTS_E14", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_E14", "to": "BTS_E15", "travel_minutes": 3, "is_transfer": false },
-
-  { "from": "BTS_W1",  "to": "BTS_CEN", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_CEN", "to": "BTS_S1",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S1",  "to": "BTS_S2",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S2",  "to": "BTS_S3",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S3",  "to": "BTS_S4",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S4",  "to": "BTS_S5",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S5",  "to": "BTS_S6",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S6",  "to": "BTS_S7",  "travel_minutes": 3, "is_transfer": false },
-  { "from": "BTS_S7",  "to": "BTS_S8",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S8",  "to": "BTS_S9",  "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S9",  "to": "BTS_S10", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S10", "to": "BTS_S11", "travel_minutes": 2, "is_transfer": false },
-  { "from": "BTS_S11", "to": "BTS_S12", "travel_minutes": 3, "is_transfer": false },
-
-  { "from": "MRT_BL11", "to": "MRT_BL12", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL12", "to": "MRT_BL13", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_BL13", "to": "MRT_BL14", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL14", "to": "MRT_BL15", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_BL15", "to": "MRT_BL16", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL16", "to": "MRT_BL17", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL17", "to": "MRT_BL18", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL18", "to": "MRT_BL19", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_BL19", "to": "MRT_BL20", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL20", "to": "MRT_BL21", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL21", "to": "MRT_BL22", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL22", "to": "MRT_BL23", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_BL23", "to": "MRT_BL24", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL24", "to": "MRT_BL25", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL25", "to": "MRT_BL26", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL26", "to": "MRT_BL27", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL27", "to": "MRT_BL28", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_BL28", "to": "MRT_BL29", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL29", "to": "MRT_BL30", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL30", "to": "MRT_BL31", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL31", "to": "MRT_BL32", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_BL32", "to": "MRT_BL01", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_BL01", "to": "MRT_BL34", "travel_minutes": 4, "is_transfer": false },
-
-  { "from": "MRT_BL11", "to": "MRT_PP15", "travel_minutes": 5, "is_transfer": true },
-  { "from": "MRT_PP15", "to": "MRT_PP14", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_PP14", "to": "MRT_PP13", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_PP13", "to": "MRT_PP12", "travel_minutes": 2, "is_transfer": false },
-  { "from": "MRT_PP12", "to": "MRT_PP11", "travel_minutes": 3, "is_transfer": false },
-  { "from": "MRT_PP11", "to": "MRT_PP10", "travel_minutes": 3, "is_transfer": false },
-
-  { "from": "ARL_A8", "to": "ARL_A7", "travel_minutes": 2, "is_transfer": false },
-  { "from": "ARL_A7", "to": "ARL_A6", "travel_minutes": 3, "is_transfer": false },
-  { "from": "ARL_A6", "to": "ARL_A5", "travel_minutes": 4, "is_transfer": false },
-  { "from": "ARL_A5", "to": "ARL_A4", "travel_minutes": 4, "is_transfer": false },
-  { "from": "ARL_A4", "to": "ARL_A3", "travel_minutes": 4, "is_transfer": false },
-  { "from": "ARL_A3", "to": "ARL_A2", "travel_minutes": 5, "is_transfer": false },
-  { "from": "ARL_A2", "to": "ARL_A1", "travel_minutes": 5, "is_transfer": false },
-
-  { "from": "BTS_N8",  "to": "MRT_BL13", "travel_minutes": 6, "is_transfer": true },
-  { "from": "BTS_N9",  "to": "MRT_BL14", "travel_minutes": 6, "is_transfer": true },
-  { "from": "BTS_E4",  "to": "MRT_BL22", "travel_minutes": 6, "is_transfer": true },
-  { "from": "BTS_S2",  "to": "MRT_BL26", "travel_minutes": 6, "is_transfer": true },
-  { "from": "BTS_S12", "to": "MRT_BL34", "travel_minutes": 6, "is_transfer": true },
-  { "from": "BTS_N2",  "to": "ARL_A8",   "travel_minutes": 6, "is_transfer": true },
-  { "from": "MRT_BL21","to": "ARL_A6",   "travel_minutes": 7, "is_transfer": true }
+  {
+    "from": "BTS_N24",
+    "to": "BTS_N23",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N23",
+    "to": "BTS_N22",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N22",
+    "to": "BTS_N21",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N21",
+    "to": "BTS_N20",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N20",
+    "to": "BTS_N19",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N19",
+    "to": "BTS_N18",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N18",
+    "to": "BTS_N17",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N17",
+    "to": "BTS_N16",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N16",
+    "to": "BTS_N15",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N15",
+    "to": "BTS_N14",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N14",
+    "to": "BTS_N13",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N13",
+    "to": "BTS_N12",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N12",
+    "to": "BTS_N11",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N11",
+    "to": "BTS_N10",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N10",
+    "to": "BTS_N9",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N9",
+    "to": "BTS_N8",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N8",
+    "to": "BTS_N7",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N7",
+    "to": "BTS_N5",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N5",
+    "to": "BTS_N4",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N4",
+    "to": "BTS_N3",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N3",
+    "to": "BTS_N2",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N2",
+    "to": "BTS_N1",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N1",
+    "to": "BTS_CEN",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_CEN",
+    "to": "BTS_E1",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E1",
+    "to": "BTS_E2",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E2",
+    "to": "BTS_E3",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E3",
+    "to": "BTS_E4",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E4",
+    "to": "BTS_E5",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E5",
+    "to": "BTS_E6",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E6",
+    "to": "BTS_E7",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E7",
+    "to": "BTS_E8",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E8",
+    "to": "BTS_E9",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E9",
+    "to": "BTS_E10",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E10",
+    "to": "BTS_E11",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E11",
+    "to": "BTS_E12",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E12",
+    "to": "BTS_E13",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E13",
+    "to": "BTS_E14",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E14",
+    "to": "BTS_E15",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E15",
+    "to": "BTS_E16",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E16",
+    "to": "BTS_E17",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E17",
+    "to": "BTS_E18",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E18",
+    "to": "BTS_E19",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E19",
+    "to": "BTS_E20",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E20",
+    "to": "BTS_E21",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E21",
+    "to": "BTS_E22",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_E22",
+    "to": "BTS_E23",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_W1",
+    "to": "BTS_CEN",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_CEN",
+    "to": "BTS_S1",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S1",
+    "to": "BTS_S2",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S2",
+    "to": "BTS_S3",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S3",
+    "to": "BTS_S4",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S4",
+    "to": "BTS_S5",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S5",
+    "to": "BTS_S6",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S6",
+    "to": "BTS_S7",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S7",
+    "to": "BTS_S8",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S8",
+    "to": "BTS_S9",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S9",
+    "to": "BTS_S10",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S10",
+    "to": "BTS_S11",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_S11",
+    "to": "BTS_S12",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_G1",
+    "to": "BTS_G2",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_G2",
+    "to": "BTS_G3",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL01",
+    "to": "MRT_BL02",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL02",
+    "to": "MRT_BL03",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL03",
+    "to": "MRT_BL04",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL04",
+    "to": "MRT_BL05",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL05",
+    "to": "MRT_BL06",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL06",
+    "to": "MRT_BL07",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL07",
+    "to": "MRT_BL08",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL08",
+    "to": "MRT_BL09",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL09",
+    "to": "MRT_BL10",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL10",
+    "to": "MRT_BL11",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL11",
+    "to": "MRT_BL12",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL12",
+    "to": "MRT_BL13",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL13",
+    "to": "MRT_BL14",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL14",
+    "to": "MRT_BL15",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL15",
+    "to": "MRT_BL16",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL16",
+    "to": "MRT_BL17",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL17",
+    "to": "MRT_BL18",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL18",
+    "to": "MRT_BL19",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL19",
+    "to": "MRT_BL20",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL20",
+    "to": "MRT_BL21",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL21",
+    "to": "MRT_BL22",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL22",
+    "to": "MRT_BL23",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL23",
+    "to": "MRT_BL24",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL24",
+    "to": "MRT_BL25",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL25",
+    "to": "MRT_BL26",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL26",
+    "to": "MRT_BL27",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL27",
+    "to": "MRT_BL28",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL28",
+    "to": "MRT_BL29",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL29",
+    "to": "MRT_BL30",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL30",
+    "to": "MRT_BL31",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL31",
+    "to": "MRT_BL32",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL32",
+    "to": "MRT_BL01",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL01",
+    "to": "MRT_BL33",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL33",
+    "to": "MRT_BL34",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL34",
+    "to": "MRT_BL35",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL35",
+    "to": "MRT_BL36",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL36",
+    "to": "MRT_BL37",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_BL37",
+    "to": "MRT_BL38",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP01",
+    "to": "MRT_PP02",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP02",
+    "to": "MRT_PP03",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP03",
+    "to": "MRT_PP04",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP04",
+    "to": "MRT_PP05",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP05",
+    "to": "MRT_PP06",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP06",
+    "to": "MRT_PP07",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP07",
+    "to": "MRT_PP08",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP08",
+    "to": "MRT_PP09",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP09",
+    "to": "MRT_PP10",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP10",
+    "to": "MRT_PP11",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP11",
+    "to": "MRT_PP12",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP12",
+    "to": "MRT_PP13",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP13",
+    "to": "MRT_PP14",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP14",
+    "to": "MRT_PP15",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PP15",
+    "to": "MRT_BL10",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL01",
+    "to": "MRT_YL02",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL02",
+    "to": "MRT_YL03",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL03",
+    "to": "MRT_YL04",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL04",
+    "to": "MRT_YL05",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL05",
+    "to": "MRT_YL06",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL06",
+    "to": "MRT_YL07",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL07",
+    "to": "MRT_YL08",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL08",
+    "to": "MRT_YL09",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL09",
+    "to": "MRT_YL10",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL10",
+    "to": "MRT_YL11",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL11",
+    "to": "MRT_YL12",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL12",
+    "to": "MRT_YL13",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL13",
+    "to": "MRT_YL14",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL14",
+    "to": "MRT_YL15",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL15",
+    "to": "MRT_YL16",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL16",
+    "to": "MRT_YL17",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL17",
+    "to": "MRT_YL18",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL18",
+    "to": "MRT_YL19",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL19",
+    "to": "MRT_YL20",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL20",
+    "to": "MRT_YL21",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL21",
+    "to": "MRT_YL22",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_YL22",
+    "to": "MRT_YL23",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK01",
+    "to": "MRT_PK02",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK02",
+    "to": "MRT_PK03",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK03",
+    "to": "MRT_PK04",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK04",
+    "to": "MRT_PK05",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK05",
+    "to": "MRT_PK06",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK06",
+    "to": "MRT_PK07",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK07",
+    "to": "MRT_PK08",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK08",
+    "to": "MRT_PK09",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK09",
+    "to": "MRT_PK10",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK10",
+    "to": "MRT_PK11",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK11",
+    "to": "MRT_PK12",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK12",
+    "to": "MRT_PK13",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK13",
+    "to": "MRT_PK14",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK14",
+    "to": "MRT_PK15",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK15",
+    "to": "MRT_PK16",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK16",
+    "to": "MRT_PK17",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK17",
+    "to": "MRT_PK18",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK18",
+    "to": "MRT_PK19",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK19",
+    "to": "MRT_PK20",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK20",
+    "to": "MRT_PK21",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK21",
+    "to": "MRT_PK22",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK22",
+    "to": "MRT_PK23",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK23",
+    "to": "MRT_PK24",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK24",
+    "to": "MRT_PK25",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK25",
+    "to": "MRT_PK26",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK26",
+    "to": "MRT_PK27",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK27",
+    "to": "MRT_PK28",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK28",
+    "to": "MRT_PK29",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK29",
+    "to": "MRT_PK30",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_PK10",
+    "to": "MRT_MT01",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "MRT_MT01",
+    "to": "MRT_MT02",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "ARL_A8",
+    "to": "ARL_A7",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "ARL_A7",
+    "to": "ARL_A6",
+    "travel_minutes": 2,
+    "is_transfer": false
+  },
+  {
+    "from": "ARL_A6",
+    "to": "ARL_A5",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "ARL_A5",
+    "to": "ARL_A4",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "ARL_A4",
+    "to": "ARL_A3",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "ARL_A3",
+    "to": "ARL_A2",
+    "travel_minutes": 6,
+    "is_transfer": false
+  },
+  {
+    "from": "ARL_A2",
+    "to": "ARL_A1",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN01",
+    "to": "SRT_RN02",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN02",
+    "to": "SRT_RN03",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN03",
+    "to": "SRT_RN04",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN04",
+    "to": "SRT_RN05",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN05",
+    "to": "SRT_RN06",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN06",
+    "to": "SRT_RN07",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN07",
+    "to": "SRT_RN08",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN08",
+    "to": "SRT_RN09",
+    "travel_minutes": 6,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN09",
+    "to": "SRT_RN10",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RN01",
+    "to": "SRT_RW02",
+    "travel_minutes": 3,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RW02",
+    "to": "SRT_RW05",
+    "travel_minutes": 7,
+    "is_transfer": false
+  },
+  {
+    "from": "SRT_RW05",
+    "to": "SRT_RW06",
+    "travel_minutes": 4,
+    "is_transfer": false
+  },
+  {
+    "from": "BTS_N9",
+    "to": "MRT_BL14",
+    "travel_minutes": 5,
+    "is_transfer": true
+  },
+  {
+    "from": "BTS_N8",
+    "to": "MRT_BL13",
+    "travel_minutes": 6,
+    "is_transfer": true
+  },
+  {
+    "from": "BTS_E4",
+    "to": "MRT_BL22",
+    "travel_minutes": 6,
+    "is_transfer": true
+  },
+  {
+    "from": "BTS_S2",
+    "to": "MRT_BL26",
+    "travel_minutes": 6,
+    "is_transfer": true
+  },
+  {
+    "from": "BTS_S12",
+    "to": "MRT_BL34",
+    "travel_minutes": 4,
+    "is_transfer": true
+  },
+  {
+    "from": "BTS_N2",
+    "to": "ARL_A8",
+    "travel_minutes": 5,
+    "is_transfer": true
+  },
+  {
+    "from": "BTS_S7",
+    "to": "BTS_G1",
+    "travel_minutes": 4,
+    "is_transfer": true
+  },
+  {
+    "from": "BTS_E15",
+    "to": "MRT_YL23",
+    "travel_minutes": 5,
+    "is_transfer": true
+  },
+  {
+    "from": "BTS_N17",
+    "to": "MRT_PK16",
+    "travel_minutes": 4,
+    "is_transfer": true
+  },
+  {
+    "from": "MRT_BL21",
+    "to": "ARL_A6",
+    "travel_minutes": 7,
+    "is_transfer": true
+  },
+  {
+    "from": "MRT_BL15",
+    "to": "MRT_YL01",
+    "travel_minutes": 5,
+    "is_transfer": true
+  },
+  {
+    "from": "MRT_BL11",
+    "to": "SRT_RN01",
+    "travel_minutes": 5,
+    "is_transfer": true
+  },
+  {
+    "from": "MRT_PP15",
+    "to": "SRT_RW02",
+    "travel_minutes": 4,
+    "is_transfer": true
+  },
+  {
+    "from": "MRT_PP11",
+    "to": "MRT_PK01",
+    "travel_minutes": 6,
+    "is_transfer": true
+  },
+  {
+    "from": "ARL_A4",
+    "to": "MRT_YL11",
+    "travel_minutes": 5,
+    "is_transfer": true
+  },
+  {
+    "from": "MRT_PK14",
+    "to": "SRT_RN06",
+    "travel_minutes": 5,
+    "is_transfer": true
+  }
 ]
