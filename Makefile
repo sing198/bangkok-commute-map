@@ -1,4 +1,4 @@
-.PHONY: up down logs seed api web build-web test import-har preview-prices update-prices sync-airbnb import-kaggle update-kaggle-prices
+.PHONY: up down logs seed api web build-web test import-har preview-prices update-prices sync-portal-prices sync-airbnb import-kaggle update-kaggle-prices
 
 HAR_INPUT ?= data/har
 KAGGLE_INPUT ?= data/kaggle
@@ -36,6 +36,10 @@ preview-prices:
 update-prices:
 	python3 scripts/import_har_prices.py --input $(HAR_INPUT) --apply-to-listings
 	cd backend && go run ./cmd/seed -validate-only
+
+sync-portal-prices:
+	python3 scripts/sync_thai_portal_prices.py
+	cd backend && go test ./cmd/seed ./internal/commute
 
 sync-airbnb:
 	python3 scripts/fetch_inside_airbnb.py

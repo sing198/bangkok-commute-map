@@ -194,9 +194,10 @@ export function ListingDrawer({
               const canAddMore = compareIds.length < 3 || isCompared;
               const isVerified = item.price_status === 'verified';
               const estRent = item.estimated_rent_thb ?? 0;
+              const isPortalBuilding = !isVerified && item.price_tier === 'portal_building' && estRent > 0;
               const isHarCalibrated = !isVerified && item.price_tier === 'market_har' && estRent > 0;
               const isKaggleMatched = !isVerified && item.price_tier === 'market_kaggle' && estRent > 0;
-              const hasBuildingMarketPrice = isHarCalibrated || isKaggleMatched;
+              const hasBuildingMarketPrice = isPortalBuilding || isHarCalibrated || isKaggleMatched;
               const estMin = item.estimated_rent_min_thb || estRent;
               const estMax = item.estimated_rent_max_thb || estRent;
               const estTrueMonthly = estRent + item.cost.monthly_commute_thb;
@@ -232,6 +233,14 @@ export function ListingDrawer({
                             <ShieldCheck className="h-3 w-3" />
                             ราคาจริงจากผู้เช่า ({item.verified_report_count})
                           </span>
+                        ) : isPortalBuilding ? (
+                          <span
+                            title={`ดึงตรงจากหน้าตึกจริงบน ${item.price_source}${item.portal_updated_at ? ` • อัปเดต ${item.portal_updated_at}` : ''}`}
+                            className="inline-flex items-center gap-0.5 rounded-full bg-teal-100 px-1.5 py-0.5 text-[10px] font-bold text-teal-800"
+                          >
+                            ราคาจริงจาก {item.price_source}
+                            {(item.portal_sample_count ?? 0) > 1 ? ` (${item.portal_sample_count})` : ''}
+                          </span>
                         ) : isHarCalibrated ? (
                           <span
                             title={item.price_source}
@@ -255,7 +264,7 @@ export function ListingDrawer({
                             เช็กราคาบนเว็บประกาศ
                           </span>
                         )}
-                        {hasBuildingMarketPrice && priceLinks.primary.isDirectBuilding && (
+                        {hasBuildingMarketPrice && !isPortalBuilding && priceLinks.primary.isDirectBuilding && (
                           <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
                             มีลิงก์หน้าตึกจริง
                           </span>
@@ -286,14 +295,16 @@ export function ListingDrawer({
                     </span>
                   </div>
 
-                  {/* Factual / Verified / Building Market Cost Box */}
+                  {/* Factual / Verified / Real Portal Building Cost Box */}
                   <div
                     className={`mt-2.5 flex items-baseline justify-between gap-2 rounded-xl px-3 py-2 ${
-                      isHarCalibrated
-                        ? 'border border-sky-100 bg-sky-50/70'
-                        : isKaggleMatched
-                          ? 'border border-violet-100 bg-violet-50/70'
-                          : 'bg-slate-50'
+                      isPortalBuilding
+                        ? 'border border-teal-100 bg-teal-50/70'
+                        : isHarCalibrated
+                          ? 'border border-sky-100 bg-sky-50/70'
+                          : isKaggleMatched
+                            ? 'border border-violet-100 bg-violet-50/70'
+                            : 'bg-slate-50'
                     }`}
                   >
                     {isVerified ? (
@@ -324,31 +335,45 @@ export function ListingDrawer({
                         <div>
                           <div
                             className={`text-[10px] font-semibold ${
-                              isHarCalibrated ? 'text-sky-700' : 'text-violet-700'
+                              isPortalBuilding
+                                ? 'text-teal-700'
+                                : isHarCalibrated
+                                  ? 'text-sky-700'
+                                  : 'text-violet-700'
                             }`}
                           >
-                            {isHarCalibrated
-                              ? 'ค่าเช่าตลาด (HAR) / เดือน'
-                              : 'ค่าเช่าตลาด (Kaggle) / เดือน'}
+                            {isPortalBuilding
+                              ? item.price_source === 'RentHub'
+                                ? 'ค่าเช่าจริง (RentHub) / เดือน'
+                                : `ค่าเช่าจริง (PropertyHub${(item.portal_sample_count ?? 0) > 1 ? ` · ${item.portal_sample_count} ประกาศ` : ''})`
+                              : isHarCalibrated
+                                ? 'ค่าเช่าตลาด (HAR) / เดือน'
+                                : 'ค่าเช่าตลาด (Kaggle) / เดือน'}
                           </div>
                           <div
                             className={`text-lg font-extrabold tracking-tight ${
-                              isHarCalibrated ? 'text-sky-800' : 'text-violet-800'
+                              isPortalBuilding
+                                ? 'text-teal-900'
+                                : isHarCalibrated
+                                  ? 'text-sky-800'
+                                  : 'text-violet-800'
                             }`}
                           >
-                            ฿{estRent.toLocaleString()}
+                            {isPortalBuilding && item.price_source === 'RentHub' && estMin > 0 && estMax > estMin
+                              ? `฿${estMin.toLocaleString()}–฿${estMax.toLocaleString()}`
+                              : `฿${estRent.toLocaleString()}`}
                           </div>
-                          {estMin > 0 && estMax > estMin && (
+                          {!(isPortalBuilding && item.price_source === 'RentHub') && estMin > 0 && estMax > estMin && (
                             <div className="text-[10px] text-slate-500">
-                              ช่วง ฿{estMin.toLocaleString()}–฿{estMax.toLocaleString()}
+                              ช่วงปกติ ฿{estMin.toLocaleString()}–฿{estMax.toLocaleString()}
                             </div>
                           )}
                         </div>
                         <div className="text-right text-[11px] text-slate-600">
                           <div>
-                            รวมประมาณ{' '}
+                            รวมเดินทาง{' '}
                             <strong className="text-indigo-700">
-                              ฿{estTrueMonthly.toLocaleString()}/ด.
+                              ~฿{estTrueMonthly.toLocaleString()}/ด.
                             </strong>
                           </div>
                           <div className={item.cost.monthly_commute_thb > 0 ? 'text-amber-700' : 'text-emerald-700'}>
@@ -390,17 +415,21 @@ export function ListingDrawer({
                     )}
                   </div>
 
-                  {/* Open-Data Station Benchmark (Inside Airbnb CC0) — clearly labeled as station-area reference */}
+                  {/* Type-Matched Thai Portal Station Range (Condo=PropertyHub, Apartment=RentHub) */}
                   {!isVerified && !hasBuildingMarketPrice && stBench && (
                     <div
-                      title={`ข้อมูลเปิด ${stBench.source} (${stBench.license || 'CC0'}) อัปเดต ${stBench.snapshot_date} • คำนวณจาก ${stBench.sample_count} ห้องในรัศมี 1.5 กม. รอบสถานี ${opLabel} ${item.origin_station.name_th} (${stBench.basis === 'monthly_28plus' ? 'เช่าขั้นต่ำ 28 คืน' : 'ทั้งยูนิต ×30 คืน'} — เรต Airbnb มักสูงกว่าสัญญารายปี ~15–35%)`}
+                      title={`เรตตลาดจริงจาก ${stBench.source} (${stBench.sample_count} ${item.property_type === 'condo' ? 'ประกาศคอนโด' : 'หอพัก/อพาร์ตเมนต์'}) รอบสถานี ${opLabel} ${item.origin_station.name_th}${stBench.snapshot_date ? ` • อัปเดต ${stBench.snapshot_date}` : ''}`}
                       className="mt-1.5 flex items-center justify-between gap-2 rounded-lg border border-sky-100 bg-sky-50/60 px-2.5 py-1.5 text-[11px]"
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-1 text-[10px] font-semibold text-sky-800">
-                          <span>เรตเช่ารายเดือนรอบ {item.origin_station.name_th}</span>
+                          <span>
+                            {item.property_type === 'condo'
+                              ? `เรตคอนโดรอบ ${item.origin_station.name_th}`
+                              : `เรตอพาร์ตเมนต์รอบ ${item.origin_station.name_th}`}
+                          </span>
                           <span className="rounded bg-white/80 px-1 py-0.2 text-[9px] font-medium text-sky-700">
-                            Inside Airbnb · {stBench.sample_count} ห้อง
+                            {stBench.source} · {stBench.sample_count}
                           </span>
                         </div>
                         <div className="font-bold text-slate-800">

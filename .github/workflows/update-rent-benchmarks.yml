@@ -1,4 +1,4 @@
-name: Monthly Open-Data Rent Benchmark Sync
+name: Monthly Thai Rental Price Sync (RentHub + PropertyHub)
 
 on:
   schedule:
@@ -10,8 +10,8 @@ permissions:
   contents: write
 
 jobs:
-  sync-inside-airbnb:
-    name: Sync Inside Airbnb Bangkok Benchmarks
+  sync-portal-prices:
+    name: Sync RentHub & PropertyHub Prices
     runs-on: ubuntu-latest
 
     steps:
@@ -29,21 +29,21 @@ jobs:
           go-version: '1.24'
           cache-dependency-path: backend/go.sum
 
-      - name: Fetch latest Inside Airbnb Bangkok snapshot
-        run: python3 scripts/fetch_inside_airbnb.py
+      - name: Sync real building and station rent prices (RentHub + PropertyHub)
+        run: python3 scripts/sync_thai_portal_prices.py --workers 6 --delay 0.15
 
       - name: Verify Go dataset and unit tests
         working-directory: backend
         run: go test -count=1 ./cmd/seed ./internal/commute ./internal/transit
 
-      - name: Commit and push updated benchmarks if changed
+      - name: Commit and push updated prices if changed
         run: |
-          if git diff --quiet backend/data/station_rent_benchmarks.json; then
-            echo "No benchmark changes detected."
+          if git diff --quiet backend/data/portal_prices.json; then
+            echo "No portal price changes detected."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add backend/data/station_rent_benchmarks.json
-          git commit -m "chore(data): update Inside Airbnb Bangkok station rent benchmarks"
+          git add backend/data/portal_prices.json
+          git commit -m "chore(data): refresh real RentHub and PropertyHub rental prices"
           git push

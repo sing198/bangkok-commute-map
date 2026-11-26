@@ -100,15 +100,20 @@ export interface CommuteCostSummary {
 export type ZoneColor = 'green' | 'yellow' | 'orange' | 'red';
 
 export interface StationRentBenchmark {
-  station_id: string;
+  station_id?: string;
+  property_type?: 'condo' | 'apartment';
   sample_count: number;
   p25_monthly_thb: number;
   median_monthly_thb: number;
   p75_monthly_thb: number;
-  basis: 'monthly_28plus' | 'entire_home_30x' | string;
-  snapshot_date: string;
-  source: string;
-  license?: string;
+  snapshot_date?: string;
+  source: string; // "PropertyHub" or "RentHub"
+  source_url?: string;
+}
+
+export interface StationPortalPrices {
+  condo?: StationRentBenchmark;
+  apartment?: StationRentBenchmark;
 }
 
 export interface ReachableStation {
@@ -119,10 +124,10 @@ export interface ReachableStation {
   transfers: number;
   route: RouteResult;
   office_access: AccessLeg;
-  station_rent_benchmark?: StationRentBenchmark;
+  station_portal_prices?: StationPortalPrices;
 }
 
-export type PriceTier = 'verified' | 'market_har' | 'market_kaggle' | 'none';
+export type PriceTier = 'verified' | 'portal_building' | 'market_har' | 'market_kaggle' | 'none';
 
 export interface ListingResult {
   id: string;
@@ -136,6 +141,8 @@ export interface ListingResult {
   estimated_rent_min_thb?: number;
   estimated_rent_max_thb?: number;
   price_source?: string;
+  portal_sample_count?: number;
+  portal_updated_at?: string;
   price_status: 'verified' | 'unverified';
   price_tier?: PriceTier;
   station_rent_benchmark?: StationRentBenchmark;

@@ -36,19 +36,19 @@ type SearchParams struct {
 
 // ReachableStation is a station reachable within max_minutes with its zone color tier.
 type ReachableStation struct {
-	Station              transit.Station       `json:"station"`
-	ZoneColor            string                `json:"zone_color"` // "green" (<=20), "yellow" (21-35), "orange" (36-45), "red" (>45)
-	CommuteMins          int                   `json:"commute_minutes"`
-	OneWayFareTHB        int                   `json:"one_way_fare_thb"`
-	Transfers            int                   `json:"transfers"`
-	Route                transit.RouteResult   `json:"route"`
-	OfficeAccess         transit.AccessLeg     `json:"office_access"`
-	StationRentBenchmark *StationRentBenchmark `json:"station_rent_benchmark,omitempty"`
+	Station             transit.Station      `json:"station"`
+	ZoneColor           string               `json:"zone_color"` // "green" (<=20), "yellow" (21-35), "orange" (36-45), "red" (>45)
+	CommuteMins         int                  `json:"commute_minutes"`
+	OneWayFareTHB       int                  `json:"one_way_fare_thb"`
+	Transfers           int                  `json:"transfers"`
+	Route               transit.RouteResult  `json:"route"`
+	OfficeAccess        transit.AccessLeg    `json:"office_access"`
+	StationPortalPrices *StationPortalPrices `json:"station_portal_prices,omitempty"`
 }
 
 // ListingResult is a real Bangkok building enriched with factual OSRM street walking distance,
-// real BTS/MRT/ARL/SRT rail time & fare, verified user-reported rent, exact building HAR/Kaggle
-// market prices, and open-data station rental benchmarks.
+// real BTS/MRT/ARL/SRT rail time & fare, verified user-reported rent, real building prices
+// synced from RentHub/PropertyHub, and type-matched station rental ranges.
 type ListingResult struct {
 	ID                    string                     `json:"id"`
 	OSMID                 string                     `json:"osm_id,omitempty"`
@@ -61,8 +61,10 @@ type ListingResult struct {
 	EstimatedRentMinTHB   int                        `json:"estimated_rent_min_thb,omitempty"`
 	EstimatedRentMaxTHB   int                        `json:"estimated_rent_max_thb,omitempty"`
 	PriceSource           string                     `json:"price_source,omitempty"`
+	PortalSampleCount     int                        `json:"portal_sample_count,omitempty"`
+	PortalUpdatedAt       string                     `json:"portal_updated_at,omitempty"`
 	PriceStatus           string                     `json:"price_status"` // "verified" or "unverified"
-	PriceTier             string                     `json:"price_tier"`   // "verified", "market_har", "market_kaggle", or "none"
+	PriceTier             string                     `json:"price_tier"`   // "verified", "portal_building", "market_har", "market_kaggle", or "none"
 	StationRentBenchmark  *StationRentBenchmark      `json:"station_rent_benchmark,omitempty"`
 	DataSource            string                     `json:"data_source,omitempty"`
 	ListingURL            string                     `json:"listing_url,omitempty"`
@@ -141,22 +143,22 @@ type CompareResponse struct {
 }
 
 // Service orchestrates PostGIS spatial queries, OSRM precomputed walking access,
-// in-memory Dijkstra routing, crowdsourced price reports, open-data station benchmarks,
-// and Redis caching.
+// in-memory Dijkstra routing, crowdsourced price reports, real Thai portal prices
+// (RentHub + PropertyHub), and Redis caching.
 type Service struct {
-	repo       *Repository
-	graph      *transit.Graph
-	cache      *cache.Client
-	benchmarks map[string]StationRentBenchmark
+	repo         *Repository
+	graph        *transit.Graph
+	cache        *cache.Client
+	portalPrices PortalPriceStore
 }
 
 // NewService creates a Commute Service.
 func NewService(repo *Repository, graph *transit.Graph, cacheClient *cache.Client) *Service {
 	return &Service{
-		repo:       repo,
-		graph:      graph,
-		cache:      cacheClient,
-		benchmarks: LoadStationRentBenchmarks(),
+		repo:         repo,
+		graph:        graph,
+		cache:        cacheClient,
+		portalPrices: LoadPortalPrices(),
 	}
 }
 
@@ -199,7 +201,7 @@ func NormalizeParams(p SearchParams) SearchParams {
 func QuantizedCacheKey(p SearchParams) string {
 	qLat := math.Round(p.Lat*1000) / 1000
 	qLng := math.Round(p.Lng*1000) / 1000
-	return fmt.Sprintf("commute:search:v8:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
+	return fmt.Sprintf("commute:search:v9:%.3f:%.3f:%d:%d:%d:%t:%d:%d:%s:%d",
 		qLat, qLng, p.MaxMinutes, p.MaxBudget, p.MaxCommuteBudget, p.VerifiedOnly, p.Workdays, p.WalkMaxM, p.Sort, p.Limit)
 }
 
@@ -219,6 +221,7 @@ func buildListingResult(
 	destSt transit.Station,
 	office OfficePoint,
 	workdays, walkMaxM int,
+	buildingPortal *BuildingPortalPrice,
 ) ListingResult {
 	distSrc := rec.DistanceSource
 	if distSrc == "" {
@@ -245,20 +248,39 @@ func buildListingResult(
 	}
 
 	// Never expose inaccurate baseline OSM zone guesses to the UI.
-	// Only populate building-level rent when tenant-verified reports exist ("verified") or
-	// when exact building-matched HAR ("market_har") or Kaggle ("market_kaggle") data exists.
-	// Station-level open-data benchmarks (Inside Airbnb CC0) are attached separately.
+	// Priority:
+	//   1) verified: tenant-submitted price reports
+	//   2) portal_building: exact building price synced from RentHub / PropertyHub
+	//   3) market_har / market_kaggle: exact building match from HAR or Kaggle CSV
+	//   4) station_rent_benchmark: strictly matched by property_type (condo=PropertyHub, apartment=RentHub)
 	verifiedRent := 0
 	marketRent := 0
 	marketRentMin := 0
 	marketRentMax := 0
 	priceSource := ""
+	portalSamples := 0
+	portalUpdated := ""
 	priceStatus := "unverified"
 	priceTier := "none"
+	listingURL := rec.ListingURL
+	listingURLLabel := rec.ListingURLLabel
+
 	if rec.VerifiedReportCount > 0 && rec.VerifiedRentMedianTHB > 0 {
 		verifiedRent = rec.VerifiedRentMedianTHB
 		priceStatus = "verified"
 		priceTier = "verified"
+	} else if buildingPortal != nil && buildingPortal.MedianRentTHB > 0 {
+		marketRent = buildingPortal.MedianRentTHB
+		marketRentMin = buildingPortal.MinRentTHB
+		marketRentMax = buildingPortal.MaxRentTHB
+		priceSource = buildingPortal.Source
+		portalSamples = buildingPortal.SampleCount
+		portalUpdated = buildingPortal.UpdatedAt
+		priceTier = "portal_building"
+		if listingURL == "" && buildingPortal.SourceURL != "" {
+			listingURL = buildingPortal.SourceURL
+			listingURLLabel = buildingPortal.Source
+		}
 	} else if rec.MonthlyRentTHB > 0 && strings.HasPrefix(rec.PriceSource, "ราคาอ้างอิงจาก HAR") {
 		marketRent = rec.MonthlyRentTHB
 		marketRentMin = rec.EstimatedRentMinTHB
@@ -271,6 +293,17 @@ func buildListingResult(
 		marketRentMax = rec.EstimatedRentMaxTHB
 		priceSource = rec.PriceSource
 		priceTier = "market_kaggle"
+	}
+
+	// Pick type-matched station range: condos ONLY use PropertyHub condo range,
+	// apartments ONLY use RentHub apartment range (never mix condos and dorms!).
+	var stBench *StationRentBenchmark
+	if stOpt.StationPortalPrices != nil {
+		if rec.PropertyType == "condo" {
+			stBench = stOpt.StationPortalPrices.Condo
+		} else {
+			stBench = stOpt.StationPortalPrices.Apartment
+		}
 	}
 
 	cost := transit.CalculateMonthlyCost(verifiedRent, homeAccess, officeAccess, route, workdays)
@@ -287,12 +320,14 @@ func buildListingResult(
 		EstimatedRentMinTHB:   marketRentMin,
 		EstimatedRentMaxTHB:   marketRentMax,
 		PriceSource:           priceSource,
+		PortalSampleCount:     portalSamples,
+		PortalUpdatedAt:       portalUpdated,
 		PriceStatus:           priceStatus,
 		PriceTier:             priceTier,
-		StationRentBenchmark:  stOpt.StationRentBenchmark,
+		StationRentBenchmark:  stBench,
 		DataSource:            rec.DataSource,
-		ListingURL:            rec.ListingURL,
-		ListingURLLabel:       rec.ListingURLLabel,
+		ListingURL:            listingURL,
+		ListingURLLabel:       listingURLLabel,
 		VerifiedRentMedianTHB: rec.VerifiedRentMedianTHB,
 		VerifiedReportCount:   rec.VerifiedReportCount,
 		LatestReportMonth:     rec.LatestReportMonth,
@@ -366,7 +401,12 @@ func (s *Service) Search(ctx context.Context, raw SearchParams) (SearchResponse,
 			continue
 		}
 		destSt, _ := s.graph.Station(stOpt.Route.DestID)
-		candidate := buildListingResult(rec, stOpt, destSt, officePt, p.Workdays, p.WalkMaxM)
+		var bpPtr *BuildingPortalPrice
+		if bp, okBP := s.portalPrices.Buildings[rec.ID]; okBP {
+			bpCopy := bp
+			bpPtr = &bpCopy
+		}
+		candidate := buildListingResult(rec, stOpt, destSt, officePt, p.Workdays, p.WalkMaxM, bpPtr)
 		if candidate.Cost.OneWayMinutes > p.MaxMinutes {
 			continue
 		}
@@ -462,7 +502,12 @@ func (s *Service) Compare(ctx context.Context, req CompareRequest) (CompareRespo
 			continue
 		}
 		destSt, _ := s.graph.Station(stOpt.Route.DestID)
-		candidate := buildListingResult(rec, stOpt, destSt, req.Office, workdays, walkMaxM)
+		var bpPtr *BuildingPortalPrice
+		if bp, okBP := s.portalPrices.Buildings[rec.ID]; okBP {
+			bpCopy := bp
+			bpPtr = &bpCopy
+		}
+		candidate := buildListingResult(rec, stOpt, destSt, req.Office, workdays, walkMaxM, bpPtr)
 		if existing, exists := bestByListing[rec.ID]; !exists || isBetterCommuteOption(candidate, existing) {
 			bestByListing[rec.ID] = candidate
 		}
@@ -520,21 +565,21 @@ func (s *Service) computeBestStationOptions(nearest []NearestStation, maxMinutes
 				continue
 			}
 
-			var benchPtr *StationRentBenchmark
-			if b, hasBench := s.benchmarks[stationID]; hasBench {
-				bCopy := b
-				benchPtr = &bCopy
+			var spPtr *StationPortalPrices
+			if sp, hasSP := s.portalPrices.Stations[stationID]; hasSP {
+				spCopy := sp
+				spPtr = &spCopy
 			}
 
 			candidate := ReachableStation{
-				Station:              st,
-				ZoneColor:            zoneColorForMinutes(stationCommuteMins),
-				CommuteMins:          stationCommuteMins,
-				OneWayFareTHB:        route.FareTHB,
-				Transfers:            route.TransferCount,
-				Route:                route,
-				OfficeAccess:         officeAccess,
-				StationRentBenchmark: benchPtr,
+				Station:             st,
+				ZoneColor:           zoneColorForMinutes(stationCommuteMins),
+				CommuteMins:         stationCommuteMins,
+				OneWayFareTHB:       route.FareTHB,
+				Transfers:           route.TransferCount,
+				Route:               route,
+				OfficeAccess:        officeAccess,
+				StationPortalPrices: spPtr,
 			}
 
 			if prev, exists := best[stationID]; !exists || isBetterStationOption(candidate, prev) {

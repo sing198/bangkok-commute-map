@@ -350,17 +350,21 @@ export function CompareModal({
                             }))
                           }
                           placeholder={
-                            (item.price_tier === 'market_har' || item.price_tier === 'market_kaggle') &&
+                            (item.price_tier === 'portal_building' ||
+                              item.price_tier === 'market_har' ||
+                              item.price_tier === 'market_kaggle') &&
                             (item.estimated_rent_thb ?? 0) > 0
-                              ? `ราคาตลาด ฿${item.estimated_rent_thb?.toLocaleString()}`
+                              ? `ราคาจริง ฿${item.estimated_rent_thb?.toLocaleString()} (${item.price_source || 'ตลาด'})`
                               : item.station_rent_benchmark
-                                ? `รอบสถานี ~฿${item.station_rent_benchmark.median_monthly_thb.toLocaleString()} (Airbnb)`
+                                ? `รอบสถานี ~฿${item.station_rent_benchmark.median_monthly_thb.toLocaleString()} (${item.station_rent_benchmark.source})`
                                 : 'เช็กลิงก์แล้วกรอก เช่น 12500'
                           }
                           className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-sm font-bold text-slate-900 placeholder:text-xs placeholder:font-normal placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         />
                         {!hasRent &&
-                          ((item.price_tier === 'market_har' || item.price_tier === 'market_kaggle') &&
+                          ((item.price_tier === 'portal_building' ||
+                            item.price_tier === 'market_har' ||
+                            item.price_tier === 'market_kaggle') &&
                           (item.estimated_rent_thb ?? 0) > 0 ? (
                             <button
                               type="button"
@@ -370,10 +374,10 @@ export function CompareModal({
                                   [item.id]: String(item.estimated_rent_thb),
                                 }))
                               }
-                              className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 hover:underline"
+                              className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-teal-700 hover:underline"
                             >
-                              ใช้ราคาตลาด ({item.price_tier === 'market_har' ? 'HAR' : 'Kaggle'}) ฿
-                              {item.estimated_rent_thb?.toLocaleString()} เทียบชั่วคราว
+                              ใช้ราคาจริง ({item.price_tier === 'portal_building' ? item.price_source : item.price_tier === 'market_har' ? 'HAR' : 'Kaggle'}) ฿
+                              {item.estimated_rent_thb?.toLocaleString()} เทียบเลย
                             </button>
                           ) : item.station_rent_benchmark ? (
                             <button
@@ -387,7 +391,7 @@ export function CompareModal({
                               className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 hover:underline"
                             >
                               ใช้ค่ากลางรอบสถานี ~฿
-                              {item.station_rent_benchmark.median_monthly_thb.toLocaleString()} (Inside Airbnb)
+                              {item.station_rent_benchmark.median_monthly_thb.toLocaleString()} ({item.station_rent_benchmark.source})
                             </button>
                           ) : null)}
                         {isCustomTyped && rent >= 1500 && (

@@ -84,7 +84,7 @@ func TestBuildListingResult_SameStationAvoidsDoubleWinDetour(t *testing.T) {
 	}
 	office := OfficePoint{Lat: 13.7880, Lng: 100.5510} // ~900m straight line -> ~1,260m direct detour -> 1 win (฿20), NOT ฿20+฿25!
 
-	res := buildListingResult(rec, stOpt, st, office, 22, 800)
+	res := buildListingResult(rec, stOpt, st, office, 22, 800, nil)
 	if res.PriceStatus != "unverified" || res.MonthlyRentTHB != 0 || res.PriceTier != "none" {
 		t.Fatalf("expected unverified 0 rent (no guessing), got status=%s tier=%s rent=%d", res.PriceStatus, res.PriceTier, res.MonthlyRentTHB)
 	}
@@ -97,54 +97,72 @@ func TestBuildListingResult_SameStationAvoidsDoubleWinDetour(t *testing.T) {
 }
 
 func TestBuildListingResult_PriceTiers(t *testing.T) {
-	st := transit.Station{ID: "BTS_N18", NameTH: "พหลโยธิน 59", Operator: "BTS", Lat: 13.8825, Lng: 100.5986}
+	st := transit.Station{ID: "MRT_BL18", NameTH: "ห้วยขวาง", Operator: "MRT", Lat: 13.7789, Lng: 100.5736}
 	stOpt := ReachableStation{
 		Station:      st,
-		Route:        transit.RouteResult{OriginID: st.ID, DestID: "BTS_E4", StationIDs: []string{st.ID, "BTS_E4"}, TotalRailMinutes: 30, FareTHB: 62},
+		Route:        transit.RouteResult{OriginID: st.ID, DestID: "MRT_BL22", StationIDs: []string{st.ID, "MRT_BL22"}, TotalRailMinutes: 12, FareTHB: 28},
 		OfficeAccess: transit.AccessLeg{DistanceM: 100, Mode: "walk", Minutes: 2, OneWayCostTHB: 0},
+		StationPortalPrices: &StationPortalPrices{
+			Condo:     &StationRentBenchmark{StationID: st.ID, PropertyType: "condo", P25MonthlyTHB: 12000, MedianMonthlyTHB: 15000, P75MonthlyTHB: 20000, SampleCount: 60, Source: "PropertyHub"},
+			Apartment: &StationRentBenchmark{StationID: st.ID, PropertyType: "apartment", P25MonthlyTHB: 4000, MedianMonthlyTHB: 5500, P75MonthlyTHB: 7500, SampleCount: 40, Source: "RentHub"},
+		},
 	}
 	office := OfficePoint{Lat: 13.7367, Lng: 100.5603}
 
-	// 1. Baseline OSM zone estimate must NOT be exposed (prevents wrong prices like ฿9,000 for luxury apartments)
+	// 1. Baseline OSM zone estimate must NOT be exposed; apartment gets RentHub apartment station range (NOT condo!)
 	zoneRec := ListingRecord{
-		ID: "LST_ZONE", Lat: 13.88, Lng: 100.60, StationID: st.ID, WalkToStationM: 400,
+		ID: "LST_APT", PropertyType: "apartment", Lat: 13.778, Lng: 100.574, StationID: st.ID, WalkToStationM: 400,
 		MonthlyRentTHB: 9000, EstimatedRentMinTHB: 7500, EstimatedRentMaxTHB: 10500,
 		PriceSource: "ประเมินจากสถิติค่าเช่าต่อ ตร.ม. ตามโซนรถไฟฟ้า (DDproperty / Hipflat / FazWaz 2026)",
 	}
-	zoneRes := buildListingResult(zoneRec, stOpt, st, office, 22, 800)
+	zoneRes := buildListingResult(zoneRec, stOpt, st, office, 22, 800, nil)
 	if zoneRes.PriceTier != "none" || zoneRes.EstimatedRentTHB != 0 || zoneRes.MonthlyRentTHB != 0 {
-		t.Fatalf("expected baseline OSM guess to be hidden (tier=none, rent=0), got %+v", zoneRes)
+		t.Fatalf("expected baseline OSM guess to be hidden, got %+v", zoneRes)
+	}
+	if zoneRes.StationRentBenchmark == nil || zoneRes.StationRentBenchmark.Source != "RentHub" || zoneRes.StationRentBenchmark.MedianMonthlyTHB != 5500 {
+		t.Fatalf("expected apartment to receive RentHub apartment benchmark, got %+v", zoneRes.StationRentBenchmark)
 	}
 
-	// 2. Exact building-matched HAR market data tier
+	// 2. Exact RentHub building match (e.g. Sirima Mansion ฿2,500–฿3,700)
+	portalBP := &BuildingPortalPrice{
+		MinRentTHB: 2500, MedianRentTHB: 3100, MaxRentTHB: 3700,
+		SampleCount: 1, Source: "RentHub", SourceURL: "https://www.renthub.in.th/sirima", UpdatedAt: "2026-11-26",
+	}
+	portalRes := buildListingResult(zoneRec, stOpt, st, office, 22, 800, portalBP)
+	if portalRes.PriceTier != "portal_building" || portalRes.EstimatedRentMinTHB != 2500 || portalRes.EstimatedRentMaxTHB != 3700 || portalRes.PriceSource != "RentHub" {
+		t.Fatalf("expected portal_building RentHub 2500-3700, got %+v", portalRes)
+	}
+
+	// 3. Exact building-matched HAR market data tier
 	harRec := zoneRec
 	harRec.ID = "LST_HAR"
+	harRec.PropertyType = "condo"
 	harRec.MonthlyRentTHB = 14000
 	harRec.EstimatedRentMinTHB = 13500
 	harRec.EstimatedRentMaxTHB = 15000
 	harRec.PriceSource = "ราคาอ้างอิงจาก HAR โครงการจริง (11 ประกาศ · 2026-11)"
-	harRes := buildListingResult(harRec, stOpt, st, office, 22, 800)
-	if harRes.PriceTier != "market_har" || harRes.EstimatedRentTHB != 14000 || harRes.EstimatedRentMinTHB != 13500 {
-		t.Fatalf("expected market_har tier with 14000 estimate, got %+v", harRes)
+	harRes := buildListingResult(harRec, stOpt, st, office, 22, 800, nil)
+	if harRes.PriceTier != "market_har" || harRes.EstimatedRentTHB != 14000 || harRes.StationRentBenchmark.Source != "PropertyHub" {
+		t.Fatalf("expected market_har + condo PropertyHub benchmark, got %+v", harRes)
 	}
 
-	// 2b. Exact building-matched Kaggle CSV tier
-	kaggleRec := zoneRec
+	// 4. Exact building-matched Kaggle CSV tier
+	kaggleRec := harRec
 	kaggleRec.ID = "LST_KAGGLE"
 	kaggleRec.MonthlyRentTHB = 18000
 	kaggleRec.EstimatedRentMinTHB = 16000
 	kaggleRec.EstimatedRentMaxTHB = 20000
 	kaggleRec.PriceSource = "ฐานข้อมูลตลาด (Kaggle CSV · 5 ประกาศ · 2026-11)"
-	kaggleRes := buildListingResult(kaggleRec, stOpt, st, office, 22, 800)
+	kaggleRes := buildListingResult(kaggleRec, stOpt, st, office, 22, 800, nil)
 	if kaggleRes.PriceTier != "market_kaggle" || kaggleRes.EstimatedRentTHB != 18000 {
 		t.Fatalf("expected market_kaggle tier with 18000 estimate, got %+v", kaggleRes)
 	}
 
-	// 3. Verified tenant report overrides tier
+	// 5. Verified tenant report overrides everything
 	verRec := harRec
 	verRec.VerifiedReportCount = 2
 	verRec.VerifiedRentMedianTHB = 14500
-	verRes := buildListingResult(verRec, stOpt, st, office, 22, 800)
+	verRes := buildListingResult(verRec, stOpt, st, office, 22, 800, portalBP)
 	if verRes.PriceTier != "verified" || verRes.PriceStatus != "verified" || verRes.MonthlyRentTHB != 14500 {
 		t.Fatalf("expected verified tier with 14500 verified rent, got %+v", verRes)
 	}
